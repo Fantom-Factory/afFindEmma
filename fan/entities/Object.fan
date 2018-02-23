@@ -7,11 +7,13 @@ class Object : Describe {
 
 	new make(|This| f) {
 		f(this)
-		if (id == null) id = `room:${name.fromDisplayName}`
+		if (id == null) id = `obj:${name.fromDisplayName}`
 	}
 	
 	override Str describe() {
-		desc
+		describe := desc
+		if (!describe.endsWith("\n")) describe = describe + "\n"
+		return describe
 	}
 	
 	override Str toStr() { id.toStr }

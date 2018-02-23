@@ -7,6 +7,10 @@ class Game {
 	new make(|This| f) { f(this) }
 
 	
+	Describe start() {
+		Describe([Describe(gameData.prelude), player.room])
+	}
+	
 	
 	static Game load() {
 		gameData := XEscape().load
@@ -26,7 +30,7 @@ class Game {
 
 @Serializable
 class GameData {
-	
+	Str			prelude
 	Uri:Room 	rooms
 	Uri:Object	objects
 	Uri			startRoomId
@@ -58,6 +62,8 @@ class GameData {
 			}
 		}
 		
+		// TODO check for reserved ID names such as east, west, in, out...
+		
 		return this
 	}
 	
@@ -66,4 +72,10 @@ class GameData {
 
 mixin Loader {
 	abstract GameData load()
+}
+
+class GameStats {
+	Duration?	time
+	Int			noOfCmds
+	Int			noOfMoves
 }

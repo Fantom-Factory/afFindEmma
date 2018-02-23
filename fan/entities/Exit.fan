@@ -29,8 +29,19 @@ class Exit : Describe {
 		blockedDesc != null
 	}
 	
+	static |Player, Room, Exit->Describe?| oneTimeMsg(Str msg) {
+		|Player player, Room room, Exit exit -> Describe?| {
+			exit.onExit = null
+			return Describe(msg)
+		}
+	}
+	
 	override Str describe() {
-		desc
+		describe := desc.isEmpty
+			? "You see nothing special.\n"
+			: desc
+		if (!describe.endsWith("\n")) describe = describe + "\n"
+		return describe
 	}
 	
 	override Str toStr() { id.toStr }

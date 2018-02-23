@@ -8,28 +8,36 @@ class TestPlayGame : Test {
 		game	= Game.load
 		player	= game.player
 		
-		log("\nSTART\n")
-		log(divider)
+		log("\nSTART\n-----\n\n")
+		log(game.start)
 		
-		look
-
+		look("out")
+		look("photo")
+		
 		move("out")
+		
+		move("east")
+		move("west")
 
 		log(divider)
 		log("END\n\n")
 	}
 	
 	
-	Void look() {
-		log(player.look)		
+	Void look(Str? obj := null) {
+		log("\n> LOOK ${obj?.upper ?: Str.defVal}\n\n")
+		log(player.look(obj))
 	}
 	
-	Void move(Str exitName) {
-		exitId := player.room.exits.find { it.type == ExitType.vals.find { it.name == exitName  } }.id
-		log("\n> $exitId.path.last.upper\n\n")
-		log(player.move(exitId))
-		log(divider)
-		look
+	Void move(Str exit) {
+		oldRoom := player.room
+		log("\n> MOVE ${exit.upper}\n\n")
+		log(player.move(exit))
+		
+		if (player.room != oldRoom) {
+			log(divider)
+			log(player.look)
+		}
 	}
 	
 	Str divider() {
