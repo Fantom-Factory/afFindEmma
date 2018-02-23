@@ -11,22 +11,31 @@ class Player {
 	
 	new make(|This| f) { f(this) }
 
-	Describe look(Uri? id := null) {
-		if (id == null)
-			return room
+	Describe look(Str? obj := null) {
+		obj = obj?.lower
+		lookAt := null as Describe
+
+		if (obj == null)
+			lookAt = room
 		
-		if (id.scheme == "obj")
-			return inventory.find { it.id == id }
+		if (lookAt == null)
+			lookAt = findExit(obj)
 		
-		if (id.scheme == "exit")
-			return room.exits.find { it.id == id }
-		
-		throw UnsupportedErr(id.toStr)
+		if (lookAt == null)
+			lookAt = findObject(obj)
+
+		if (lookAt == null)
+			lookAt = Describe("404 - ${obj.upper} not found")
+
+		return lookAt
 	}
 	
-	Describe? move(Uri exitId) {
-		exit := room.visibleExits.find { it.id == exitId }
-		
+	Describe move(Str cmd) {
+		cmd = cmd.lower
+		exit := findExit(cmd)
+		if (exit == null)
+			return Describe("There is no ${cmd.upper}.")
+
 		// FIXME help!? should there be an onBlock() or just onExit()?
 		if (exit.isBlocked)
 			return exit.onBlock?.call(this, room, exit) ?: Describe(exit.blockedDesc)
@@ -43,6 +52,20 @@ class Player {
 		
 		return Describe(descs)
 	}
+	
+	private Exit? findExit(Str str) {
+		exitType := ExitType(str, false)
+		return room.findExit(exitType)
+	}
+
+	private Object? findObject(Str str) {
+		obj := room.findObject(str)
+		if (obj == null)
+			obj = inventory.find { it.name.lower == str || it.id.path.last == str }
+		return obj
+	}
+
+
 	
 //	private GameCtx ctx() {
 //		GameCtx {

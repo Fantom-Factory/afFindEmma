@@ -1,5 +1,6 @@
 
 mixin Describe {
+	** All strings MUST end with '\n'.
 	abstract Str describe()
 	
 	static new makeStr(Str? desc) {
@@ -16,8 +17,7 @@ internal class DescribeStr : Describe {
 	override Str describe
 
 	new make(Str describe) {
-		if (!describe.endsWith("\n"))
-			describe = describe + "\n"
+		if (!describe.endsWith("\n")) describe = describe + "\n"
 		this.describe = describe
 	}
 }
@@ -30,6 +30,10 @@ internal class DescribeMulti : Describe {
 	}
 
 	override Str describe() {
-		describes.join("\n\n") { it.describe }
+		describes.join("\n") |d->Str| {
+			describe := d.describe
+			if (!describe.endsWith("\n")) describe = describe + "\n"
+			return describe
+		}
 	}
 }
