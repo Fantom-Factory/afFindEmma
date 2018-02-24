@@ -15,9 +15,12 @@ class Game {
 	static Game load() {
 		gameData := XEscape().load
 		player	 := Player {
-			it.inventory = Object[,]
-			it.room		 = gameData.rooms[gameData.startRoomId]
-			it.gameData	 = gameData
+			it.inventory 	= Object[,]
+			it.room		 	= gameData.rooms[gameData.startRoomId]
+			it.gameData	 	= gameData
+			it.onPickUp		= gameData.onPickUp
+			it.onDrop		= gameData.onDrop
+			it.onUse		= gameData.onUse
 		}
 		return Game {
 			it.player 	= player
@@ -35,7 +38,11 @@ class GameData {
 	Uri:Object	objects
 	Uri			startRoomId
 	Uri[]		startInventory
-	
+
+	|Object, Player -> Describe?|?	onPickUp
+	|Object, Player -> Describe?|?	onDrop
+	|Object, Player -> Describe?|?	onUse
+
 	new make(|This| f) { f(this) }
 
 	

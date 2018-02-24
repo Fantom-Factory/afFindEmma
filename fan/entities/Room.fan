@@ -8,18 +8,12 @@ class Room : Describe {
 	Object[]		objects
 	Str?			namePrefix
 	
-	|Player, Room -> Describe?|?	onEnter
-	|Player, Room -> Describe?|?	onLeave
+	|Room, Player -> Describe?|?	onEnter
+	|Room, Player -> Describe?|?	onLeave
 	
-	internal new make(|This| f) {
-		f(this)
-		if (id == null)			id		= `room:${name.fromDisplayName}`
-		if (desc == null)		desc	= ""
-		if (exits == null)		exits	= Exit[,]
-		if (objects == null)	objects	= Object[,]
-	}
-	
-	internal new makeName(Str name, Str desc, |This f|? f) {
+	private new make(|This| f) { f(this) }
+
+	internal new makeName(Str name, Str desc, |This|? f) {
 		this.name		= name
 		this.desc		= desc
 		this.id			= `room:${name.fromDisplayName}`
@@ -44,13 +38,12 @@ class Room : Describe {
 		exits.findAll { it.isVisible }
 	}
 	
-	internal Exit? findExit(ExitType? exitType) {
-		exitType == null ? null :
-		visibleExits.find { it.type == exitType }
+	internal Exit? findExit(Str str) {
+		visibleExits.find { it.matches(str) }
 	}
 	
 	internal Object? findObject(Str str) {
-		objects.find { it.name.lower == str || it.id.path.last == str }
+		objects.find { it.matches(str) }
 	}
 
 	override Str describe() {

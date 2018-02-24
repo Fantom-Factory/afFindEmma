@@ -9,17 +9,16 @@ class Exit : Describe {
 	Str?			blockedDesc
 	Uri				exitToId
 
-	|Player, Room, Exit -> Describe?|?	onBlock
-	|Player, Room, Exit -> Describe?|?	onExit
+	|Exit, Player -> Describe?|?	onBlock
+	|Exit, Player -> Describe?|?	onExit
 
+	private new make(|This| f) { f(this) }
 	
-	new make(|This| f) { f(this) }
-	
-	new makeName(ExitType type, Uri exitToId) {
+	new makeName(ExitType type, Uri exitToId, Str desc := "") {
 		this.type		= type
 		this.exitToId	= exitToId
 
-		this.desc		= ""
+		this.desc		= desc
 		this.name		= type.name
 		this.id			= `exit:$name.fromDisplayName`
 		this.isVisible	= true
@@ -29,8 +28,8 @@ class Exit : Describe {
 		blockedDesc != null
 	}
 	
-	static |Player, Room, Exit->Describe?| oneTimeMsg(Str msg) {
-		|Player player, Room room, Exit exit -> Describe?| {
+	static |Exit, Player->Describe?| oneTimeMsg(Str msg) {
+		|Exit exit, Player player-> Describe?| {
 			exit.onExit = null
 			return Describe(msg)
 		}
@@ -44,6 +43,10 @@ class Exit : Describe {
 		return describe
 	}
 	
+	internal Bool matches(Str str) {
+		type == ExitType(str, false)
+	}
+
 	override Str toStr() { id.toStr }
 }
 
