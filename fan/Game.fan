@@ -18,6 +18,7 @@ class Game {
 			it.inventory 	= Object[,]
 			it.room		 	= gameData.rooms[gameData.startRoomId]
 			it.gameData	 	= gameData
+			it.onMove		= gameData.onMove
 			it.onPickUp		= gameData.onPickUp
 			it.onDrop		= gameData.onDrop
 			it.onUse		= gameData.onUse
@@ -39,6 +40,7 @@ class GameData {
 	Uri			startRoomId
 	Uri[]		startInventory
 
+	|Exit  , Player -> Describe?|?	onMove
 	|Object, Player -> Describe?|?	onPickUp
 	|Object, Player -> Describe?|?	onDrop
 	|Object, Player -> Describe?|?	onUse

@@ -4,12 +4,14 @@ class Player {
 	
 	Object[]	inventory	:= Object[,]
 	Room		room
+	Bool		canMove		:= true
 	Bool		canPickUp	:= true
 	Bool		canDrop		:= true
 	Bool		canUse		:= true
 
 	Str:Obj?	data		:= Str:Obj?[:]
 
+	|Exit  , Player -> Describe?|?	onMove
 	|Object, Player -> Describe?|?	onPickUp
 	|Object, Player -> Describe?|?	onDrop
 	|Object, Player -> Describe?|?	onUse
@@ -41,27 +43,23 @@ class Player {
 		return lookAt
 	}
 	
-	Describe? move(Str cmd) {
-		cmd = cmd.lower
-		exit := room.findExit(cmd)
+	Describe? move(Str str) {
+		exit := room.findExit(str)
 		if (exit == null)
-			return Describe("There is no ${cmd.upper}.")
+			return Describe("There is no ${str.upper}.")
 
-		// FIXME help!? should there be an onBlock() or just onExit()?
-		if (exit.isBlocked)
-			return exit.onBlock?.call(exit, this) ?: Describe(exit.blockedDesc)
-		
-		// FIXME help!? should I recheck block status?
 		descs := Describe?[,]
-		descs.add(exit.onExit?.call(exit, this))
+		descs.add(onMove?.call(exit, this))
 		
-		// FIXME should onExit be called before or after leave / enter?
-		
-		descs.add(room.onLeave?.call(room, this))
-		
-		room = gameData.room(exit.exitToId)
-
-		descs.add(room.onEnter?.call(room, this))
+		if (canMove) {
+			descs.add(exit.onMove?.call(exit, this))
+			
+			if (exit.canMove) {
+				descs.add(room.onLeave?.call(room, this))
+				room = gameData.room(exit.exitToId)
+				descs.add(room.onEnter?.call(room, this))
+			}
+		}
 		
 		return Describe(descs)
 	}

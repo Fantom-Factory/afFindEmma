@@ -2,37 +2,30 @@
 @Serializable
 class Exit : Describe {
 	Uri				id
-	Str				name
 	Str				desc
 	ExitType		type
-	Bool			isVisible
-	Str?			blockedDesc
 	Uri				exitToId
+	Bool			isVisible
+	Bool			canMove
 
-	|Exit, Player -> Describe?|?	onBlock
-	|Exit, Player -> Describe?|?	onExit
+	|Exit, Player -> Describe?|?	onMove
 
 	private new make(|This| f) { f(this) }
 	
-	new makeName(ExitType type, Uri exitToId, Str desc := "") {
+	new makeName(ExitType type, Uri exitToId, Str desc := "", |This|? f := null) {
 		this.type		= type
 		this.exitToId	= exitToId
-
 		this.desc		= desc
-		this.name		= type.name
-		this.id			= `exit:$name.fromDisplayName`
+		this.id			= `exit:$type.name.fromDisplayName`
 		this.isVisible	= true
+		this.canMove	= true
+
+		f?.call(this)
 	}
 
-	Bool isBlocked() {
-		blockedDesc != null
-	}
-	
-	static |Exit, Player->Describe?| oneTimeMsg(Str msg) {
-		|Exit exit, Player player-> Describe?| {
-			exit.onExit = null
-			return Describe(msg)
-		}
+	Void block(Str msg) {
+		canMove	= false
+		onMove  = blockedMsg(msg)
 	}
 	
 	override Str describe() {
@@ -48,6 +41,19 @@ class Exit : Describe {
 	}
 
 	override Str toStr() { id.toStr }
+
+	static |Exit, Player->Describe?| oneTimeMsg(Str msg) {
+		|Exit exit, Player player-> Describe?| {
+			exit.onMove = null
+			return Describe(msg)
+		}
+	}
+	
+	static |Exit, Player->Describe?| blockedMsg(Str msg) {
+		|Exit exit, Player player-> Describe?| {
+			exit.canMove ? null : Describe(msg)
+		}
+	}
 }
 
 enum class ExitType {
