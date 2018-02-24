@@ -15,12 +15,21 @@ class TestPlayGame : Test {
 		look("photo")
 		
 		move("out")
-		
-		move("east")
-		move("west")
 
-		log(divider)
-		log("END\n\n")
+		pickup("lead")
+		look
+		drop("lead")
+		look
+		
+//		move("north")
+//		move("west")
+//		move("up")
+//
+//		move("east")
+//		move("south")
+//		move("west")
+
+		log("\n---\nEND\n\n")
 	}
 	
 	
@@ -31,13 +40,27 @@ class TestPlayGame : Test {
 	
 	Void move(Str exit) {
 		oldRoom := player.room
-		log("\n> MOVE ${exit.upper}\n\n")
-		log(player.move(exit))
+		log("\n> MOVE ${exit.upper}\n")
+		des := player.move(exit)	// this should be applied to ALL cmds, as with Game default msgs, there is no guarentee that a Desc will be returned
+		if (des != null) {
+			log("\n")
+			log(des)
+		}
 		
 		if (player.room != oldRoom) {
 			log(divider)
 			log(player.look)
 		}
+	}
+	
+	Void pickup(Str obj) {
+		log("\n> PICKUP ${obj.upper}\n\n")
+		log(player.pickUp(obj))
+	}
+	
+	Void drop(Str obj) {
+		log("\n> DROP ${obj.upper}\n\n")
+		log(player.drop(obj))
 	}
 	
 	Str divider() {
