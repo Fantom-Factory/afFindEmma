@@ -2,15 +2,15 @@
 class XEscape : Loader {
 	
 	override GameData load() {
-		prelude := "You awake from a long cosy slumber."
+		prelude := "You awake from a long cosy slumber and fondly remember the exciting, long walks from yesterday."
 		
 		rooms := Room[
 			Room("Cage", "The cage is just small enough for you to fit in and the floor is lined with a soft duvet. There is a pink handkerchief tied across the top, it reads, \"Secnirp\".") {
 				it.namePrefix = "in a"
 				Exit(ExitType.out, `room:diningRoom`, "You see the main dining room of the house and recall many a happy day stretched out in the sun as it streamed in through the wide windows.") {
-					onMove = Exit.oneTimeMsg("You crawl out of the cage. You arch your back, stretch out your front legs, and let out a large yawn - it was a good nights sleep!") 
+					it.oneTimeMsg("You crawl out of the cage. You arch your back, stretch out your front legs, and let out a large yawn - it was a good nights sleep!") 
 				},
-				Object("Photo of Emma", "It is a photo of your favourite play pal, Emma. You really miss her and long for some tender strokes. But where is she? You feel a mission brewing...") {
+				Object("Photo of Emma", "It is a photo of your favourite play pal, Emma. You really miss her and long for some tender strokes. You remember walks in the long grass, frolics, and sausage surprises. You wish you could do it all again. But where is she? You feel a mission brewing...") {
 					it.aliases = ["Photo"]
 				},
 			},
@@ -28,8 +28,11 @@ class XEscape : Loader {
 			
 			Room("Lounge", "The lounge is where you spend your evenings, happily gnawing bones on the Sofa with Emma and Steve.") {
 				Exit(ExitType.south, `room:diningRoom`, "An open archway leads to the dining room."),
-				Exit(ExitType.west, `room:hallway`, "A door leads to the hallway, but it is closed. The handle looms high overhead, out of your reach.") {
+				Exit(ExitType.west, `room:hallway`, "A door leads to the hallway, but it is closed.") {
 					it.block("You bang your head on the door. It remains closed.")
+				},
+				Object("Door", "The door guards the hallway. Its handle looms high overhead, out of your reach.") {
+					it.openExit("lead", "west", "You toss the lead into the air and its loop catches on the handle. You grasp the other end with your teeth and give it a tug. The door swings open.", "You see an open door leading to the hallway.")
 				},
 			},
 
