@@ -17,14 +17,21 @@ class TestPlayGame : Test {
 		move("out")
 
 		look("lead")
-		pickup("lead")
+		take("lead")
 
 		look("north")
 		move("north")
 		look("west")
 		move("west")
+		look("door")
 		
-//		use("lead", "")
+		use("lead", "door")
+		
+		drop("lead")
+		take("door")
+		
+		look("west")
+		move("west")
 		
 //		move("north")
 //		move("west")
@@ -58,8 +65,8 @@ class TestPlayGame : Test {
 		}
 	}
 	
-	Void pickup(Str obj) {
-		log("\n> PICKUP ${obj.upper}\n\n")
+	Void take(Str obj) {
+		log("\n> TAKE ${obj.upper}\n\n")
 		log(player.pickUp(obj.lower))
 	}
 	
@@ -68,9 +75,12 @@ class TestPlayGame : Test {
 		log(player.drop(obj.lower))
 	}
 	
-	Void use(Str obj) {
-		log("\n> USE ${obj.upper}\n\n")
-		log(player.drop(obj.lower))
+	Void use(Str obj, Str? receiver := null) {
+		cmd := "USE ${obj.upper}"
+		if (receiver != null)
+			cmd += " ON ${receiver.upper}"
+		log("\n> ${cmd}\n\n")
+		log(player.use(obj.lower, receiver.lower))
 	}
 	
 	Str divider() {

@@ -6,13 +6,14 @@ class Object : Describe {
 	Str			desc
 	Bool		canPickUp
 	Bool		canDrop
-	Bool		canUse
+//	Bool		canUse		// this makes no sense as it is queried *after* onUse() is called! There is no default use action.
 	Str[]		aliases
 	Str[]		aliasesLower
 
 	|Object, Player -> Describe?|?	onPickUp
 	|Object, Player -> Describe?|?	onDrop
-	|Object, Player -> Describe?|?	onUse
+
+	|Object, Object?, Player -> Describe?|?	onUse
 	
 	private new make(|This| f) { f(this) }
 
@@ -22,7 +23,7 @@ class Object : Describe {
 		this.desc		= desc
 		this.canPickUp	= true
 		this.canDrop	= true
-		this.canUse		= true
+//		this.canUse		= true
 		this.aliases	= Str#.emptyList
 		
 		f?.call(this)
@@ -41,4 +42,23 @@ class Object : Describe {
 	}
 	
 	override Str toStr() { id.toStr }
+	
+	Void openExit(Str objStr, Str exitStr, Str desc, Str? newExitDesc := null) {
+		canPickUp	= false
+		canDrop		= false
+		onUse		= openExitFn(objStr, exitStr, desc, newExitDesc)
+	}
+	
+	static |Object, Object?, Player->Describe?| openExitFn(Str objStr, Str exitStr, Str desc, Str? newExitDesc) {
+		|Object me, Object? obj, Player player -> Describe?| {
+			if (obj != null && obj.matches(objStr)) {
+				exit := player.room.findExit(exitStr)
+				exit.canMove = true
+				if (newExitDesc != null)
+					exit.desc = newExitDesc
+				return Describe(desc)
+			}
+			return null
+		}		
+	}
 }

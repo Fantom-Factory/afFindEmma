@@ -43,7 +43,8 @@ class GameData {
 	|Exit  , Player -> Describe?|?	onMove
 	|Object, Player -> Describe?|?	onPickUp
 	|Object, Player -> Describe?|?	onDrop
-	|Object, Player -> Describe?|?	onUse
+
+	|Object, Object?, Player -> Describe?|?	onUse
 
 	new make(|This| f) { f(this) }
 

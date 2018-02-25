@@ -23,11 +23,6 @@ class Exit : Describe {
 		f?.call(this)
 	}
 
-	Void block(Str msg) {
-		canMove	= false
-		onMove  = blockedMsg(msg)
-	}
-	
 	override Str describe() {
 		describe := desc.isEmpty
 			? "You see nothing special.\n"
@@ -42,14 +37,23 @@ class Exit : Describe {
 
 	override Str toStr() { id.toStr }
 
-	static |Exit, Player->Describe?| oneTimeMsg(Str msg) {
+	Void oneTimeMsg(Str msg) {
+		onMove = oneTimeMsgFn(msg)
+	}
+	
+	Void block(Str msg) {
+		canMove	= false
+		onMove  = blockedMsgFn(msg)
+	}
+	
+	static |Exit, Player->Describe?| oneTimeMsgFn(Str msg) {
 		|Exit exit, Player player-> Describe?| {
 			exit.onMove = null
 			return Describe(msg)
 		}
 	}
 	
-	static |Exit, Player->Describe?| blockedMsg(Str msg) {
+	static |Exit, Player->Describe?| blockedMsgFn(Str msg) {
 		|Exit exit, Player player-> Describe?| {
 			exit.canMove ? null : Describe(msg)
 		}

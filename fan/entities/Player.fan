@@ -14,7 +14,8 @@ class Player {
 	|Exit  , Player -> Describe?|?	onMove
 	|Object, Player -> Describe?|?	onPickUp
 	|Object, Player -> Describe?|?	onDrop
-	|Object, Player -> Describe?|?	onUse
+
+	|Object, Object?, Player -> Describe?|?	onUse
 	
 	@Transient
 	internal GameData	gameData
@@ -73,12 +74,19 @@ class Player {
 		descs.add(onPickUp?.call(object, this))
 
 		if (canPickUp) {
-			descs.add(object.onPickUp?.call(object, this))
+			desc := object.onPickUp?.call(object, this)
 
 			if (object.canPickUp) {
 				room.objects.remove(object)
 				inventory.add(object)
+				if (desc == null)
+					desc = Describe("You pick up the ${obj.upper}")
+			} else {
+				if (desc == null)
+					desc = Describe("You cannot pick up the ${obj.upper}")				
 			}
+
+			descs.add(desc)
 		}
 		
 		return Describe(descs)
@@ -93,28 +101,49 @@ class Player {
 		descs.add(onDrop?.call(object, this))
 
 		if (canDrop) {
-			descs.add(object.onDrop?.call(object, this))
+			desc := object.onDrop?.call(object, this)
 
 			if (object.canDrop) {
 				inventory.remove(object)
 				room.objects.add(object)
+				if (desc == null)
+					desc = Describe("You drop the ${obj.upper}")
+			} else {
+				if (desc == null)
+					desc = Describe("You cannot drop the ${obj.upper}")				
 			}
+
+			descs.add(desc)
 		}
 		
 		return Describe(descs)
 	}
 	
-	Describe? use(Str obj) {
-		object := findObject(obj)
-		if (object == null)
+	Describe? use(Str obj, Str? receiver) {
+		object1 := findObject(obj)
+		if (object1 == null)
 			return Describe("There is no ${obj.upper}.")
 
+		object2 := null as Object
+		if (receiver != null) {
+			object2 = findObject(receiver)
+			if (object2 == null)
+				object2 = room.findObject(receiver)
+			if (object2 == null)
+				return Describe("There is no ${receiver.upper}.")
+		}
+
 		descs := Describe?[,]
-		descs.add(onUse?.call(object, this))
+		descs.add(onUse?.call(object1, object2, this))
 
 		if (canUse) {
-			desc := object.onUse?.call(object, this)
-			if (desc == null && descs.first == null)
+			desc := null as Describe
+			if (object2 != null)
+				desc = object2.onUse?.call(object2, object1, this)
+			else
+				desc = object1.onUse?.call(object1, null, this)
+			
+			if (desc == null)
 				desc = Describe("Apparently, nothing of interest happened.")
 			descs.add(desc)
 		}
@@ -126,8 +155,6 @@ class Player {
 		inventory.find { it.matches(str) }
 	}
 
-
-	
 //	private GameCtx ctx() {
 //		GameCtx {
 //			it.player	= this
