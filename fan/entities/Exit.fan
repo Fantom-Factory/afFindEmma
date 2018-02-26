@@ -3,6 +3,7 @@
 class Exit : Describe {
 	Uri				id
 	Str				desc
+	Str?			descBlocked
 	ExitType		type
 	Uri				exitToId
 	Bool			isVisible
@@ -27,6 +28,10 @@ class Exit : Describe {
 		describe := desc.isEmpty
 			? "You see nothing special.\n"
 			: desc
+		
+		if (isBlocked && descBlocked != null)
+			describe += " " + descBlocked
+		
 		if (!describe.endsWith("\n")) describe = describe + "\n"
 		return describe
 	}
@@ -41,9 +46,10 @@ class Exit : Describe {
 		onMove = oneTimeMsgFn(msg)
 	}
 	
-	Void block(Str msg) {
+	Void block(Str msg, Str blockedMsg) {
 		isBlocked	= true
 		onMove  	= blockedMsgFn(msg)
+		descBlocked	= blockedMsg
 	}
 	
 	static |Exit, Player->Describe?| oneTimeMsgFn(Str msg) {
