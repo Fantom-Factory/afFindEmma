@@ -45,6 +45,10 @@ class Syntax {
 			cmd = matchStatistics(player, cmdStr)		
 		if (cmd == null)
 			cmd = matchInventory(player, cmdStr)		
+		if (cmd == null)
+			cmd = matchWear(player, cmdStr)		
+		if (cmd == null)
+			cmd = matchTakeOff(player, cmdStr)		
 
 		return cmd
 	}
@@ -218,6 +222,44 @@ class Syntax {
 		return Cmd {
 			it.method	= Player#listInventory
 			it.args		= Obj#.emptyList
+		}
+	}
+	
+	Cmd? matchWear(Player player, Str cmdStr) {
+		wearCmd := wearSynonyms.find { cmdStr.startsWith(it) || cmdStr == it.trimEnd }
+		if (wearCmd == null) return null
+		
+		if (cmdStr == wearCmd.trimEnd)
+			return Cmd("Wear what?")
+
+		cmdStr = cmdStr[wearCmd.size..-1] 
+		object := player.room.findObject(cmdStr)
+		if (object == null)
+			object = player.findObject(cmdStr)
+		if (object == null)
+			return Cmd("There is no ${cmdStr.upper}.")
+
+		return Cmd {
+			it.method	= Player#wear
+			it.args		= [object]
+		}
+	}
+
+	Cmd? matchTakeOff(Player player, Str cmdStr) {
+		takeOffCmd := takeOffSynonyms.find { cmdStr.startsWith(it) || cmdStr == it.trimEnd }
+		if (takeOffCmd == null) return null
+		
+		if (cmdStr == takeOffCmd.trimEnd)
+			return Cmd("Pick up what?")
+
+		cmdStr = cmdStr[takeOffCmd.size..-1] 
+		object := player.findObject(cmdStr)
+		if (object == null || !player.clothes.contains(object))
+			return Cmd("You are not wearing ${cmdStr.upper}.")
+
+		return Cmd {
+			it.method	= Player#takeOff
+			it.args		= [object]
 		}
 	}
 }

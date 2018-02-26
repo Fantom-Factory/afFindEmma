@@ -8,6 +8,8 @@ class Player {
 	Bool		canMove		:= true
 	Bool		canPickUp	:= true
 	Bool		canDrop		:= true
+	Bool		canWear		:= true
+	Bool		canTakeOff	:= true
 	Bool		canUse		:= true
 
 	Str:Obj?	data		:= Str:Obj?[:]
@@ -15,6 +17,8 @@ class Player {
 	|Exit  , Player -> Describe?|?	onMove
 	|Object, Player -> Describe?|?	onPickUp
 	|Object, Player -> Describe?|?	onDrop
+	|Object, Player -> Describe?|?	onWear
+	|Object, Player -> Describe?|?	onTakeOff
 
 	|Object, Object?, Player -> Describe?|?	onUse
 	
@@ -98,6 +102,55 @@ class Player {
 		return Describe(descs)
 	}
 	
+	Describe? wear(Object object) {
+		descs := Describe?[,]
+		descs.add(onWear?.call(object, this))
+
+		if (canWear) {
+			desc := object.onWear?.call(object, this)
+
+			if (object.canWear) {
+				clothes.add(object)
+				room.objects.remove(object)	// remove from both as we're not sure where it came from
+				inventory.remove(object)
+				if (desc == null)
+					desc = Describe("You wear ${object.fullName}")
+			} else {
+				if (desc == null)
+					desc = Describe("You cannot wear ${object.fullName}")				
+			}
+
+			descs.add(desc)
+		}
+		
+		gameStats.noOfCmds++
+		return Describe(descs)
+	}
+	
+	Describe? takeOff(Object object) {
+		descs := Describe?[,]
+		descs.add(onWear?.call(object, this))
+
+		if (canWear) {
+			desc := object.onWear?.call(object, this)
+
+			if (object.canWear) {
+				clothes.remove(object)
+				room.objects.add(object)	// place in room, as inventory may be full
+				if (desc == null)
+					desc = Describe("You pick up the ${object.name}")
+			} else {
+				if (desc == null)
+					desc = Describe("You cannot pick up the ${object.name}")				
+			}
+
+			descs.add(desc)
+		}
+		
+		gameStats.noOfCmds++
+		return Describe(descs)
+	}
+	
 	Describe? use(Object object1, Object? object2) {
 		descs := Describe?[,]
 		descs.add(onUse?.call(object1, object2, this))
@@ -148,6 +201,11 @@ class Player {
 	}
 
 	internal Object? findObject(Str str) {
-		inventory.find { it.matches(str) }
+		obj := null as Object
+		if (obj == null)
+			inventory.find { it.matches(str) }
+		if (obj == null)
+			clothes.find { it.matches(str) }
+		return obj
 	}
 }

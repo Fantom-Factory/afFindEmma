@@ -21,6 +21,8 @@ class Game {
 			it.onMove		= gameData.onMove
 			it.onPickUp		= gameData.onPickUp
 			it.onDrop		= gameData.onDrop
+			it.onWear		= gameData.onWear
+			it.onTakeOff	= gameData.onTakeOff
 			it.onUse		= gameData.onUse
 		}
 		return Game {
@@ -43,6 +45,8 @@ class GameData {
 	|Exit  , Player -> Describe?|?	onMove
 	|Object, Player -> Describe?|?	onPickUp
 	|Object, Player -> Describe?|?	onDrop
+	|Object, Player -> Describe?|?	onWear
+	|Object, Player -> Describe?|?	onTakeOff
 
 	|Object, Object?, Player -> Describe?|?	onUse
 

@@ -6,6 +6,8 @@ class Object : Describe {
 	Str			desc
 	Bool		canPickUp
 	Bool		canDrop
+	Bool		canWear
+	Bool		canTakeOff
 //	Bool		canUse		// this makes no sense as it is queried *after* onUse() is called! There is no default use action.
 	Str[]		aliases
 	Str[]		aliasesLower
@@ -14,6 +16,8 @@ class Object : Describe {
 
 	|Object, Player -> Describe?|?	onPickUp
 	|Object, Player -> Describe?|?	onDrop
+	|Object, Player -> Describe?|?	onWear
+	|Object, Player -> Describe?|?	onTakeOff
 
 	|Object, Object?, Player -> Describe?|?	onUse
 	
