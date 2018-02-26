@@ -9,7 +9,7 @@ class Exit : Describe {
 	Bool			isVisible
 	Bool			isBlocked
 
-	|Exit, Player -> Describe?|?	onMove
+	|Exit, Player -> Describe?|?	onExit
 
 	private new make(|This| f) { f(this) }
 	
@@ -43,18 +43,18 @@ class Exit : Describe {
 	override Str toStr() { id.toStr }
 
 	Void oneTimeMsg(Str msg) {
-		onMove = oneTimeMsgFn(msg)
+		onExit = oneTimeMsgFn(msg)
 	}
 	
 	Void block(Str msg, Str blockedMsg) {
 		isBlocked	= true
-		onMove  	= blockedMsgFn(msg)
+		onExit  	= blockedMsgFn(msg)
 		descBlocked	= blockedMsg
 	}
 	
 	static |Exit, Player->Describe?| oneTimeMsgFn(Str msg) {
 		|Exit exit, Player player-> Describe?| {
-			exit.onMove = null
+			exit.onExit = null
 			return Describe(msg)
 		}
 	}

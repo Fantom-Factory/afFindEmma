@@ -40,7 +40,7 @@ class Player {
 		descs.add(onMove?.call(exit, this))
 		
 		if (canMove) {
-			descs.add(exit.onMove?.call(exit, this))
+			descs.add(exit.onExit?.call(exit, this))
 			
 			if (!exit.isBlocked) {
 				descs.add(room.onLeave?.call(room, this))
