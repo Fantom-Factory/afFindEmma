@@ -41,6 +41,10 @@ class Object : Describe {
 		return describe
 	}
 	
+	internal Str fullName() {
+		"a ${name}"
+	}
+	
 	internal Bool matches(Str str) {
 		name.lower == str || id.path.last == str || aliasesLower.contains(str)
 	}

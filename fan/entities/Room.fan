@@ -57,7 +57,7 @@ class Room : Describe {
 		}
 
 		if (objects.size > 0) {
-			str.add("You see ").add(objects.join(", ") { "a ${it.name}" }).addChar('.').addChar('\n')
+			str.add("You see ").add(objects.join(", ") { it.fullName }).addChar('.').addChar('\n')
 			str.addChar('\n')
 		}
 

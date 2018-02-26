@@ -3,6 +3,7 @@
 class Player {
 	
 	Object[]	inventory	:= Object[,]
+	Object[]	clothes		:= Object[,]
 	Room		room
 	Bool		canMove		:= true
 	Bool		canPickUp	:= true
@@ -118,13 +119,32 @@ class Player {
 	}
 	
 	Describe listInventory() {
-		msg := "state"
-		return Describe(msg)		
+		str := StrBuf()
+		
+		if (inventory.isEmpty)
+			str.add("You hold nothing.\n")
+		else {
+			str.add("You are holding:\n")
+			inventory.each {
+				str.add("  - ${it.fullName}\n")
+			}
+		}
+		str.addChar('\n')
+		
+		if (clothes.isEmpty)
+			str.add("You wear nothing.\n")
+		else {
+			str.add("You are wearing:\n")
+			clothes.each {
+				str.add("  - ${it.fullName}\n")
+			}
+		}
+
+		return Describe(str)		
 	}
 
 	Describe statistics() {
-		msg := "state"
-		return Describe(msg)
+		Describe(gameStats.print)
 	}
 
 	internal Object? findObject(Str str) {
