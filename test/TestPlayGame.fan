@@ -31,12 +31,17 @@ class TestPlayGame : Test {
  		
  		LOOK DOOR
  		USE LEAD ON DOOR
+ 		inv
  		
  		DROP LEAD
  		TAKE DOOR
  		
  		LOOK EAST
  		MOVE EAST
+ 		
+ 		stats
+ 		inv
+ 		inventory
  		
  ".splitLines.each { executeCmd(it) }
 		

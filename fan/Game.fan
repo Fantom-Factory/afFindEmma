@@ -95,4 +95,15 @@ class GameStats {
 	Duration gameTime() {
 		Duration.now - startTime
 	}
+
+	Str print() {
+		str := StrBuf()
+		str.add("Time played ........ ${DurationLocale.approx(gameTime)}\n")
+		str.add("Commands entered ... ${noOfCmds}\n")
+		str.add("Moves made ......... ${noOfMoves}\n")
+		str.add("Snacks eaten ....... ${noOfSnacksEaten}\n")
+		return str.toStr
+	}
+	
+	override Str toStr() { print }
 }

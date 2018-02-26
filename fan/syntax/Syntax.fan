@@ -9,8 +9,8 @@ class Syntax {
 	static const Str[]	takeOffSynonyms		:= "take off "						.split('|', false)
 	static const Str[]	useSynonyms			:= "use "							.split('|', false)
 	static const Str[]	useJoins			:= "to |on |at |with "				.split('|', false)
-	static const Str[]	statsSynonyms		:= "stats |statistics "				.split('|', false)
-	static const Str[]	inventorySynonyms	:= "inventory "						.split('|', false)
+	static const Str[]	statisticsSynonyms	:= "stats |statistics "				.split('|', false)
+	static const Str[]	inventorySynonyms	:= "inv |inventory "				.split('|', false)
 	static const Str[]	hi5Synonyms			:= "hi5 |high five "				.split('|', false)
 	
 //	static const Str	lookSyntax			:= "^(?:CMD)(?: (EXIT|ROOM.OBJECT|USER.OBJECT))?\$"
@@ -41,6 +41,10 @@ class Syntax {
 			cmd = matchDrop(player, cmdStr)		
 		if (cmd == null)
 			cmd = matchUse(player, cmdStr)		
+		if (cmd == null)
+			cmd = matchStatistics(player, cmdStr)		
+		if (cmd == null)
+			cmd = matchInventory(player, cmdStr)		
 
 		return cmd
 	}
@@ -154,6 +158,8 @@ class Syntax {
 		if (useCmd == null) {
 			object = player.inventory.find |obj| {
 				verbCmd := obj.verbsLower.find { cmdStr == it || cmdStr.startsWith(it + " ") }
+				if (verbCmd == null)
+					return false
 				if (cmdStr == verbCmd)
 					return false	// Cmd("Use what?")				
 			
@@ -170,7 +176,7 @@ class Syntax {
 		}
 		
 		if (object == null)
-			return Cmd("Use what?")				
+			return null				
 
 		if (cmdStr.trimEnd.isEmpty)
 			return Cmd {
@@ -192,6 +198,26 @@ class Syntax {
 		return Cmd {
 			it.method	= Player#use
 			it.args		= [object, object2]
+		}
+	}
+	
+	Cmd? matchStatistics(Player player, Str cmdStr) {
+		moveCmd := statisticsSynonyms.find { cmdStr.startsWith(it) || cmdStr == it.trimEnd }
+		if (moveCmd == null) return null
+		
+		return Cmd {
+			it.method	= Player#statistics
+			it.args		= Obj#.emptyList
+		}
+	}
+	
+	Cmd? matchInventory(Player player, Str cmdStr) {
+		moveCmd := inventorySynonyms.find { cmdStr.startsWith(it) || cmdStr == it.trimEnd }
+		if (moveCmd == null) return null
+		
+		return Cmd {
+			it.method	= Player#listInventory
+			it.args		= Obj#.emptyList
 		}
 	}
 }

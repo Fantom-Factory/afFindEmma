@@ -6,6 +6,10 @@ mixin Describe {
 	static new makeStr(Str? desc) {
 		desc == null ? null : DescribeStr(desc)
 	}
+	
+	static new makeStrBuf(StrBuf? desc) {
+		desc == null ? null : DescribeStr(desc.toStr)
+	}
 
 	static new makeMulti(Describe?[] descs) {
 		descs = descs.exclude { it == null }
