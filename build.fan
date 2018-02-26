@@ -13,7 +13,7 @@ class Build : BuildPod {
 			"afFish   2.0.7.0  - 2.0",
 		]
 
-		srcDirs = [`fan/`, `fan/entities/`, `test/`]
+		srcDirs = [`fan/`, `fan/entities/`, `fan/syntax/`, `test/`]
 		resDirs = [,]
 		
 		docApi = true

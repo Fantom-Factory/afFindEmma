@@ -85,7 +85,14 @@ mixin Loader {
 }
 
 class GameStats {
-	Duration?	time
+	Duration	startTime	:= startTime = Duration.now
 	Int			noOfCmds
 	Int			noOfMoves
+	Int			noOfSnacksEaten
+	
+	// TODO have a list of Game durations to allow pausing / saving
+	
+	Duration gameTime() {
+		Duration.now - startTime
+	}
 }
