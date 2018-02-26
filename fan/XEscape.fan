@@ -19,7 +19,7 @@ class XEscape : Loader {
 				Exit(ExitType.in, `room:cage`, "The cage is where you sleep at night, dreaming of chasing ducks by the canal."),
 				Exit(ExitType.south, `room:lounge`, "An open archway leads to the lounge."),
 				Exit(ExitType.east, `room:kitchen`, "The kitchen! That tiled floor looks slippery though.") {
-					it.block("You step out onto the slippery tiles. The pads on your little legs have no grip and you start slipping and sliding everywhere. You frantically try to run but your splayed legs are in all directions. With luck and determination you manage to return back to the safety of carpet and the back room.")
+					it.block("You step out onto the slippery tiles. The pads on your little legs have no grip and you start slipping and sliding everywhere. You frantically try to run but your splayed legs are in all directions. With luck and determination you manage to return back to the safety of carpet and the back room.", "")
 				},
 				Object("Short Lead", "A short black training lead with a loop on one end.") {
 					it.aliases = ["Lead"]
@@ -29,11 +29,11 @@ class XEscape : Loader {
 			
 			Room("Lounge", "The lounge is where you spend your evenings, happily gnawing bones on the Sofa with Emma and Steve.") {
 				Exit(ExitType.north, `room:diningRoom`, "An open archway leads to the dining room."),
-				Exit(ExitType.east, `room:hallway`, "A door leads to the hallway, but it is closed.") {
-					it.block("You bang your head on the door. It remains closed.")
+				Exit(ExitType.east, `room:hallway`, "A door leads to the hallway.") {
+					it.block("You bang your head on the door. It remains closed.", "It is closed.")
 				},
 				Object("Door", "The door guards the hallway. Its handle looms high overhead, out of your reach.") {
-					it.openExit("lead", "east", "You toss the lead into the air and its loop catches on the handle. You grasp the other end with your teeth and give it a tug. The door swings open.", "You see an open door leading to the hallway.")
+					it.openExit("lead", "east", "You toss the lead into the air and its loop catches on the handle. You grasp the other end with your teeth and give it a tug. The door swings open.")
 				},
 			},
 

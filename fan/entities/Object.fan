@@ -63,19 +63,17 @@ class Object : Describe {
 	
 	override Str toStr() { id.toStr }
 	
-	Void openExit(Str objStr, Str exitStr, Str desc, Str? newExitDesc := null) {
+	Void openExit(Str objStr, Str exitStr, Str desc) {
 		canPickUp	= false
 		canDrop		= false
-		onUse		= openExitFn(objStr, exitStr, desc, newExitDesc)
+		onUse		= openExitFn(objStr, exitStr, desc)
 	}
 	
-	static |Object, Object?, Player->Describe?| openExitFn(Str objStr, Str exitStr, Str desc, Str? newExitDesc) {
+	static |Object, Object?, Player->Describe?| openExitFn(Str objStr, Str exitStr, Str desc) {
 		|Object door, Object? obj, Player player -> Describe?| {
 			if (obj != null && obj.matches(objStr)) {
 				exit := player.room.findExit(exitStr)
 				exit.isBlocked = false
-				if (newExitDesc != null)
-					exit.desc = newExitDesc
 				player.room.objects.remove(door)
 				return Describe(desc)
 			}
