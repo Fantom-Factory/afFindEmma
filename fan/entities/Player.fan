@@ -17,38 +17,20 @@ class Player {
 
 	|Object, Object?, Player -> Describe?|?	onUse
 	
+	GameStats	gameStats	:= GameStats()
+	
 	@Transient
 	internal GameData	gameData
 	
 	new make(|This| f) { f(this) }
 
-	Describe look(Str? obj := null) {
-		obj = obj?.lower
-		lookAt := null as Describe
-
-		if (obj == null)
-			lookAt = room
-		
-		if (lookAt == null)
-			lookAt = room.findExit(obj)
-		
-		if (lookAt == null)
-			lookAt = room.findObject(obj)
-
-		if (lookAt == null)
-			lookAt = findObject(obj)
-
-		if (lookAt == null)
-			lookAt = Describe("404 - ${obj.upper} not found")
-
-		return lookAt
+	Describe look(Describe? at := null) {
+		if (at == null) at = room
+		gameStats.noOfCmds++
+		return at
 	}
 	
-	Describe? move(Str str) {
-		exit := room.findExit(str)
-		if (exit == null)
-			return Describe("There is no ${str.upper}.")
-
+	Describe? move(Exit exit) {
 		descs := Describe?[,]
 		descs.add(onMove?.call(exit, this))
 		
@@ -62,14 +44,12 @@ class Player {
 			}
 		}
 		
+		gameStats.noOfCmds++
+		gameStats.noOfMoves++
 		return Describe(descs)
 	}
 	
-	Describe? pickUp(Str obj) {
-		object := room.findObject(obj)
-		if (object == null)
-			return Describe("There is no ${obj.upper}.")
-
+	Describe? pickup(Object object) {
 		descs := Describe?[,]
 		descs.add(onPickUp?.call(object, this))
 
@@ -80,23 +60,20 @@ class Player {
 				room.objects.remove(object)
 				inventory.add(object)
 				if (desc == null)
-					desc = Describe("You pick up the ${obj.upper}")
+					desc = Describe("You pick up the ${object.name}")
 			} else {
 				if (desc == null)
-					desc = Describe("You cannot pick up the ${obj.upper}")				
+					desc = Describe("You cannot pick up the ${object.name}")				
 			}
 
 			descs.add(desc)
 		}
 		
+		gameStats.noOfCmds++
 		return Describe(descs)
 	}
 	
-	Describe? drop(Str obj) {
-		object := findObject(obj)
-		if (object == null)
-			return Describe("There is no ${obj.upper}.")
-
+	Describe? drop(Object object) {
 		descs := Describe?[,]
 		descs.add(onDrop?.call(object, this))
 
@@ -107,32 +84,20 @@ class Player {
 				inventory.remove(object)
 				room.objects.add(object)
 				if (desc == null)
-					desc = Describe("You drop the ${obj.upper}")
+					desc = Describe("You drop the ${object.name}")
 			} else {
 				if (desc == null)
-					desc = Describe("You cannot drop the ${obj.upper}")				
+					desc = Describe("You cannot drop the ${object.name}")				
 			}
 
 			descs.add(desc)
 		}
 		
+		gameStats.noOfCmds++
 		return Describe(descs)
 	}
 	
-	Describe? use(Str obj, Str? receiver) {
-		object1 := findObject(obj)
-		if (object1 == null)
-			return Describe("There is no ${obj.upper}.")
-
-		object2 := null as Object
-		if (receiver != null) {
-			object2 = findObject(receiver)
-			if (object2 == null)
-				object2 = room.findObject(receiver)
-			if (object2 == null)
-				return Describe("There is no ${receiver.upper}.")
-		}
-
+	Describe? use(Object object1, Object? object2) {
 		descs := Describe?[,]
 		descs.add(onUse?.call(object1, object2, this))
 
@@ -148,25 +113,21 @@ class Player {
 			descs.add(desc)
 		}
 
+		gameStats.noOfCmds++
 		return Describe(descs)
 	}
 	
-	private Object? findObject(Str str) {
-		inventory.find { it.matches(str) }
+	Describe listInventory() {
+		msg := "state"
+		return Describe(msg)		
 	}
 
-//	private GameCtx ctx() {
-//		GameCtx {
-//			it.player	= this
-//			it.room		= this.room
-//		}
-//	}
+	Describe statistics() {
+		msg := "state"
+		return Describe(msg)
+	}
+
+	internal Object? findObject(Str str) {
+		inventory.find { it.matches(str) }
+	}
 }
-
-
-//class GameCtx {
-//	Player	player
-//	Room	room
-//	
-//	new make(|This| f) { f(this) }
-//}
