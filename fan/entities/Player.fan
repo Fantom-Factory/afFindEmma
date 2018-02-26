@@ -37,7 +37,7 @@ class Player {
 		if (canMove) {
 			descs.add(exit.onMove?.call(exit, this))
 			
-			if (exit.canMove) {
+			if (!exit.isBlocked) {
 				descs.add(room.onLeave?.call(room, this))
 				room = gameData.room(exit.exitToId)
 				descs.add(room.onEnter?.call(room, this))

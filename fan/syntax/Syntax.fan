@@ -5,6 +5,8 @@ class Syntax {
 	static const Str[]	moveSynonyms		:= "move |go |exit "				.split('|', false)
 	static const Str[]	pickupSynonyms		:= "pickup |pick up |take |get "	.split('|', false)
 	static const Str[]	dropSynonyms		:= "drop "							.split('|', false)
+	static const Str[]	wearSynonyms		:= "wear |put on "					.split('|', false)
+	static const Str[]	takeOffSynonyms		:= "take off "						.split('|', false)
 	static const Str[]	useSynonyms			:= "use "							.split('|', false)
 	static const Str[]	useJoins			:= "to |on |at |with "				.split('|', false)
 	static const Str[]	statsSynonyms		:= "stats |statistics "				.split('|', false)

@@ -30,21 +30,7 @@ class TestPlayGame : Test {
  		MOVE EAST
  		
  		LOOK DOOR
- 		USE
- 		USE 
- 		USE LEAD
- 		USE LEAD 
- 		USE LEAD ON
- 		USE LEAD ON 
  		USE LEAD ON DOOR
- 
- 		throw
- 		throw 
- 		throw short LEAD
- 		throw short LEAD 
- 		throw short LEAD at
- 		throw short LEAD at 
- 		throw short LEAD at DOOR
  		
  		DROP LEAD
  		TAKE DOOR

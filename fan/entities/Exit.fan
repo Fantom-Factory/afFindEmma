@@ -6,7 +6,7 @@ class Exit : Describe {
 	ExitType		type
 	Uri				exitToId
 	Bool			isVisible
-	Bool			canMove
+	Bool			isBlocked
 
 	|Exit, Player -> Describe?|?	onMove
 
@@ -18,7 +18,7 @@ class Exit : Describe {
 		this.desc		= desc
 		this.id			= `exit:$type.name.fromDisplayName`
 		this.isVisible	= true
-		this.canMove	= true
+		this.isBlocked	= false
 
 		f?.call(this)
 	}
@@ -42,8 +42,8 @@ class Exit : Describe {
 	}
 	
 	Void block(Str msg) {
-		canMove	= false
-		onMove  = blockedMsgFn(msg)
+		isBlocked	= true
+		onMove  	= blockedMsgFn(msg)
 	}
 	
 	static |Exit, Player->Describe?| oneTimeMsgFn(Str msg) {
@@ -55,7 +55,7 @@ class Exit : Describe {
 	
 	static |Exit, Player->Describe?| blockedMsgFn(Str msg) {
 		|Exit exit, Player player-> Describe?| {
-			exit.canMove ? null : Describe(msg)
+			exit.isBlocked ? Describe(msg) : null
 		}
 	}
 }
