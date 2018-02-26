@@ -65,7 +65,7 @@ class Object : Describe {
 		|Object door, Object? obj, Player player -> Describe?| {
 			if (obj != null && obj.matches(objStr)) {
 				exit := player.room.findExit(exitStr)
-				exit.canMove = true
+				exit.isBlocked = false
 				if (newExitDesc != null)
 					exit.desc = newExitDesc
 				player.room.objects.remove(door)
