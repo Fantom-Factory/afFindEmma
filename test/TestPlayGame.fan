@@ -40,6 +40,7 @@ class TestPlayGame : Test {
  		
  		LOOK SOUTH
  		MOVE SOUTH
+ 		HELP
  		
  ".splitLines.each { executeCmd(it) }
 		

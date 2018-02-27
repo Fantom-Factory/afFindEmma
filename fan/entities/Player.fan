@@ -11,6 +11,7 @@ class Player {
 	Bool		canWear		:= true
 	Bool		canTakeOff	:= true
 	Bool		canUse		:= true
+	Bool		canHi5		:= true
 
 	Str:Obj?	data		:= Str:Obj?[:]
 
@@ -19,8 +20,9 @@ class Player {
 	|Object, Player -> Describe?|?	onDrop
 	|Object, Player -> Describe?|?	onWear
 	|Object, Player -> Describe?|?	onTakeOff
-
 	|Object, Object?, Player -> Describe?|?	onUse
+	|Object?, Player -> Describe?|?	onHi5
+	|Player -> Describe?|?			onRollover
 	
 	GameStats	gameStats	:= GameStats()
 	
@@ -35,6 +37,61 @@ class Player {
 		return at
 	}
 	
+	Describe? help() {
+		str := StrBuf()
+		str.add("Game commands:\n")
+		str.add("  - look    [exit | object]\n")
+		str.add("  - move    <exit>\n")
+		str.add("  - pickup  <object>\n")
+		str.add("  - drop    <object>\n")
+		str.add("  - wear    <object>\n")
+		str.add("  - takeoff <object>\n")
+		str.add("  - use <object> [on <object>]\n")
+		str.add("\n")
+		str.add("Player commands:\n")
+		str.add("  - rollover\n")
+		str.add("  - hi5 <object>\n")
+		str.add("\n")
+		str.add("Misc commands:\n")
+		str.add("  - statistics\n")
+		str.add("  - inventory\n")
+		str.add("\n")
+		str.add("Alternative synonyms, verbs, and abbreviations are allowed, e.g.:\n")
+		str.add("  - go n\n")
+		str.add("  - eat snack\n")
+		str.add("  - hi5 squirrel\n")
+		return Describe(str)
+	}
+	
+	Describe statistics() {
+		Describe(gameStats.print)
+	}
+	
+	Describe listInventory() {
+		str := StrBuf()
+		
+		if (inventory.isEmpty)
+			str.add("You hold nothing.\n")
+		else {
+			str.add("You are holding:\n")
+			inventory.each {
+				str.add("  - ${it.fullName}\n")
+			}
+		}
+		str.addChar('\n')
+		
+		if (clothes.isEmpty)
+			str.add("You wear nothing.\n")
+		else {
+			str.add("You are wearing:\n")
+			clothes.each {
+				str.add("  - ${it.fullName}\n")
+			}
+		}
+
+		return Describe(str)		
+	}
+
 	Describe? move(Exit exit) {
 		descs := Describe?[,]
 		descs.add(onMove?.call(exit, this))
@@ -171,34 +228,32 @@ class Player {
 		return Describe(descs)
 	}
 	
-	Describe listInventory() {
-		str := StrBuf()
-		
-		if (inventory.isEmpty)
-			str.add("You hold nothing.\n")
-		else {
-			str.add("You are holding:\n")
-			inventory.each {
-				str.add("  - ${it.fullName}\n")
-			}
-		}
-		str.addChar('\n')
-		
-		if (clothes.isEmpty)
-			str.add("You wear nothing.\n")
-		else {
-			str.add("You are wearing:\n")
-			clothes.each {
-				str.add("  - ${it.fullName}\n")
-			}
+	Describe? hi5(Object object) {
+		descs := Describe?[,]
+		descs.add(onHi5?.call(object, this))
+
+		if (canHi5) {
+			desc := object.onHi5?.call(this)
+			descs.add(desc)
 		}
 
-		return Describe(str)		
+		if (descs.isEmpty)
+			descs.add(Describe("You high five thin air. Sadly, it leaves you hanging and does not high five back."))				
+		
+		gameStats.noOfCmds++
+		return Describe(descs)
 	}
+	
+	Describe? rollover() {
+		desc := onRollover?.call(this)
 
-	Describe statistics() {
-		Describe(gameStats.print)
+		if (desc == null)
+			desc = Describe("You rollover. It impresses no one.")
+
+		gameStats.noOfCmds++
+		return desc
 	}
+	
 
 	internal Object? findObject(Str str) {
 		obj := null as Object
