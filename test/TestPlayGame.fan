@@ -16,9 +16,7 @@ class TestPlayGame : Test {
 "
  		LOOK 
  		LOOK OUT
- 		LOOK PHOTO
- 		
- 		MOVE
+ 		LOOK PHOTO 		
  		MOVE OUT
  		
  		LOOK LEAD
@@ -26,22 +24,22 @@ class TestPlayGame : Test {
  		
  		LOOK SOUTH
  		MOVE SOUTH
- 		LOOK EAST
- 		MOVE EAST
+ 		LOOK WEST
+ 		MOVE WEST
  		
  		LOOK DOOR
  		USE LEAD ON DOOR
- 		inv
  		
- 		DROP LEAD
- 		TAKE DOOR
+ 		LOOK WEST
+ 		MOVE WEST
  		
- 		LOOK EAST
- 		MOVE EAST
+ 		LOOK SOUTH
+ 		MOVE SOUTH
+ 		USE LEAD ON DOOR
+ 		LOOK
  		
- 		stats
- 		inv
- 		inventory
+ 		LOOK SOUTH
+ 		MOVE SOUTH
  		
  ".splitLines.each { executeCmd(it) }
 		
