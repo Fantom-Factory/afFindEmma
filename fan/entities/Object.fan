@@ -9,6 +9,7 @@ class Object : Describe {
 	Bool		canWear
 	Bool		canTakeOff
 //	Bool		canUse		// this makes no sense as it is queried *after* onUse() is called! There is no default use action.
+//	Bool		canHi5		// as above - not needed if there is no default action
 	Str[]		aliases
 	Str[]		aliasesLower
 	Str[]		verbs
@@ -18,8 +19,8 @@ class Object : Describe {
 	|Object, Player -> Describe?|?	onDrop
 	|Object, Player -> Describe?|?	onWear
 	|Object, Player -> Describe?|?	onTakeOff
-
 	|Object, Object?, Player -> Describe?|?	onUse
+	|Player -> Describe?|?	onHi5
 	
 	private new make(|This| f) { f(this) }
 

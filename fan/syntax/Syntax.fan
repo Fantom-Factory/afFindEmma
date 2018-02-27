@@ -1,7 +1,7 @@
 
 class Syntax {
 
-	static const Str[]	lookSynonyms		:= "look "							.split('|', false)
+	static const Str[]	lookSynonyms		:= "look |l "						.split('|', false)
 	static const Str[]	moveSynonyms		:= "move |go |exit "				.split('|', false)
 	static const Str[]	pickupSynonyms		:= "pickup |pick up |take |get "	.split('|', false)
 	static const Str[]	dropSynonyms		:= "drop "							.split('|', false)
@@ -9,9 +9,13 @@ class Syntax {
 	static const Str[]	takeOffSynonyms		:= "take off "						.split('|', false)
 	static const Str[]	useSynonyms			:= "use "							.split('|', false)
 	static const Str[]	useJoins			:= "to |on |at |with "				.split('|', false)
+
+	static const Str[]	hi5Synonyms			:= "hi5 |high five "				.split('|', false)
+	static const Str[]	rolloverSynonyms	:= "rollover "						.split('|', false)
+
+	static const Str[]	helpSynonyms		:= "help"							.split('|', false)
 	static const Str[]	statisticsSynonyms	:= "stats |statistics "				.split('|', false)
 	static const Str[]	inventorySynonyms	:= "inv |inventory "				.split('|', false)
-	static const Str[]	hi5Synonyms			:= "hi5 |high five "				.split('|', false)
 	
 //	static const Str	lookSyntax			:= "^(?:CMD)(?: (EXIT|ROOM.OBJECT|USER.OBJECT))?\$"
 //	static const Str	moveSyntax			:= "^(?:CMD) (EXIT)\$"
@@ -32,23 +36,29 @@ class Syntax {
 		// regex's just give a yes / no, it worked / it didn't work answer
 		
 		if (cmd == null)
-			cmd = matchLook(player, cmdStr)		
+			cmd = matchLook(player, cmdStr)
 		if (cmd == null)
-			cmd = matchMove(player, cmdStr)		
+			cmd = matchMove(player, cmdStr)
 		if (cmd == null)
-			cmd = matchPickup(player, cmdStr)		
+			cmd = matchPickup(player, cmdStr)
 		if (cmd == null)
-			cmd = matchDrop(player, cmdStr)		
+			cmd = matchDrop(player, cmdStr)
 		if (cmd == null)
-			cmd = matchUse(player, cmdStr)		
+			cmd = matchUse(player, cmdStr)
 		if (cmd == null)
-			cmd = matchStatistics(player, cmdStr)		
+			cmd = matchWear(player, cmdStr)
 		if (cmd == null)
-			cmd = matchInventory(player, cmdStr)		
+			cmd = matchTakeOff(player, cmdStr)
 		if (cmd == null)
-			cmd = matchWear(player, cmdStr)		
+			cmd = matchHi5(player, cmdStr)
 		if (cmd == null)
-			cmd = matchTakeOff(player, cmdStr)		
+			cmd = matchRollover(player, cmdStr)
+		if (cmd == null)
+			cmd = matchHelp(player, cmdStr)
+		if (cmd == null)
+			cmd = matchStatistics(player, cmdStr)
+		if (cmd == null)
+			cmd = matchInventory(player, cmdStr)
 
 		return cmd
 	}
@@ -165,7 +175,7 @@ class Syntax {
 				if (verbCmd == null)
 					return false
 				if (cmdStr == verbCmd)
-					return false	// Cmd("Use what?")				
+					return false	// Cmd("Use what?")
 			
 				verbStr := cmdStr[verbCmd.size+1..-1] 
 
@@ -205,26 +215,6 @@ class Syntax {
 		}
 	}
 	
-	Cmd? matchStatistics(Player player, Str cmdStr) {
-		moveCmd := statisticsSynonyms.find { cmdStr.startsWith(it) || cmdStr == it.trimEnd }
-		if (moveCmd == null) return null
-		
-		return Cmd {
-			it.method	= Player#statistics
-			it.args		= Obj#.emptyList
-		}
-	}
-	
-	Cmd? matchInventory(Player player, Str cmdStr) {
-		moveCmd := inventorySynonyms.find { cmdStr.startsWith(it) || cmdStr == it.trimEnd }
-		if (moveCmd == null) return null
-		
-		return Cmd {
-			it.method	= Player#listInventory
-			it.args		= Obj#.emptyList
-		}
-	}
-	
 	Cmd? matchWear(Player player, Str cmdStr) {
 		wearCmd := wearSynonyms.find { cmdStr.startsWith(it) || cmdStr == it.trimEnd }
 		if (wearCmd == null) return null
@@ -260,6 +250,64 @@ class Syntax {
 		return Cmd {
 			it.method	= Player#takeOff
 			it.args		= [object]
+		}
+	}
+
+	Cmd? matchHi5(Player player, Str cmdStr) {
+		hi5Cmd := hi5Synonyms.find { cmdStr.startsWith(it) || cmdStr == it.trimEnd }
+		if (hi5Cmd == null) return null
+		
+		if (cmdStr == hi5Cmd.trimEnd)
+			return Cmd("High five what?")
+
+		cmdStr = cmdStr[hi5Cmd.size..-1] 
+		object := player.room.findObject(cmdStr)
+		if (object == null)
+			return Cmd("There is no ${cmdStr.upper}.")
+
+		return Cmd {
+			it.method	= Player#hi5
+			it.args		= [object]
+		}
+	}
+
+	Cmd? matchRollover(Player player, Str cmdStr) {
+		rollCmd := rolloverSynonyms.find { cmdStr.startsWith(it) || cmdStr == it.trimEnd }
+		if (rollCmd == null) return null
+		
+		return Cmd {
+			it.method	= Player#rollover
+			it.args		= Obj#.emptyList
+		}
+	}
+	
+	Cmd? matchHelp(Player player, Str cmdStr) {
+		helpCmd := helpSynonyms.find { cmdStr.startsWith(it) || cmdStr == it.trimEnd }
+		if (helpCmd == null) return null
+		
+		return Cmd {
+			it.method	= Player#help
+			it.args		= Obj#.emptyList
+		}
+	}
+
+	Cmd? matchStatistics(Player player, Str cmdStr) {
+		moveCmd := statisticsSynonyms.find { cmdStr.startsWith(it) || cmdStr == it.trimEnd }
+		if (moveCmd == null) return null
+		
+		return Cmd {
+			it.method	= Player#statistics
+			it.args		= Obj#.emptyList
+		}
+	}
+	
+	Cmd? matchInventory(Player player, Str cmdStr) {
+		moveCmd := inventorySynonyms.find { cmdStr.startsWith(it) || cmdStr == it.trimEnd }
+		if (moveCmd == null) return null
+		
+		return Cmd {
+			it.method	= Player#listInventory
+			it.args		= Obj#.emptyList
 		}
 	}
 }

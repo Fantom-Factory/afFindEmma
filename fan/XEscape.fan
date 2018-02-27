@@ -6,7 +6,7 @@ class XEscape : Loader {
 	override GameData load() {
 		prelude := "You awake from a long cosy slumber and fondly remember the exciting, long walks from yesterday."
 		
-		postman := Object("Postman", "...") {
+		postman := Object("Postman", "You see a burly figure in red costume carrying a large sack of goodies.") {
 			
 		}
 		
@@ -53,7 +53,7 @@ class XEscape : Loader {
 					it.openExit("lead", "south", openDoorDesc + ".. to reveal a burly Postman!") |door, obj, exit, player| {
 						player.room.desc = ""
 						player.room.objects.add(postman)
-						exit.block("You quickly dash forward but the Postman is quicker. He blocks your exit and ushers you back inside.", "The Postman blocks your path")
+						exit.block("You quickly dash forward but the Postman is quicker. He blocks your exit and ushers you back inside.", "The Postman blocks your path.")
 					}
 				},
 			},
