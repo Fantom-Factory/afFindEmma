@@ -37,8 +37,31 @@ class XEscape : Loader {
 			return null
 		}
 		
+		boots := Object("Pair of Boots", "A pair of shiny red dog booties with sticky soles.") {
+			it.aliases = "boots".split
+			it.canWear = true
+			it.onWear = |->Describe| { Describe("You slip the booties on over your back paws and fasten the velcro. They're a nice snug fit.") }
+		}
+
+		parcel := |Object inside->Object| {
+			Object("Parcel", "A small parcel wrapped up in brown paper. I wonder what's inside?") {
+				it.aliases = Str[,]
+				it.verbs = "open|rip open|tear open|rip|tear".split('|')
+				it.onUse = |Object me, Object? obj, Player player -> Describe| {
+					player.room.objects.add(inside)
+					player.room.objects.remove(me)					
+					return Describe("You excitedly rip open the parcel, sending wrapping paper everywhere, to reveal ${inside.fullName}.")
+				}
+			}
+		}
+		
 		postman := Object("Postman", "You see a burly figure in red costume carrying a large sack of goodies.") {
-			
+			it.onHi5 = |Object me, Player player -> Describe| {
+				player.room.objects.add(parcel(boots))
+				player.room.objects.remove(me)
+				player.room.findExit("north").block("As soon as you step outside, the cold hits you. Brr! You dash back in side to the safety of the warm house.", "But it looks so cold and windy outside.")
+				return Describe("You hang your paw in the air. The Postman kneels down, but instead of a 'high five' he whips out a signature scanner and collects your paw print!\n\n\"Thanks!\" he cheerfully says, tosses a parcel into the hallway, and disappears off down the garden path.")
+			}
 		}
 		
 		rooms := Room[
@@ -78,12 +101,12 @@ class XEscape : Loader {
 
 			Room("Hallway", "You hear a door bell ring.") {
 				Exit(ExitType.east, `room:lounge`),
-				Exit(ExitType.south, `room:frontLawn`, "The door to the outside world. It looks cold though.") {
+				Exit(ExitType.north, `room:frontLawn`, "The font garden leads to the avenue.") {
 					it.block("You bang your head on the door. It remains closed.", "It is closed.")
 				},
 				Object("Front Door", "It is the main door to the house. Its handle looms high overhead, out of your reach.") {
 					it.aliases = "door".split
-					it.openExit("lead", "south", openDoorDesc + ".. to reveal a burly Postman!") |door, obj, exit, player| {
+					it.openExit("lead", "north", openDoorDesc + ".. to reveal a burly Postman!") |door, obj, exit, player| {
 						player.room.desc = ""
 						player.room.objects.add(postman)
 						exit.block("You quickly dash forward but the Postman is quicker. He blocks your exit and ushers you back inside.", "The Postman blocks your path.")
@@ -96,7 +119,7 @@ class XEscape : Loader {
 			},
 
 			Room("Front Lawn", "") {
-				Exit(ExitType.north, `room:hallway`),
+				Exit(ExitType.south, `room:hallway`),
 			},
 		]
 		

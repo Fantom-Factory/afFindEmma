@@ -7,8 +7,8 @@ class Syntax {
 	static const Str[]	dropSynonyms		:= "drop "							.split('|', false)
 	static const Str[]	wearSynonyms		:= "wear |put on "					.split('|', false)
 	static const Str[]	takeOffSynonyms		:= "take off "						.split('|', false)
-	static const Str[]	useSynonyms			:= "use "							.split('|', false)
-	static const Str[]	useJoins			:= "to |on |at |with "				.split('|', false)
+//	static const Str[]	useSynonyms			:= "use "							.split('|', false)
+	static const Str[]	useActions			:= "to |on |at |with |against"		.split('|', false)
 
 	static const Str[]	hi5Synonyms			:= "hi5 |high five "				.split('|', false)
 	static const Str[]	rolloverSynonyms	:= "rollover "						.split('|', false)
@@ -149,56 +149,66 @@ class Syntax {
 	}
 
 	Cmd? matchUse(Player player, Str cmdStr) {
-		object := null as Object
-
-		useCmd := useSynonyms.find { cmdStr.startsWith(it) || cmdStr == it.trimEnd }
-		if (useCmd != null) {
-			if (cmdStr == useCmd.trimEnd)
-				return Cmd("Use what?")
-			
-			cmdStr = cmdStr[useCmd.size..-1] 
-			object = player.inventory.find |obj->Bool| {
-				objStr := obj.startsWith(cmdStr)
-				if (objStr != null) {
-					cmdStr = cmdStr[objStr.size..-1].trimStart
-					return true
-				}
+		// use ROOM.OBJECT
+		object := player.room.objects.find |obj| {
+			verbCmd := obj.verbsLower.find { cmdStr == it || cmdStr.startsWith(it + " ") }
+			if (verbCmd == null)
 				return false
+			if (cmdStr == verbCmd)
+				return false
+			
+			verbStr := cmdStr[verbCmd.size+1..-1] 
+
+			// check the verb belongs to the obj
+			objStr := obj.startsWith(verbStr)
+			if (objStr != null) {
+				cmdStr = verbStr[objStr.size..-1].trimStart
+				return true
 			}
-			if (object == null)
-				return Cmd("There is no ${cmdStr.upper}.")
+			return false
 		}
+		
+		if (object != null) {
+			if (!cmdStr.trimEnd.isEmpty)
+				return Cmd("Too much information!")
 
-		if (useCmd == null) {
-			object = player.inventory.find |obj| {
-				verbCmd := obj.verbsLower.find { cmdStr == it || cmdStr.startsWith(it + " ") }
-				if (verbCmd == null)
-					return false
-				if (cmdStr == verbCmd)
-					return false	// Cmd("Use what?")
-			
-				verbStr := cmdStr[verbCmd.size+1..-1] 
-
-				// check that the verb belongs to the obj
-				objStr := obj.startsWith(verbStr)
-				if (objStr != null) {
-					cmdStr = verbStr[objStr.size..-1].trimStart
-					return true
-				}
-				return false
+			return Cmd {
+				it.method	= Player#use
+				it.args		= [object, null]
 			}
 		}
 		
-		if (object == null)
-			return null				
+		// use PLAYER.OBJECT on ROOM.OBJECT
+		object = player.inventory.find |obj| {
+			verbCmd := obj.verbsLower.find { cmdStr == it || cmdStr.startsWith(it + " ") }
+			if (verbCmd == null)
+				return false
+			if (cmdStr == verbCmd)
+				return false
+		
+			verbStr := cmdStr[verbCmd.size+1..-1] 
 
+			// check that the verb belongs to the obj
+			objStr := obj.startsWith(verbStr)
+			if (objStr != null) {
+				cmdStr = verbStr[objStr.size..-1].trimStart
+				return true
+			}
+			return false
+		}
+		
+		if (object == null)
+			return null
+		
+		// allow players to use objects if they're holding them
 		if (cmdStr.trimEnd.isEmpty)
+//			return Cmd("Use ${object.name} on what?")
 			return Cmd {
 				it.method	= Player#use
 				it.args		= [object, null]
 			}
 		
-		joinCmd := useJoins.find { cmdStr.startsWith(it) || cmdStr == it.trimEnd }
+		joinCmd := useActions.find { cmdStr.startsWith(it) || cmdStr == it.trimEnd }
 		if (joinCmd == null) return Cmd("Please rephrase.")
 		
 		if (cmdStr == joinCmd.trimEnd)
