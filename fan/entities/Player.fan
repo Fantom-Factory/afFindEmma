@@ -264,6 +264,9 @@ class Player {
 		return desc
 	}
 	
+	Bool isWearing(Str str) {
+		clothes.any { it.matches(str) }
+	}
 
 	internal Object? findObject(Str str) {
 		obj := null as Object

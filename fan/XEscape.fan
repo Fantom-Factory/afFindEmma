@@ -80,7 +80,13 @@ class XEscape : Loader {
 				Exit(ExitType.in, `room:cage`, "The cage is where you sleep at night, dreaming of chasing ducks by the canal."),
 				Exit(ExitType.north, `room:lounge`, "An open archway leads to the lounge."),
 				Exit(ExitType.west, `room:kitchen`, "The kitchen! That tiled floor looks slippery though.") {
-					it.block("You step out onto the slippery tiles. The pads on your little legs have no grip and you start slipping and sliding everywhere. You frantically try to run but your splayed legs are in all directions. With luck and determination you manage to return back to the safety of carpet and the back room.", "")
+					it.isBlocked	= true
+					it.onExit = |Exit exit, Player player-> Describe?| {
+						exit.isBlocked = !player.isWearing("boots")
+						return exit.isBlocked
+							? Describe("You step out onto the slippery tiles. The pads on your little legs have no grip and you start slipping and sliding everywhere. You frantically try to run but your splayed legs are in all directions. With luck and determination you manage to return back to the safety of carpet and the back room.")
+							: Describe("Your little booties give you traction on the slippery tiles.")
+					}
 				},
 				Object("Short Lead", "A short black training lead with a loop on one end.") {
 					it.aliases = ["Lead"]
