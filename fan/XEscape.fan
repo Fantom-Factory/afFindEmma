@@ -6,6 +6,37 @@ class XEscape : Loader {
 	override GameData load() {
 		prelude := "You awake from a long cosy slumber and fondly remember the exciting, long walks from yesterday."
 		
+		newSnack := |->Object| {
+			snack := Object("Dog Biscuit", "A crunchy dog treat.")
+			snack.aliases = "snack treat".split
+			snack.verbs = "eat chomp gnaw chew trough".split
+			snack.onUse = |Object me, Object? obj, Player player -> Describe?| {
+				player.gameStats.noOfSnacksEaten++
+				player.inventory.remove(me)
+				return Describe([
+					"Om nom nom. Tasty!",
+					"Yum, delicious!",
+					"Oh my god, my belly is so full!",
+					"Nom nom nom nom",
+				].random)
+			}
+			snack.data["snack"] = true
+			return snack
+		}
+		
+		onRollover := |Player player -> Describe?| {
+			postman := player.room.findObject("postman")
+			if (postman != null) {
+				snacksGiven := (postman.data["snacksGiven"] as Int) ?: 0
+				if (snacksGiven >= 3)
+					return Describe("Aww, the Postman is all out of dog treats.")
+				postman.data["snacksGiven"] = snacksGiven + 1
+				player.room.objects.add(newSnack())
+				return Describe("You rollover onto your back and the Postman rubs your belly. Amidst cries of \"You're so cute!\" the Postie digs around in his pocket, fishes out a dog treat, and tosses it into the hall.")
+			}
+			return null
+		}
+		
 		postman := Object("Postman", "You see a burly figure in red costume carrying a large sack of goodies.") {
 			
 		}
@@ -19,6 +50,7 @@ class XEscape : Loader {
 				Object("Photo of Emma", "It is a photo of your favourite play pal, Emma. You really miss her and long for some tender strokes. You remember walks in the long grass, frolics, and sausage surprises. You wish you could do it all again. But where is she? You feel a mission brewing...") {
 					it.aliases = ["Photo"]
 				},
+				newSnack(),
 			},
 			
 			Room("Dining Room", "The dining room is where you spend the majority of your contented days, sunning yourself in beams of light that stream through the windows.") {
@@ -31,6 +63,7 @@ class XEscape : Loader {
 					it.aliases = ["Lead"]
 					it.verbs = "throw".split
 				},
+				newSnack(),
 			},
 			
 			Room("Lounge", "The lounge is where you spend your evenings, happily gnawing bones on the Sofa with Emma and Steve.") {
@@ -85,6 +118,7 @@ class XEscape : Loader {
 				player.canPickUp = true
 				return null
 			}
+			it.onRollover		= onRollover
 		}.validate
 	}
 

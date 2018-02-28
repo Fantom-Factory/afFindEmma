@@ -11,20 +11,20 @@ class Object : Describe {
 //	Bool		canUse		// this makes no sense as it is queried *after* onUse() is called! There is no default use action.
 //	Bool		canHi5		// as above - not needed if there is no default action
 	Str[]		aliases
-	Str[]		aliasesLower
 	Str[]		verbs
-	Str[]		verbsLower
 
 	|Object, Player -> Describe?|?	onPickUp
 	|Object, Player -> Describe?|?	onDrop
 	|Object, Player -> Describe?|?	onWear
 	|Object, Player -> Describe?|?	onTakeOff
+	|Object, Player -> Describe?|?	onHi5
 	|Object, Object?, Player -> Describe?|?	onUse
-	|Player -> Describe?|?	onHi5
 	
+	Str:Obj?	data		:= Str:Obj?[:]
+
 	private new make(|This| f) { f(this) }
 
-	new makeName(Str name, Str desc, |This|? f) {
+	new makeName(Str name, Str desc, |This|? f := null) {
 		this.id			= `obj:${name.fromDisplayName}`
 		this.name		= name
 		this.desc		= desc
@@ -35,9 +35,6 @@ class Object : Describe {
 		this.verbs		= Str#.emptyList
 		
 		f?.call(this)
-		
-		this.aliasesLower	= this.aliases.map { it.lower }
-		this.verbsLower		= this.verbs  .map { it.lower }
 	}
 	
 	override Str describe() {
@@ -63,6 +60,16 @@ class Object : Describe {
 	}
 	
 	override Str toStr() { id.toStr }
+	
+	private once Str[] aliasesLower() {
+		// do the lowering here, so we don't have to set aliases in the ctor
+		aliases.map { it.lower }
+	}
+	
+	internal once Str[] verbsLower() {
+		// do the lowering here, so we don't have to set verbs in the ctor
+		verbs.map { it.lower }
+	}
 	
 	Void openExit(Str objStr, Str exitStr, Str desc, |Object, Object?, Exit, Player|? onOpen := null) {
 		canPickUp	= false

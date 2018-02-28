@@ -24,6 +24,8 @@ class Game {
 			it.onWear		= gameData.onWear
 			it.onTakeOff	= gameData.onTakeOff
 			it.onUse		= gameData.onUse
+			it.onHi5		= gameData.onHi5
+			it.onRollover	= gameData.onRollover
 		}
 		return Game {
 			it.player 	= player
@@ -47,8 +49,9 @@ class GameData {
 	|Object, Player -> Describe?|?	onDrop
 	|Object, Player -> Describe?|?	onWear
 	|Object, Player -> Describe?|?	onTakeOff
-
 	|Object, Object?, Player -> Describe?|?	onUse
+	|Object?, Player -> Describe?|?	onHi5
+	|Player -> Describe?|?			onRollover
 
 	new make(|This| f) { f(this) }
 

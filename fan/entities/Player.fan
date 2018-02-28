@@ -56,8 +56,11 @@ class Player {
 		str.add("  - statistics\n")
 		str.add("  - inventory\n")
 		str.add("\n")
+		str.add("You can only use and wear items in your inventory.\n")
+		str.add("\n")
 		str.add("Alternative synonyms, verbs, and abbreviations are allowed, e.g.:\n")
 		str.add("  - go n\n")
+		str.add("  - get snack\n")
 		str.add("  - eat snack\n")
 		str.add("  - hi5 squirrel\n")
 		return Describe(str)
@@ -233,12 +236,13 @@ class Player {
 		descs.add(onHi5?.call(object, this))
 
 		if (canHi5) {
-			desc := object.onHi5?.call(this)
+			desc := object.onHi5?.call(object, this)
 			descs.add(desc)
 		}
 
+		descs = descs.exclude { it == null }
 		if (descs.isEmpty)
-			descs.add(Describe("You high five thin air. Sadly, it leaves you hanging and does not high five back."))				
+			descs.add(Describe("You high five! But sadly, the ${object.name} leaves you hanging. It's kind of embarrassing."))				
 		
 		gameStats.noOfCmds++
 		return Describe(descs)
@@ -258,9 +262,9 @@ class Player {
 	internal Object? findObject(Str str) {
 		obj := null as Object
 		if (obj == null)
-			inventory.find { it.matches(str) }
+			obj = inventory.find { it.matches(str) }
 		if (obj == null)
-			clothes.find { it.matches(str) }
+			obj = clothes.find { it.matches(str) }
 		return obj
 	}
 }
