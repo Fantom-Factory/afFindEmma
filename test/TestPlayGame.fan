@@ -35,14 +35,19 @@ class TestPlayGame : Test {
  		
  		LOOK SOUTH
  		MOVE SOUTH
- 		USE LEAD ON DOOR
+ 		throw LEAD ON DOOR
  		LOOK
  		
  		LOOK SOUTH
  		MOVE SOUTH
- 		HELP
+ 		drop lead
+ 		rollover
+ 		get snack
+ 		eat snack
  		
  ".splitLines.each { executeCmd(it) }
+		
+//		 executeCmd("eat snack")
 		
 		log("\n---\nEND\n\n")
 	}
