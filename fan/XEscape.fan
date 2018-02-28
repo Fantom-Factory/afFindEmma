@@ -17,7 +17,7 @@ class XEscape : Loader {
 					"Om nom nom. Tasty!",
 					"Yum, delicious!",
 					"Oh my god, my belly is so full!",
-					"Nom nom nom nom",
+					"Nom nom nom nom.",
 				].random)
 			}
 			snack.data["snack"] = true
@@ -78,7 +78,7 @@ class XEscape : Loader {
 			
 			Room("Dining Room", "The dining room is where you spend the majority of your contented days, sunning yourself in beams of light that stream through the windows.") {
 				Exit(ExitType.in, `room:cage`, "The cage is where you sleep at night, dreaming of chasing ducks by the canal."),
-				Exit(ExitType.south, `room:lounge`, "An open archway leads to the lounge."),
+				Exit(ExitType.north, `room:lounge`, "An open archway leads to the lounge."),
 				Exit(ExitType.west, `room:kitchen`, "The kitchen! That tiled floor looks slippery though.") {
 					it.block("You step out onto the slippery tiles. The pads on your little legs have no grip and you start slipping and sliding everywhere. You frantically try to run but your splayed legs are in all directions. With luck and determination you manage to return back to the safety of carpet and the back room.", "")
 				},
@@ -90,7 +90,7 @@ class XEscape : Loader {
 			},
 			
 			Room("Lounge", "The lounge is where you spend your evenings, happily gnawing bones on the Sofa with Emma and Steve.") {
-				Exit(ExitType.north, `room:diningRoom`, "An open archway leads to the dining room."),
+				Exit(ExitType.south, `room:diningRoom`, "An open archway leads to the dining room."),
 				Exit(ExitType.west, `room:hallway`, "A door leads to the hallway.") {
 					it.block("You bang your head on the door. It remains closed.", "It is closed.")
 				},

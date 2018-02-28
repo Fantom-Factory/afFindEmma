@@ -14,36 +14,23 @@ class TestPlayGame : Test {
 		log(game.start)
 		
 "
- 		LOOK PHOTO 		
- 		MOVE OUT
- 		PICKUP LEAD
- 		MOVE SOUTH
- 		MOVE WEST
+ 		look photo
+ 		move out
+ 		pickup lead
+ 		move north
+ 		use lead on door
+ 		move west
+ 		use lead on door
  		
- 		LOOK DOOR
- 		USE LEAD ON DOOR
- 		MOVE WEST
- 		
- 		LOOK SOUTH
- 		MOVE SOUTH
- 		throw LEAD ON DOOR
- 		LOOK
- 		
- 		LOOK SOUTH
- 		MOVE SOUTH
- 		drop lead
  		rollover
- 		get snack
  		eat snack
- 		stats
  		hi5 postman
- 		look
- 		use parcel
- 		look
- 		
+ 		rip open parcel
  		wear boots
- 		l n
- 		move n
+ 		
+ 		east
+ 		south
+ 		west
  		
  ".splitLines.each { executeCmd(it) }
 		
@@ -55,7 +42,7 @@ class TestPlayGame : Test {
 	Void executeCmd(Str cmdStr) {
 		cmdStr = cmdStr.trim
 		if (cmdStr.startsWith("//") || cmdStr.trim.isEmpty) return
-		log("\n> ${cmdStr}\n")
+		log("\n> ${cmdStr.upper}\n")
 	
 		cmd := syntax.compile(player, cmdStr)
 		old := player.room
@@ -69,7 +56,8 @@ class TestPlayGame : Test {
 			log("\nI do not understand.")
 	
 		if (player.room != old) {
-			log(divider)
+			log("\n")
+//			log(divider)
 			log(player.look)
 		}
 	}
