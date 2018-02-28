@@ -14,23 +14,14 @@ class TestPlayGame : Test {
 		log(game.start)
 		
 "
- 		LOOK 
- 		LOOK OUT
  		LOOK PHOTO 		
  		MOVE OUT
- 		
- 		LOOK LEAD
  		PICKUP LEAD
- 		
- 		LOOK SOUTH
  		MOVE SOUTH
- 		LOOK WEST
  		MOVE WEST
  		
  		LOOK DOOR
  		USE LEAD ON DOOR
- 		
- 		LOOK WEST
  		MOVE WEST
  		
  		LOOK SOUTH
@@ -44,6 +35,15 @@ class TestPlayGame : Test {
  		rollover
  		get snack
  		eat snack
+ 		stats
+ 		hi5 postman
+ 		look
+ 		use parcel
+ 		look
+ 		
+ 		wear boots
+ 		l n
+ 		move n
  		
  ".splitLines.each { executeCmd(it) }
 		

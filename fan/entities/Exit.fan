@@ -37,7 +37,7 @@ class Exit : Describe {
 	}
 	
 	internal Bool matches(Str str) {
-		type == ExitType(str, false)
+		type == ExitType(str, false) || str == type.name[0].toChar
 	}
 
 	override Str toStr() { id.toStr }
@@ -46,10 +46,10 @@ class Exit : Describe {
 		onExit = oneTimeMsgFn(msg)
 	}
 	
-	Void block(Str msg, Str blockedMsg) {
+	Void block(Str exitMsg, Str lookMsg) {
 		isBlocked	= true
-		onExit  	= blockedMsgFn(msg)
-		descBlocked	= blockedMsg
+		onExit  	= blockedMsgFn(exitMsg)
+		descBlocked	= lookMsg
 	}
 	
 	static |Exit, Player->Describe?| oneTimeMsgFn(Str msg) {

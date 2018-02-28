@@ -1,17 +1,17 @@
 
 @Serializable
 class Object : Describe {
-	Uri			id
-	Str			name
-	Str			desc
-	Bool		canPickUp
-	Bool		canDrop
-	Bool		canWear
-	Bool		canTakeOff
-//	Bool		canUse		// this makes no sense as it is queried *after* onUse() is called! There is no default use action.
-//	Bool		canHi5		// as above - not needed if there is no default action
-	Str[]		aliases
-	Str[]		verbs
+	const	Uri			id
+	const	Str			name
+			Str			desc
+			Bool		canPickUp
+			Bool		canDrop
+			Bool		canWear
+			Bool		canTakeOff
+//			Bool		canUse		// this makes no sense as it is queried *after* onUse() is called! There is no default use action.
+//			Bool		canHi5		// as above - not needed if there is no default action
+			Str[]		aliases
+			Str[]		verbs
 
 	|Object, Player -> Describe?|?	onPickUp
 	|Object, Player -> Describe?|?	onDrop
@@ -31,8 +31,10 @@ class Object : Describe {
 		this.canPickUp	= true
 		this.canDrop	= true
 //		this.canUse		= true
+		this.canWear	= false
+		this.canTakeOff	= true
 		this.aliases	= Str#.emptyList
-		this.verbs		= Str#.emptyList
+		this.verbs		= Str#.emptyList	// "use" added to verbs lower
 		
 		f?.call(this)
 	}
@@ -68,7 +70,7 @@ class Object : Describe {
 	
 	internal once Str[] verbsLower() {
 		// do the lowering here, so we don't have to set verbs in the ctor
-		verbs.map { it.lower }
+		["use"].addAll(verbs.map { it.lower })
 	}
 	
 	Void openExit(Str objStr, Str exitStr, Str desc, |Object, Object?, Exit, Player|? onOpen := null) {
