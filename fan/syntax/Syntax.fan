@@ -95,6 +95,19 @@ class Syntax {
 	}
 
 	Cmd? matchMove(Player player, Str cmdStr) {
+		isExit := ExitType.vals.any {
+			it.name == cmdStr || it.name[0].toChar == cmdStr
+		}
+		if (isExit) {
+			exit := player.room.findExit(cmdStr)
+			if (exit == null)
+				return Cmd("There is no ${cmdStr.upper}.")
+			return Cmd {
+				it.method	= Player#move
+				it.args		= [exit]
+			}
+		}
+		
 		moveCmd := moveSynonyms.find { cmdStr.startsWith(it) || cmdStr == it.trimEnd }
 		if (moveCmd == null) return null
 		
