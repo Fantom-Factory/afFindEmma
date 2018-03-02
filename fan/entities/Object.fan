@@ -82,7 +82,7 @@ class Object : Describe {
 	static |Object, Object?, Player->Describe?| openExitFn(Str objStr, Str exitStr, Str desc, |Object, Object?, Exit, Player|? onOpen := null) {
 		|Object door, Object? obj, Player player -> Describe?| {
 			if (obj != null && obj.matches(objStr)) {
-				exit := player.room.findExit(exitStr)
+				exit := player.room.findExit(exitStr) ?: throw Err("$player.room has no exit $exitStr")
 				exit.isBlocked = false
 				player.room.objects.remove(door)
 				onOpen?.call(door, obj, exit, player)

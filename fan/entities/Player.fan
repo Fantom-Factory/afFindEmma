@@ -33,7 +33,7 @@ class Player {
 
 	Describe look(Describe? at := null) {
 		if (at == null) at = room
-		gameStats.noOfCmds++
+		gameStats.incCmds
 		return at
 	}
 	
@@ -115,8 +115,8 @@ class Player {
 			}
 		}
 		
-		gameStats.noOfCmds++
-		gameStats.noOfMoves++
+		gameStats.incCmds
+		gameStats.incMoves
 		return Describe(descs)
 	}
 	
@@ -140,7 +140,7 @@ class Player {
 			descs.add(desc)
 		}
 		
-		gameStats.noOfCmds++
+		gameStats.incCmds
 		return Describe(descs)
 	}
 	
@@ -164,7 +164,7 @@ class Player {
 			descs.add(desc)
 		}
 		
-		gameStats.noOfCmds++
+		gameStats.incCmds
 		return Describe(descs)
 	}
 	
@@ -189,7 +189,7 @@ class Player {
 			descs.add(desc)
 		}
 		
-		gameStats.noOfCmds++
+		gameStats.incCmds
 		return Describe(descs)
 	}
 	
@@ -213,7 +213,7 @@ class Player {
 			descs.add(desc)
 		}
 		
-		gameStats.noOfCmds++
+		gameStats.incCmds
 		return Describe(descs)
 	}
 	
@@ -233,7 +233,7 @@ class Player {
 			descs.add(desc)
 		}
 
-		gameStats.noOfCmds++
+		gameStats.incCmds
 		return Describe(descs)
 	}
 	
@@ -250,7 +250,7 @@ class Player {
 		if (descs.isEmpty)
 			descs.add(Describe("You high five! But sadly, the ${object.name} leaves you hanging. It's kind of embarrassing."))				
 		
-		gameStats.noOfCmds++
+		gameStats.incCmds
 		return Describe(descs)
 	}
 	
@@ -260,7 +260,7 @@ class Player {
 		if (desc == null)
 			desc = Describe("You rollover. It impresses no one.")
 
-		gameStats.noOfCmds++
+		gameStats.incCmds
 		return desc
 	}
 	

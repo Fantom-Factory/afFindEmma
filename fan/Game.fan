@@ -93,9 +93,11 @@ mixin Loader {
 
 class GameStats {
 	Duration	startTime	:= startTime = Duration.now
-	Int			noOfCmds
-	Int			noOfMoves
-	Int			noOfSnacksEaten
+	Int			noOfCmds		{ private set }
+	Int			noOfMoves 		{ private set }
+	Int			noOfSnacksEaten { private set }
+	Int			bellySize := 5	{ private set }
+	private Int	legWork
 	
 	// TODO have a list of Game durations to allow pausing / saving
 	
@@ -103,12 +105,39 @@ class GameStats {
 		Duration.now - startTime
 	}
 
+	Void incCmds() {
+		noOfCmds++
+	}
+
+	Void incMoves() {
+		noOfMoves++
+		legWork++
+		if (legWork >= 3) {
+			legWork = 0
+			decBellySize
+		}
+	}
+
+	Void incSnacks() {
+		noOfSnacksEaten++
+		incBellySize
+	}
+	
+	Void incBellySize() {
+		bellySize = bellySize.increment.min(9)
+	}
+
+	Void decBellySize() {
+		bellySize = bellySize.decrement.max(0)
+	}
+	
 	Str print() {
 		str := StrBuf()
 		str.add("Time played ........ ${DurationLocale.approx(gameTime)}\n")
 		str.add("Commands entered ... ${noOfCmds}\n")
 		str.add("Moves made ......... ${noOfMoves}\n")
 		str.add("Snacks eaten ....... ${noOfSnacksEaten}\n")
+		str.add("Belly size ......... (" + ("X" * bellySize) + ")\n")
 		return str.toStr
 	}
 	
