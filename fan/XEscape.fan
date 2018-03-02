@@ -7,17 +7,24 @@ class XEscape : Loader {
 		prelude := "You awake from a long cosy slumber and fondly remember the exciting, long walks from yesterday."
 		
 		newSnack := |->Object| {
-			snack := Object("Dog Biscuit", "A crunchy dog treat.")
+			snack := [
+				Object("Dog Biscuit", "A crunchy dog treat."),
+				Object("Dog Chew", "Real rawhide coated with chicken flavouring."),
+				Object("Dog Bone", "A large bone stuffed with extra marrow."),
+				Object("Dog Treat", "A tasty snack for dogs"),
+			].random
 			snack.aliases = "snack treat".split
-			snack.verbs = "eat chomp gnaw chew trough".split
+			snack.verbs = "eat chomp gnaw chew trough swallow gulp".split
 			snack.onUse = |Object me, Object? obj, Player player -> Describe?| {
-				player.gameStats.noOfSnacksEaten++
+				player.gameStats.incSnacks
 				player.inventory.remove(me)
 				return Describe([
 					"Om nom nom. Tasty!",
 					"Yum, delicious!",
 					"Oh my god, my belly is so full!",
 					"Nom nom nom nom.",
+					"Chew. Gnaw. Chomp. Swallow.",
+					"Gulp!",
 				].random)
 			}
 			snack.data["snack"] = true
@@ -120,12 +127,46 @@ class XEscape : Loader {
 				},
 			},
 
-			Room("Kitchen", "") {
+			Room("Kitchen", "Tall shaker style kitchen cabinets line the walls in a Cheshire Oak finish, with a real Welsh slate worktop peeking over the top. You know that food magically appears from up there somehow, if only you were a little bit taller!") {
 				Exit(ExitType.east, `room:diningRoom`),
+				Exit(ExitType.west, `room:backPorch`),
+				Object("Back Door", "The tradesman's entrance to the house. Its handle looms high overhead, out of your reach.") {
+					it.aliases = "door".split
+					it.openExit("lead", "west", openDoorDesc)
+				},
 			},
 
+			Room("Back Porch", "") {
+				Exit(ExitType.west, `room:outHouse`),
+				Exit(ExitType.east, `room:kitchen`),
+				Exit(ExitType.north, `room:driveway`),
+				Exit(ExitType.south, `room:patio`),
+			},
+
+			Room("Out House", "") {
+				Exit(ExitType.east, `room:backPorch`),
+			},
+			
 			Room("Front Lawn", "") {
 				Exit(ExitType.south, `room:hallway`),
+				Exit(ExitType.west, `room:driveway`),
+			},
+
+			Room("Driveway", "") {
+				Exit(ExitType.south, `room:backPorch`),
+				Exit(ExitType.east, `room:frontLawn`),
+				Exit(ExitType.west, `room:garage`),		// ??? garage?
+				Exit(ExitType.in, `room:car`),
+			},
+			Room("Garage", "") {						// ??? garage?
+				Exit(ExitType.east, `room:driveway`),
+			},
+			Room("car", "") {
+				// no exit - it's the end!
+			},
+
+			Room("patio", "") {
+				
 			},
 		]
 		

@@ -17,9 +17,9 @@ class TestPlayGame : Test {
  		look photo
  		move out
  		pickup lead
- 		move north
+ 		north
  		use lead on door
- 		move west
+ 		west
  		use lead on door
  		
  		rollover
@@ -31,6 +31,8 @@ class TestPlayGame : Test {
  		east
  		south
  		west
+ 		use lead on door
+ 		stats
  		
  ".splitLines.each { executeCmd(it) }
 		
