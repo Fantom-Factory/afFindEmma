@@ -16,6 +16,10 @@ class TestPlayGame : Test {
 "
  		look photo
  		move out
+ 		
+ 		use box
+ 		look in box
+ 		
  		pickup lead
  		north
  		use lead on door
@@ -33,6 +37,8 @@ class TestPlayGame : Test {
  		west
  		use lead on door
  		stats
+ 		open oven
+ 		eat cake
  		
  ".splitLines.each { executeCmd(it) }
 		
@@ -48,6 +54,7 @@ class TestPlayGame : Test {
 	
 		cmd := syntax.compile(player, cmdStr)
 		old := player.room
+		obj := player.room.objects.dup
 		des := cmd?.execute(player)
 		if (des != null) {
 			log("\n")
@@ -59,13 +66,12 @@ class TestPlayGame : Test {
 	
 		if (player.room != old) {
 			log("\n")
-//			log(divider)
 			log(player.look)
+		} else
+		if (player.room.objects != obj) {
+			log("\n")
+			log(player.room.lookObjects)			
 		}
-	}
-	
-	Str divider() {
-		"\n----\n\n"
 	}
 	
 	Void log(Obj? obj) {

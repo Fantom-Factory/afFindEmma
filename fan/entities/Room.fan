@@ -46,6 +46,12 @@ class Room : Describe {
 		objects.find { it.matches(str) }
 	}
 
+	Describe lookObjects() {
+		str := StrBuf()
+		str.add("You see ").add(objects.join(", ") { it.fullName }).addChar('.').addChar('\n')		
+		return Describe(str)
+	}
+	
 	override Str describe() {
 		str := StrBuf()
 		str.add("You are ").add(namePrefix ?: "in the ").add(name).addChar('.').addChar('\n')

@@ -123,11 +123,11 @@ class GameStats {
 		incBellySize
 	}
 	
-	Void incBellySize() {
+	private Void incBellySize() {
 		bellySize = bellySize.increment.min(9)
 	}
 
-	Void decBellySize() {
+	private Void decBellySize() {
 		bellySize = bellySize.decrement.max(0)
 	}
 	
