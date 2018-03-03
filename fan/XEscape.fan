@@ -13,21 +13,16 @@ class XEscape : Loader {
 				Object("Dog Bone", "A large bone stuffed with extra marrow."),
 				Object("Dog Treat", "A tasty snack for dogs"),
 			].random
-			snack.aliases = "snack treat".split
-			snack.verbs = "eat chomp gnaw chew trough swallow gulp".split
-			snack.onUse = |Object me, Object? obj, Player player -> Describe?| {
-				player.gameStats.incSnacks
-				player.inventory.remove(me)
-				return Describe([
-					"Om nom nom. Tasty!",
-					"Yum, delicious!",
-					"Oh my god, my belly is so full!",
-					"Nom nom nom nom.",
-					"Chew. Gnaw. Chomp. Swallow.",
-					"Gulp!",
-				].random)
-			}
-			snack.data["snack"] = true
+			snack.aliases = "treat biscuit chew bone treat".split
+			snack.edible(false, [
+				"Om nom nom. Tasty!",
+				"Yum, delicious!",
+				"Oh my god, my belly is so full!",
+				"Nom nom nom nom.",
+				"Chew. Gnaw. Chomp. Swallow.",
+				"Gulp!",
+			].random)
+			snack.data["snack"] = true		// TODO used?
 			return snack
 		}
 		
@@ -45,6 +40,7 @@ class XEscape : Loader {
 		}
 		
 		boots := Object("Pair of Boots", "A pair of shiny red dog booties with sticky soles.") {
+			it.canPickUp = true
 			it.aliases = "boots".split
 			it.canWear = true
 			it.onWear = |->Describe| { Describe("You slip the booties on over your back paws and fasten the velcro. They're a nice snug fit.") }
@@ -52,6 +48,7 @@ class XEscape : Loader {
 
 		parcel := |Object inside->Object| {
 			Object("Parcel", "A small parcel wrapped up in brown paper. I wonder what's inside?") {
+				it.canPickUp = true
 				it.aliases = Str[,]
 				it.verbs = "open|rip open|tear open|rip|tear".split('|')
 				it.onUse = |Object me, Object? obj, Player player -> Describe| {
@@ -78,6 +75,7 @@ class XEscape : Loader {
 					it.oneTimeMsg("You crawl out of the cage. You arch your back, stretch out your front legs, and let out a large yawn - it was a good nights sleep!") 
 				},
 				Object("Photo of Emma", "It is a photo of your favourite play pal, Emma. You really miss her and long for some tender strokes. You remember walks in the long grass, frolics, and sausage surprises. You wish you could do it all again. But where is she? You feel a mission brewing...") {
+					it.canPickUp = true
 					it.aliases = ["Photo"]
 				},
 				newSnack(),
@@ -96,8 +94,23 @@ class XEscape : Loader {
 					}
 				},
 				Object("Short Lead", "A short black training lead with a loop on one end.") {
+					it.canPickUp = true
 					it.aliases = ["Lead"]
 					it.verbs = "throw".split
+				},
+				Object("Mystery Box", "A cardboard box filled with scrunched up newspaper, although your nose also detects traces of food.") {
+					it.aliases = "box".split('|')
+					it.verbs   = "lookin|look in|rummage|rummage in".split('|')
+					it.onUse   = |Object me, Object? obj, Player player -> Describe?| {
+						if (obj != null) return null
+						desc  := "You thust your head into the box and have a good snort around. You rustle around the newspaper to find "
+						found := (0..3).random == 2
+						if (!found)
+							return Describe(desc + "nothing.")
+						snack := newSnack()
+						player.room.objects.add(snack)
+						return Describe(desc + snack.fullName + "!")
+					}
 				},
 				newSnack(),
 			},
@@ -115,7 +128,7 @@ class XEscape : Loader {
 			Room("Hallway", "You hear a door bell ring.") {
 				Exit(ExitType.east, `room:lounge`),
 				Exit(ExitType.north, `room:frontLawn`, "The font garden leads to the avenue.") {
-					it.block("You bang your head on the door. It remains closed.", "It is closed.")
+					it.block("You move forward and bang your head on the door. It remains closed.", "It is closed.")
 				},
 				Object("Front Door", "It is the main door to the house. Its handle looms high overhead, out of your reach.") {
 					it.aliases = "door".split
@@ -134,9 +147,25 @@ class XEscape : Loader {
 					it.aliases = "door".split
 					it.openExit("lead", "west", openDoorDesc)
 				},
+				Object("Oven", "A frequently used oven where baked delights are born.") {
+					it.verbs = "open".split
+					it.onUse = |Object me, Object? obj, Player player -> Describe?| {
+						obj == null ? me.onLook?.call(me, player) : null
+					}
+					it.onLook = |Object oven, Player player -> Describe?| {
+						cake := Object("Birthday Cake", "A fat vanilla sponge with lemon drizzle on top and cream in the middle.") {
+							it.aliases = "cake".split
+							it.edible(false, "You plunge your head in and devour the cake with all the finesse of a Tazmanian devil. Emma would be proud!")
+							it.verbs.add("savage")
+						}
+						player.room.objects.add(cake)
+						oven.onLook = null
+						return Describe("You lower the oven door to be greeted with a blast of warm air. The room fills with the sweet fragrance of edible goodies. You peer inside to find to find a Birthday cake!")
+					}
+				}
 			},
 
-			Room("Back Porch", "") {
+			Room("Back Porch", "You see damp remains of an old coal shed with condensation and filtered rain water dripping from the ceiling.") {
 				Exit(ExitType.west, `room:outHouse`),
 				Exit(ExitType.east, `room:kitchen`),
 				Exit(ExitType.north, `room:driveway`),
@@ -145,6 +174,8 @@ class XEscape : Loader {
 
 			Room("Out House", "") {
 				Exit(ExitType.east, `room:backPorch`),
+				Object("Sack of Peanuts", ""),
+				Object("Sack of Bird Seed", ""),
 			},
 			
 			Room("Front Lawn", "") {

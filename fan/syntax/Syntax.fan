@@ -35,6 +35,8 @@ class Syntax {
 		// do custom matching so we keep parsing context and are able to give customised error messages
 		// regex's just give a yes / no, it worked / it didn't work answer
 		
+		if (cmd == null)	// use first - so it may override other cmds 
+			cmd = matchUse(player, cmdStr)
 		if (cmd == null)
 			cmd = matchLook(player, cmdStr)
 		if (cmd == null)
@@ -43,8 +45,6 @@ class Syntax {
 			cmd = matchPickup(player, cmdStr)
 		if (cmd == null)
 			cmd = matchDrop(player, cmdStr)
-		if (cmd == null)
-			cmd = matchUse(player, cmdStr)
 		if (cmd == null)
 			cmd = matchWear(player, cmdStr)
 		if (cmd == null)

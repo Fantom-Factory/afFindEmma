@@ -13,6 +13,7 @@ class Object : Describe {
 			Str[]		aliases
 			Str[]		verbs
 
+	|Object, Player -> Describe?|?	onLook
 	|Object, Player -> Describe?|?	onPickUp
 	|Object, Player -> Describe?|?	onDrop
 	|Object, Player -> Describe?|?	onWear
@@ -28,7 +29,7 @@ class Object : Describe {
 		this.id			= `obj:${name.fromDisplayName}`
 		this.name		= name
 		this.desc		= desc
-		this.canPickUp	= true
+		this.canPickUp	= false
 		this.canDrop	= true
 //		this.canUse		= true
 		this.canWear	= false
@@ -46,7 +47,7 @@ class Object : Describe {
 	}
 	
 	internal Str fullName() {
-		"a ${name}"
+		"iouae".chars.contains(name[0].lower) ? "an ${name}" : "a ${name}"
 	}
 	
 	internal Bool matches(Str str) {
@@ -74,11 +75,27 @@ class Object : Describe {
 	}
 	
 	Void openExit(Str objStr, Str exitStr, Str desc, |Object, Object?, Exit, Player|? onOpen := null) {
-		canPickUp	= false
-		canDrop		= false
-		onUse		= openExitFn(objStr, exitStr, desc, onOpen)
+		onUse = openExitFn(objStr, exitStr, desc, onOpen)
 	}
 	
+	Void edible(Bool infiniteSupply, Str desc) {
+		canPickUp = true
+		verbs = verbs.rw.addAll("eat chomp gnaw chew trough swallow gulp".split)
+		onUse = edibleFn(infiniteSupply, desc)
+	}
+	
+	static |Object, Object?, Player->Describe?| edibleFn(Bool infiniteSupply, Str desc, |Object, Object?, Exit, Player|? onOpen := null) {
+		|Object food, Object? obj, Player player -> Describe?| {
+			if (obj == null) {
+				player.gameStats.incSnacks
+				if (!infiniteSupply)
+					player.room.objects.remove(food)
+				return Describe(desc)
+			}
+			return null
+		}
+	}
+
 	static |Object, Object?, Player->Describe?| openExitFn(Str objStr, Str exitStr, Str desc, |Object, Object?, Exit, Player|? onOpen := null) {
 		|Object door, Object? obj, Player player -> Describe?| {
 			if (obj != null && obj.matches(objStr)) {

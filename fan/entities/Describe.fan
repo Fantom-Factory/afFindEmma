@@ -2,7 +2,7 @@
 mixin Describe {
 	** All strings MUST end with '\n'.
 	abstract Str describe()
-	
+
 	static new makeStr(Str? desc) {
 		desc == null ? null : DescribeStr(desc)
 	}

@@ -3,7 +3,7 @@
 class Player {
 	
 	Object[]	inventory	:= Object[,]
-	Object[]	clothes		:= Object[,]
+	Object[]	clothes		:= Object[,]	// TODO rename to wearing?
 	Room		room
 	Bool		canMove		:= true
 	Bool		canPickUp	:= true
@@ -33,8 +33,14 @@ class Player {
 
 	Describe look(Describe? at := null) {
 		if (at == null) at = room
+
+		descs := Describe?[at]
+		
+		if (at is Object)
+			descs.add(((Object) at).onLook?.call(at, this))
+		
 		gameStats.incCmds
-		return at
+		return Describe(descs)
 	}
 	
 	Describe? help() {
