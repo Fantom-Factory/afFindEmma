@@ -54,14 +54,17 @@ body {
 }
 .text {
 	white-space			: pre-wrap;
-	overflow-y			: auto;
+	overflow-x			: hidden;
 	height				: 100%;
 	line-height			: 1rem;
 	
 	// hide the scroll bar, but still allow scrolling!
-	overflow			: auto;
+	overflow-y			: auto;
 	margin-right		: -2rem;
 	padding-right		: 2rem;
+}
+.logo {
+	white-space			: pre;
 }
 .input {
 	padding				: 0 1rem;
