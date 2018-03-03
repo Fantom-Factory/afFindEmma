@@ -87,10 +87,12 @@ class Object : Describe {
 	static |Object, Object?, Player->Describe?| edibleFn(Bool infiniteSupply, Str desc, |Object, Object?, Exit, Player|? onOpen := null) {
 		|Object food, Object? obj, Player player -> Describe?| {
 			if (obj == null) {
-				player.gameStats.incSnacks
+				descs := Describe?[,]
+				descs.add(player.gameStats.incSnacks)
 				if (!infiniteSupply)
 					player.room.objects.remove(food)
-				return Describe(desc)
+				descs.add(Describe(desc))
+				return Describe(descs)
 			}
 			return null
 		}

@@ -122,7 +122,7 @@ class Player {
 		}
 		
 		gameStats.incCmds
-		gameStats.incMoves
+		descs.add(gameStats.incMoves)
 		return Describe(descs)
 	}
 	
