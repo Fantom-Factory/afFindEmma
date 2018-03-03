@@ -1,6 +1,5 @@
 
-@Serializable
-class Object : Describe {
+@Js class Object : Describe {
 	const	Uri			id
 	const	Str			name
 			Str			desc

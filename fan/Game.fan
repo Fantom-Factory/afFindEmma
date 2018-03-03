@@ -1,5 +1,5 @@
 
-class Game {
+@Js class Game {
 	
 	Player?		player
 	GameData?	gameData
@@ -36,8 +36,7 @@ class Game {
 	}
 }
 
-@Serializable
-class GameData {
+@Js class GameData {
 	Str			prelude
 	Uri:Room 	rooms
 	Uri:Object	objects
@@ -87,11 +86,11 @@ class GameData {
 	private Log log() { typeof.pod.log }
 }
 
-mixin Loader {
+@Js mixin Loader {
 	abstract GameData load()
 }
 
-class GameStats {
+@Js class GameStats {
 	Duration	startTime	:= startTime = Duration.now
 	Int			noOfCmds		{ private set }
 	Int			noOfMoves 		{ private set }
