@@ -1,5 +1,5 @@
 
-mixin Describe {
+@Js mixin Describe {
 	** All strings MUST end with '\n'.
 	abstract Str describe()
 
@@ -17,7 +17,7 @@ mixin Describe {
 	}
 }
 
-internal class DescribeStr : Describe {
+@Js internal class DescribeStr : Describe {
 	override Str describe
 
 	new make(Str describe) {
@@ -26,7 +26,7 @@ internal class DescribeStr : Describe {
 	}
 }
 
-internal class DescribeMulti : Describe {
+@Js internal class DescribeMulti : Describe {
 	private Describe[] describes
 
 	new make(Describe[] describes) {

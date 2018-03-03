@@ -1,5 +1,5 @@
 
-class Syntax {
+@Js class Syntax {
 
 	static const Str[]	lookSynonyms		:= "look |l "						.split('|', false)
 	static const Str[]	moveSynonyms		:= "move |go |exit "				.split('|', false)
@@ -335,7 +335,7 @@ class Syntax {
 	}
 }
 
-class Cmd {
+@Js class Cmd {
 	Method?	method
 	Obj?[]?	args
 	Str?	msg

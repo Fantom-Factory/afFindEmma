@@ -1,6 +1,5 @@
 
-@Serializable
-class Room : Describe {
+@Js class Room : Describe {
 	Uri				id
 	Str				name
 	Str				desc

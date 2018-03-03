@@ -1,5 +1,5 @@
 
-class XEscape : Loader {
+@Js class XEscape : Loader {
 	
 	private static const Str openDoorDesc := "You toss the lead into the air and its loop catches on the handle. You grasp the other end with your teeth and give it a tug. The door swings open."
 	
@@ -253,5 +253,4 @@ class XEscape : Loader {
 			it.onRollover		= onRollover
 		}.validate
 	}
-
 }

@@ -1,6 +1,5 @@
 
-@Serializable
-class Player {
+@Js class Player {
 	
 	Object[]	inventory	:= Object[,]
 	Object[]	clothes		:= Object[,]	// TODO rename to wearing?

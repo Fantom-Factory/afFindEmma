@@ -1,6 +1,5 @@
 
-@Serializable
-class Exit : Describe {
+@Js class Exit : Describe {
 	Uri				id
 	Str				desc
 	Str?			descBlocked
@@ -66,7 +65,7 @@ class Exit : Describe {
 	}
 }
 
-enum class ExitType {
+@Js enum class ExitType {
 	in, out,
 	up, down,
 	north, south, east, west;
