@@ -8,13 +8,13 @@ class XEscape : Loader {
 		
 		newSnack := |->Object| {
 			snack := [
-				Object("Dog Biscuit", "A crunchy dog treat."),
-				Object("Dog Chew", "Real rawhide coated with chicken flavouring."),
-				Object("Dog Bone", "A large bone stuffed with extra marrow."),
-				Object("Dog Treat", "A tasty snack for dogs"),
+				Object("dog biscuit", "A crunchy dog treat."),
+				Object("dog chew", "Real rawhide coated with chicken flavouring."),
+				Object("dog bone", "A large bone stuffed with extra marrow."),
+				Object("dog treat", "A tasty snack for dogs"),
 			].random
 			snack.aliases = "treat biscuit chew bone treat".split
-			snack.edible(false, [
+			snack.edible([
 				"Om nom nom. Tasty!",
 				"Yum, delicious!",
 				"Oh my god, my belly is so full!",
@@ -39,7 +39,7 @@ class XEscape : Loader {
 			return null
 		}
 		
-		boots := Object("Pair of Boots", "A pair of shiny red dog booties with sticky soles.") {
+		boots := Object("pair of boots", "A pair of shiny red dog booties with sticky soles.") {
 			it.canPickUp = true
 			it.aliases = "boots".split
 			it.canWear = true
@@ -47,7 +47,7 @@ class XEscape : Loader {
 		}
 
 		parcel := |Object inside->Object| {
-			Object("Parcel", "A small parcel wrapped up in brown paper. I wonder what's inside?") {
+			Object("parcel", "A small parcel wrapped up in brown paper. I wonder what's inside?") {
 				it.canPickUp = true
 				it.aliases = Str[,]
 				it.verbs = "open|rip open|tear open|rip|tear".split('|')
@@ -74,9 +74,9 @@ class XEscape : Loader {
 				Exit(ExitType.out, `room:diningRoom`, "You see the main dining room of the house and recall many a happy day stretched out in the sun as it streamed in through the wide windows.") {
 					it.oneTimeMsg("You crawl out of the cage. You arch your back, stretch out your front legs, and let out a large yawn - it was a good nights sleep!") 
 				},
-				Object("Photo of Emma", "It is a photo of your favourite play pal, Emma. You really miss her and long for some tender strokes. You remember walks in the long grass, frolics, and sausage surprises. You wish you could do it all again. But where is she? You feel a mission brewing...") {
+				Object("photo of emma", "It is a photo of your favourite play pal, Emma. You really miss her and long for some tender strokes. You remember walks in the long grass, frolics, and sausage surprises. You wish you could do it all again. But where is she? You feel a mission brewing...") {
+					it.aliases = "photo emma".split
 					it.canPickUp = true
-					it.aliases = ["Photo"]
 				},
 				newSnack(),
 			},
@@ -93,12 +93,12 @@ class XEscape : Loader {
 							: Describe("Your little booties give you traction on the slippery tiles.")
 					}
 				},
-				Object("Short Lead", "A short black training lead with a loop on one end.") {
+				Object("short lead", "A short black training lead with a loop on one end.") {
 					it.canPickUp = true
 					it.aliases = ["Lead"]
 					it.verbs = "throw".split
 				},
-				Object("Mystery Box", "A cardboard box filled with scrunched up newspaper, although your nose also detects traces of food.") {
+				Object("mystery box", "A cardboard box filled with scrunched up newspaper, although your nose also detects traces of food.") {
 					it.aliases = "box".split('|')
 					it.verbs   = "lookin|look in|rummage|rummage in".split('|')
 					it.onUse   = |Object me, Object? obj, Player player -> Describe?| {
@@ -120,7 +120,7 @@ class XEscape : Loader {
 				Exit(ExitType.west, `room:hallway`, "A door leads to the hallway.") {
 					it.block("You bang your head on the door. It remains closed.", "It is closed.")
 				},
-				Object("Door", "The door guards the hallway. Its handle looms high overhead, out of your reach.") {
+				Object("door", "The door guards the hallway. Its handle looms high overhead, out of your reach.") {
 					it.openExit("lead", "west", openDoorDesc)
 				},
 			},
@@ -130,7 +130,7 @@ class XEscape : Loader {
 				Exit(ExitType.north, `room:frontLawn`, "The font garden leads to the avenue.") {
 					it.block("You move forward and bang your head on the door. It remains closed.", "It is closed.")
 				},
-				Object("Front Door", "It is the main door to the house. Its handle looms high overhead, out of your reach.") {
+				Object("front door", "It is the main door to the house. Its handle looms high overhead, out of your reach.") {
 					it.aliases = "door".split
 					it.openExit("lead", "north", openDoorDesc + ".. to reveal a burly Postman!") |door, obj, exit, player| {
 						player.room.desc = ""
@@ -143,19 +143,19 @@ class XEscape : Loader {
 			Room("Kitchen", "Tall shaker style kitchen cabinets line the walls in a Cheshire Oak finish, with a real Welsh slate worktop peeking over the top. You know that food magically appears from up there somehow, if only you were a little bit taller!") {
 				Exit(ExitType.east, `room:diningRoom`),
 				Exit(ExitType.west, `room:backPorch`),
-				Object("Back Door", "The tradesman's entrance to the house. Its handle looms high overhead, out of your reach.") {
+				Object("back door", "The tradesman's entrance to the house. Its handle looms high overhead, out of your reach.") {
 					it.aliases = "door".split
 					it.openExit("lead", "west", openDoorDesc)
 				},
-				Object("Oven", "A frequently used oven where baked delights are born.") {
+				Object("oven", "A frequently used oven where baked delights are born.") {
 					it.verbs = "open".split
 					it.onUse = |Object me, Object? obj, Player player -> Describe?| {
 						obj == null ? me.onLook?.call(me, player) : null
 					}
 					it.onLook = |Object oven, Player player -> Describe?| {
-						cake := Object("Birthday Cake", "A fat vanilla sponge with lemon drizzle on top and cream in the middle.") {
+						cake := Object("birthday cake", "A fat vanilla sponge with lemon drizzle on top and cream in the middle.") {
 							it.aliases = "cake".split
-							it.edible(false, "You plunge your head in and devour the cake with all the finesse of a Tazmanian devil. Emma would be proud!")
+							it.edible("You plunge your head in and devour the cake with all the finesse of a Tazmanian devil. Emma would be proud!")
 							it.verbs.add("savage")
 						}
 						player.room.objects.add(cake)
@@ -174,10 +174,41 @@ class XEscape : Loader {
 
 			Room("Out House", "") {
 				Exit(ExitType.east, `room:backPorch`),
-				Object("Sack of Peanuts", ""),
-				Object("Sack of Bird Seed", ""),
+				Object("sack of peanuts", "A large 15Kg sack of peanuts.") {
+					it.aliases = "peanuts nuts".split
+					it.onPickUp = |Object food, Player player -> Describe?| {
+						player.inventory.add(Object("peanuts", "A small scoop of peanuts.") {
+							it.aliases = "peanuts nuts".split
+							it.edible("Unable to contain your desires, you gobble down the nuts.")
+						})
+						return Describe("Using a small plastic tray, you grab a small scoop of peanuts.")
+					}
+					it.redirectOnUse(it.onPickUp)
+				},
+				Object("sack of bird seed", "A large 15Kg sack of bird seed.") {
+					it.aliases = "bird seed|birdseed|seed".split('|')
+					it.onPickUp = |Object food, Player player -> Describe?| {
+						player.inventory.add(Object("bird seed", "A small scoop of bird seed.") {
+							it.aliases = "birdseed seed".split
+							it.edible("Unable to contain your desires, you lap up the seed.")
+						})
+						return Describe("Using a small plastic tray, you grab a small scoop of bird seed.")
+					}
+					it.redirectOnUse(it.onPickUp)
+				},
+				Object("box of fish food", "A large biscuit tin full of fish food.") {
+					it.aliases = "fish food|fishfood|food".split('|')
+					it.onPickUp = |Object food, Player player -> Describe?| {
+						player.inventory.add(Object("fish food", "A small scoop of fish food.") {
+							it.aliases = "fishfood".split
+							it.edible("Unable to contain your desires, you lap up the fish food.")
+						})
+						return Describe("Using a small plastic tray, you grab a small scoop of fish food.")
+					}
+					it.redirectOnUse(it.onPickUp)
+				},
 			},
-			
+
 			Room("Front Lawn", "") {
 				Exit(ExitType.south, `room:hallway`),
 				Exit(ExitType.west, `room:driveway`),

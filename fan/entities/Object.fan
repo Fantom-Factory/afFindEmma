@@ -78,20 +78,29 @@ class Object : Describe {
 		onUse = openExitFn(objStr, exitStr, desc, onOpen)
 	}
 	
-	Void edible(Bool infiniteSupply, Str desc) {
+	Void edible(Str desc) {
 		canPickUp = true
 		verbs = verbs.rw.addAll("eat chomp gnaw chew trough swallow gulp".split)
-		onUse = edibleFn(infiniteSupply, desc)
+		onUse = edibleFn(desc)
 	}
 	
-	static |Object, Object?, Player->Describe?| edibleFn(Bool infiniteSupply, Str desc, |Object, Object?, Exit, Player|? onOpen := null) {
+	Void redirectOnUse(|Object, Player->Describe?| event) {
+		onUse = redirectOnUseFn(event)
+	}
+	
+	static |Object, Object?, Player->Describe?| redirectOnUseFn(|Object, Player->Describe?| event) {
+		|Object me, Object? obj, Player player -> Describe?| {
+			obj == null ? event.call(me, player) : null
+		}
+	}
+
+	static |Object, Object?, Player->Describe?| edibleFn(Str desc, |Object, Object?, Exit, Player|? onOpen := null) {
 		|Object food, Object? obj, Player player -> Describe?| {
 			if (obj == null) {
 				descs := Describe?[,]
-				descs.add(player.gameStats.incSnacks)
-				if (!infiniteSupply)
-					player.room.objects.remove(food)
+				player.room.objects.remove(food)
 				descs.add(Describe(desc))
+				descs.add(player.gameStats.incSnacks)
 				return Describe(descs)
 			}
 			return null

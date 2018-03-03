@@ -39,6 +39,20 @@ class TestPlayGame : Test {
  		stats
  		open oven
  		eat cake
+ 		west
+ 		west
+ 		
+ 		drop lead
+ 		use nuts
+ 		eat nuts
+ 		use bird seed
+ 		eat seed
+ 		use bird seed
+ 		eat seed
+ 		use bird seed
+ 		eat seed
+ 		use bird seed
+ 		eat seed
  		
  ".splitLines.each { executeCmd(it) }
 		
