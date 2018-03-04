@@ -7,6 +7,7 @@ using graphics
 	override Syntax?	syntax
 			 Elem?		screen
 			 Elem?		prompt
+			 CmdHistory	history	:= CmdHistory()
 
 	Str logo := "
 	                  _____^__
@@ -41,8 +42,17 @@ using graphics
 							    it.onEvent("keydown", false) |e| {
 							    	if (e.key == Key.enter) {
 										exeCmd(prompt->value->trim->lower)
-										prompt->value = ""
+										history.add(prompt->value)
+										win.setTimeout(10ms) { prompt->value = "" }
 							    	}
+							    	if (e.key == Key.esc) {
+										history.reset
+										win.setTimeout(10ms) { prompt->value = "" }
+							    	}
+							    	if (e.key == Key.up)
+										win.setTimeout(10ms) { prompt->value = history.up }
+							    	if (e.key == Key.down)
+										win.setTimeout(10ms) { prompt->value = history.down }
 								}
 							},
 						},
@@ -54,38 +64,46 @@ using graphics
 		prompt.focus
 		
 		startGame
+		scrollScreen
 	}
 	
 	Void exeCmd(Str cmdStr) {
-		if (cmdStr == "help") {
-			log("\n> ${cmdStr.upper}\n", "usrCmd")
-			return log(help)
+		switch (cmdStr) {
+			case "help":
+				log("\n> ${cmdStr.upper}\n", "usrCmd")
+				log(help)
+			
+			case "more help":
+			case "help more":
+				log("\n> ${cmdStr.upper}\n", "usrCmd")
+				log(helpMore)
+
+			case "cls":
+			case "clear":
+				screen.removeAll
+
+			case "logo":
+				screen.add(div("logo", logo))
+
+			case "history":
+				log("\n> ${cmdStr.upper}\n", "usrCmd")
+				log("\n")
+				history.history.eachr { log("> $it") }
+		
+			default:
+				executeCmd(cmdStr)
 		}
-		if (cmdStr == "help more" || cmdStr == "more help") {
-			log("\n> ${cmdStr.upper}\n", "usrCmd")
-			return log(helpMore)
-		}
-		if (cmdStr == "clear" || cmdStr == "cls") {
-			screen.removeAll
-			return
-		}
-		if (cmdStr == "logo") {
-			screen.add(div("logo", logo))
-			scrollScreen
-			return
-		}
-		executeCmd(cmdStr)
+		scrollScreen		
 	}
 	
 	override Void log(Obj? obj, Str klass := "") {
 		des := obj as Describe ?: Describe(obj?.toStr)
 		screen.add(div(klass, des.describe))
-		scrollScreen
 	}
 	
 	Void scrollScreen() {
 		if ((screen.size.h + screen.scrollPos.y) < screen.scrollSize.h) {
-			screen.scrollPos = Point(0f, screen.scrollPos.y + 4f)
+			screen.scrollPos = Point(0f, screen.scrollPos.y + 16f)
 			win.reqAnimationFrame { scrollScreen }
 		}
 	}
@@ -138,6 +156,7 @@ using graphics
 		str.add("  - help\n")
 		str.add("  - more help\n")
 		str.add("  - cls\n")
+		str.add("  - history\n")
 		str.add("\n")
 		str.add("Now go find Emma.\n")
 		return Describe(str)
