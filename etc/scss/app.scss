@@ -81,9 +81,7 @@ input[type=text] {
 	padding-left		: 1rem;
 	height				: 2rem;
 	line-height			: 2rem;
-}
-.domkit-TextField:focus {
-	outline				: none;
+	outline				: none;	// stoopid chrome ring
 }
 .input:before {
 	@extend				.usrCmd;

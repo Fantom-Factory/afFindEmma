@@ -90,6 +90,9 @@ using graphics
 				log("\n")
 				history.history.eachr { log("> $it") }
 		
+			case "cheat":
+				cheat
+
 			default:
 				executeCmd(cmdStr)
 		}
@@ -200,6 +203,30 @@ using graphics
 		player	= game.player
 		syntax	= Syntax()
 		log(game.start)
+	}
+	
+	Void cheat() {
+"
+ 		move out
+ 		pickup lead
+ 		north
+ 		use lead on door
+ 		west
+ 		use lead on door
+ 		rollover
+ 		eat snack
+ 		hi5 postman
+ 		rip open parcel
+ 		wear boots
+ 		east
+ 		south
+ 		west
+ 		open oven
+ 		eat cake
+ 		use lead on door
+ 		west
+ 		
+ ".splitLines.each { executeCmd(it) }
 	}
 	
 	abstract Void log(Obj? obj, Str klass := "")
