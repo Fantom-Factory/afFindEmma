@@ -23,7 +23,9 @@ const mixin WebDogPage : EfanComponent {
 
 		// manually inject pods so the likes of afIoc aren't injected
 		injector.injectScript.fromLocalUrl(`/pod/sys/sys.js`)
+		injector.injectScript.fromLocalUrl(`/pod/concurrent/concurrent.js`)
 		injector.injectScript.fromLocalUrl(`/pod/graphics/graphics.js`)
+		injector.injectScript.fromLocalUrl(`/pod/web/web.js`)
 		injector.injectScript.fromLocalUrl(`/pod/dom/dom.js`)
 		injector.injectScript.fromLocalUrl(`/pod/afQuest/afQuest.js`)
 		injector.injectScript.withScript(
