@@ -7,35 +7,29 @@
 	Void executeCmd(Str cmdStr) {
 		cmdStr = cmdStr.trim
 		if (cmdStr.startsWith("//") || cmdStr.trim.isEmpty) return
-		log("\n> ${cmdStr.upper}\n", "usrCmd")
+		log("> ${cmdStr.upper}", "usrCmd")
 	
 		cmd := syntax.compile(player, cmdStr)
 		old := player.room
 		obj := player.room.objects.dup
 		des := cmd?.execute(player)
-		if (des != null) {
-			log("\n")
+		if (des != null)
 			log(des)
-		}
 	
 		if (cmd == null)
-			log("\nI do not understand.")
+			log("I do not understand.")
 	
 		if (player.room != old) {
-			log("\n")
 			log(player.look)
+
 		} else {
 			// if we tried to move but were blocked, restate which room we're in
-			if (cmd?.method == Player#move) {
-				log("\n")
+			if (cmd?.method == Player#move)
 				log(player.room.lookName)				
-			}
 			
 			// if we didn't move but an object has (dis)appeared, then list it
-			if (player.room.objects != obj && player.room.objects.size > 0) {
-				log("\n")
+			if (player.room.objects != obj && player.room.objects.size > 0)
 				log(player.room.lookObjects)
-			}
 		}
 	}
 	
