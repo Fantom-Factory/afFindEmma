@@ -25,7 +25,6 @@
 //	static const Str	inventorySyntax		:= "^(?:CMD)\$"
 //	static const Str	hi5Syntax			:= "^(?:CMD) (ROOM.OBJECT)?\$"
 	
-	
 	** Note there are game cmds and sys cmds
 	Cmd? compile(Player player, Str cmdStr) {
 		cmdStr = cmdStr.trim.lower
