@@ -6,7 +6,8 @@
 	Str				desc
 	Exit[]			exits
 	Object[]		objects
-	
+	Str:Obj?		meta		:= Str:Obj?[:]
+
 	|Room, Player -> Describe?|?	onEnter
 	|Room, Player -> Describe?|?	onLeave
 	

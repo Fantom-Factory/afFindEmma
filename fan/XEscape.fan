@@ -22,17 +22,16 @@
 				"Chew. Gnaw. Chomp. Swallow.",
 				"Gulp!",
 			].random)
-			snack.data["snack"] = true		// TODO used?
 			return snack
 		}
 		
 		onRollover := |Player player -> Describe?| {
 			postman := player.room.findObject("postman")
 			if (postman != null) {
-				snacksGiven := (postman.data["snacksGiven"] as Int) ?: 0
+				snacksGiven := (postman.meta["snacksGiven"] as Int) ?: 0
 				if (snacksGiven >= 3)
 					return Describe("Aww, the Postman is all out of dog treats.")
-				postman.data["snacksGiven"] = snacksGiven + 1
+				postman.meta["snacksGiven"] = snacksGiven + 1
 				player.room.objects.add(newSnack())
 				return Describe("You rollover onto your back and the Postman rubs your belly. Amidst cries of \"You're so cute!\" the Postie digs around in his pocket, fishes out a dog treat, and tosses it into the hall.")
 			}
@@ -76,6 +75,7 @@
 		rooms := Room[
 			Room("cage", "The cage is just small enough for you to fit in and the floor is lined with a soft duvet. There is a pink handkerchief tied across the top, it reads, \"Ssecnirp\".") {
 				it.namePrefix = "in a"
+				it.meta["inside"] = true
 				Exit(ExitType.out, `room:diningRoom`, "You see the main dining room of the house and recall many a happy day stretched out in the sun as it streamed in through the wide windows.") {
 					it.oneTimeMsg("You crawl out of the cage. You arch your back, stretch out your front legs, and let out a large yawn - it was a good nights sleep!") 
 				},
@@ -87,6 +87,7 @@
 			},
 			
 			Room("dining room", "The dining room is where you spend the majority of your contented days, sunning yourself in beams of light that stream through the windows.") {
+				it.meta["inside"] = true
 				Exit(ExitType.in, `room:cage`, "The cage is where you sleep at night, dreaming of chasing ducks by the canal."),
 				Exit(ExitType.north, `room:lounge`, "An open archway leads to the lounge."),
 				Exit(ExitType.west, `room:kitchen`, "The kitchen! That tiled floor looks slippery though.") {
@@ -119,6 +120,7 @@
 			},
 			
 			Room("lounge", "The lounge is where you spend your evenings, happily gnawing bones on the Sofa with Emma and Steve.") {
+				it.meta["inside"] = true
 				Exit(ExitType.south, `room:diningRoom`, "An open archway leads to the dining room."),
 				Exit(ExitType.west, `room:hallway`, "A door leads to the hallway.") {
 					it.block("It is closed.", "You bang your head on the door. It remains closed.")
@@ -129,6 +131,7 @@
 			},
 
 			Room("hallway", "You hear a door bell ring.") {
+				it.meta["inside"] = true
 				Exit(ExitType.east, `room:lounge`),
 				Exit(ExitType.north, `room:frontLawn`, "The font garden leads to the avenue.") {
 					it.block("It is closed.", "You move forward and bang your head on the door. It remains closed.")
@@ -144,6 +147,7 @@
 			},
 
 			Room("kitchen", "Tall shaker style kitchen cabinets line the walls in a Cheshire Oak finish, with a real Welsh slate worktop peeking over the top. You know that food magically appears from up there somehow, if only you were a little bit taller!") {
+				it.meta["inside"] = true
 				Exit(ExitType.east, `room:diningRoom`),
 				Exit(ExitType.west, `room:backPorch`),
 				Object("back door", "The tradesman's entrance to the house. Its handle looms high overhead, out of your reach.") {
@@ -167,6 +171,7 @@
 			},
 
 			Room("back porch", "You see damp remains of an old coal shed with condensation and filtered rain water dripping from the ceiling.") {
+				it.meta["inside"] = true
 				Exit(ExitType.west, `room:outHouse`),
 				Exit(ExitType.east, `room:kitchen`) {
 					it.block(
@@ -175,24 +180,46 @@
 						"Your little booties give you traction on the slippery tiles."
 					) |me, player| { !player.isWearing("boots") }
 				},
-				Exit(ExitType.north, `room:driveway`),
-				Exit(ExitType.south, `room:patio`) {
-					it.block(
+				Exit(ExitType.north, `room:driveway`)
+					.block(
 						"But it looks so cold and windy outside.", 
 						"As soon as you step outside, the cold hits you. Brr! You dash back in side to the safety of the warmth.", 
 						"Your coat keeps you warm."
-					) |me, player| { !player.isWearing("coat") }
-				},
+					) |me, player| { !player.isWearing("coat") },
+				Exit(ExitType.south, `room:patio`)
+					.block(
+						"But it looks so cold and windy outside.", 
+						"As soon as you step outside, the cold hits you. Brr! You dash back in side to the safety of the warmth.", 
+						"Your coat keeps you warm."
+					) |me, player| { !player.isWearing("coat") },
 			},
 
 			Room("out house", "") {
+				it.meta["inside"] = true
 				Exit(ExitType.east, `room:backPorch`),
 				Object("washing machine", "A front loading washing machine. It looks like it's recently finished a wash.") {
 					it.verbs = "open".split
 					it.onLook = |Object oven, Player player -> Describe?| {
 						coat := Object("coat", "A bright pink thermal dog coat, designed to keep the cold at bay.") {
-							it.canWear = true
-							it.onWear = |->Describe| { return Describe("You pull the coat on over your head and tie the velcro straps around your waist. Ahh, toasty warm!") }
+							it.canWear	 = true
+							it.onWear	 = |->Describe| {
+								if (player.meta["tooColdToMove"] == true) {
+									player.canMove = true
+									player.onMove = null
+									player.meta.remove("tooColdToMove")
+								}
+								return Describe("You pull the coat on over your head and tie the velcro straps around your waist. Ahh, toasty warm!")
+							}
+							it.onTakeOff = |->Describe?| {
+								// taking the coat off outside immobilises you
+								if (player.room.meta["inside"] != true) {
+									player.meta["tooColdToMove"] = true
+									player.canMove = false
+									player.onMove = |->Describe?| { Describe("Your mind lunges forward, but your body does not. It is so cold, you've frozen to the spot!") }
+									return Describe("You take your coat off and immediately regret it as you start shivering. It's sooo cold out here!")
+								}
+								return null
+							}
 						}
 						player.room.objects.add(coat)
 						oven.onLook = null
@@ -256,6 +283,7 @@
 
 			Room("patio", "") {
 				it.namePrefix = "on the"
+				Exit(ExitType.north, `room:backPorch`),
 			},
 		]
 		

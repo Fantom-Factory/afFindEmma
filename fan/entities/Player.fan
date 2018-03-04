@@ -12,7 +12,7 @@
 	Bool		canUse		:= true
 	Bool		canHi5		:= true
 
-	Str:Obj?	data		:= Str:Obj?[:]
+	Str:Obj?	meta		:= Str:Obj?[:]
 
 	|Exit  , Player -> Describe?|?	onMove
 	|Object, Player -> Describe?|?	onPickUp
