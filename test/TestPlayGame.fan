@@ -6,7 +6,7 @@ class TestPlayGame : Test, Commander {
 	override Syntax?	syntax
 
 	Void testRunThrough() {		
-		log("\nSTART\n-----\n\n")
+		log("START\n-----\n\n")
 		startGame
 		cheat
 "
@@ -28,11 +28,11 @@ class TestPlayGame : Test, Commander {
 		
 //		 executeCmd("eat snack")
 		
-		log("\n---\nEND\n\n")
+		log("---\nEND\n\n")
 	}
 	
 	override Void log(Obj? obj, Str klass := "") {
 		des := obj as Describe ?: Describe(obj?.toStr)
-		des?.with { Env.cur.out.print(des.describe) }
+		des?.with { Env.cur.out.print("\n" + des.describe) }
 	}
 }

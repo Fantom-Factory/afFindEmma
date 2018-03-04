@@ -103,7 +103,7 @@ using graphics
 	
 	override Void log(Obj? obj, Str klass := "") {
 		des := obj as Describe ?: Describe(obj?.toStr)
-		screen.add(div(klass, des.describe))
+		screen.add(div(klass, "\n" + des.describe))
 	}
 	
 	Void scrollScreen() {
