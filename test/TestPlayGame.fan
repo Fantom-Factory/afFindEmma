@@ -1,17 +1,13 @@
 
-class TestPlayGame : Test {
+class TestPlayGame : Test, Commander {
 	
-	Game?	game
-	Player?	player
-	Syntax?	syntax
+	override Game?		game
+	override Player?	player
+	override Syntax?	syntax
 
-	Void testRunThrough() {
-		game	= Game.load
-		player	= game.player
-		syntax	= Syntax()
-		
+	Void testRunThrough() {		
 		log("\nSTART\n-----\n\n")
-		log(game.start)
+		startGame
 		
 "
  		look photo
@@ -61,34 +57,7 @@ class TestPlayGame : Test {
 		log("\n---\nEND\n\n")
 	}
 	
-	Void executeCmd(Str cmdStr) {
-		cmdStr = cmdStr.trim
-		if (cmdStr.startsWith("//") || cmdStr.trim.isEmpty) return
-		log("\n> ${cmdStr.upper}\n")
-	
-		cmd := syntax.compile(player, cmdStr)
-		old := player.room
-		obj := player.room.objects.dup
-		des := cmd?.execute(player)
-		if (des != null) {
-			log("\n")
-			log(des)
-		}
-	
-		if (cmd == null)
-			log("\nI do not understand.")
-	
-		if (player.room != old) {
-			log("\n")
-			log(player.look)
-		} else
-		if (player.room.objects != obj) {
-			log("\n")
-			log(player.room.lookObjects)			
-		}
-	}
-	
-	Void log(Obj? obj) {
+	override Void log(Obj? obj, Str klass := "") {
 		des := obj as Describe ?: Describe(obj?.toStr)
 		des?.with { Env.cur.out.print(des.describe) }
 	}

@@ -6,11 +6,9 @@
 	
 	new make(|This| f) { f(this) }
 
-	
 	Describe start() {
 		Describe([Describe(gameData.prelude), player.room])
 	}
-	
 	
 	static Game load() {
 		gameData := XEscape().load
@@ -53,7 +51,6 @@
 	|Player -> Describe?|?			onRollover
 
 	new make(|This| f) { f(this) }
-
 	
 	Room room(Uri id) {
 		rooms.getOrThrow(id)

@@ -13,7 +13,6 @@
 	static const Str[]	hi5Synonyms			:= "hi5 |high five "				.split('|', false)
 	static const Str[]	rolloverSynonyms	:= "rollover "						.split('|', false)
 
-	static const Str[]	helpSynonyms		:= "help"							.split('|', false)
 	static const Str[]	statisticsSynonyms	:= "stats |statistics "				.split('|', false)
 	static const Str[]	inventorySynonyms	:= "inv |inventory "				.split('|', false)
 	
@@ -53,8 +52,6 @@
 			cmd = matchHi5(player, cmdStr)
 		if (cmd == null)
 			cmd = matchRollover(player, cmdStr)
-		if (cmd == null)
-			cmd = matchHelp(player, cmdStr)
 		if (cmd == null)
 			cmd = matchStatistics(player, cmdStr)
 		if (cmd == null)
@@ -300,16 +297,6 @@
 		
 		return Cmd {
 			it.method	= Player#rollover
-			it.args		= Obj#.emptyList
-		}
-	}
-	
-	Cmd? matchHelp(Player player, Str cmdStr) {
-		helpCmd := helpSynonyms.find { cmdStr.startsWith(it) || cmdStr == it.trimEnd }
-		if (helpCmd == null) return null
-		
-		return Cmd {
-			it.method	= Player#help
 			it.args		= Obj#.emptyList
 		}
 	}

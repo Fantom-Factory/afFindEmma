@@ -45,7 +45,8 @@
 		objects.find { it.matches(str) }
 	}
 
-	Describe lookObjects() {
+	Describe? lookObjects() {
+		if (objects.isEmpty) return null
 		str := StrBuf()
 		str.add("You see ").add(objects.join(", ") { it.fullName }).addChar('.').addChar('\n')		
 		return Describe(str)

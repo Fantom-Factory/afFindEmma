@@ -42,41 +42,6 @@
 		return Describe(descs)
 	}
 	
-	Describe? help() {
-		str := StrBuf()
-		str.add("Game commands:\n")
-		str.add("  - look    [exit | item]\n")
-		str.add("  - move    <exit>\n")
-		str.add("  - pickup  <item>\n")
-		str.add("  - drop    <item>\n")
-		str.add("  - wear    <item>\n")
-		str.add("  - takeoff <item>\n")
-		str.add("  - use <item> [on <item>]\n")
-		str.add("\n")
-		str.add("Player commands:\n")
-		str.add("  - rollover\n")
-		str.add("  - hi5 <item>\n")
-		str.add("\n")
-		str.add("Misc commands:\n")
-		str.add("  - statistics\n")
-		str.add("  - inventory\n")
-		str.add("\n")
-		str.add("Alternative synonyms, verbs, and abbreviations are allowed, e.g.:\n")
-		str.add("  - go n\n")
-		str.add("  - get snack\n")
-		str.add("  - eat snack\n")
-		str.add("  - hi5 squirrel\n")
-		str.add("\n")
-		str.add("You can use items in the room, but you must pick it up to action it on another item, e.g.:\n")
-		str.add("  - eat snack\n")
-		str.add("vs\n")
-		str.add("  - pickup snack\n")
-		str.add("  - throw snack at door\n")
-		str.add("\n")
-		str.add("You can only wear items in your inventory.\n")
-		return Describe(str)
-	}
-	
 	Describe statistics() {
 		Describe(gameStats.print)
 	}
