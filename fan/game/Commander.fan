@@ -66,6 +66,9 @@
  		eat cake
  		use lead on door
  		west
+ 		west
+ 		open washing machine
+ 		wear coat
  		
  ".splitLines.each { executeCmd(it) }
 	}

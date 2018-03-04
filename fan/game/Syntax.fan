@@ -40,13 +40,13 @@
 		if (cmd == null)
 			cmd = matchMove(player, cmdStr)
 		if (cmd == null)
+			cmd = matchWear(player, cmdStr)
+		if (cmd == null)
+			cmd = matchTakeOff(player, cmdStr)	// check for 'take off' before 'take'
+		if (cmd == null)
 			cmd = matchPickup(player, cmdStr)
 		if (cmd == null)
 			cmd = matchDrop(player, cmdStr)
-		if (cmd == null)
-			cmd = matchWear(player, cmdStr)
-		if (cmd == null)
-			cmd = matchTakeOff(player, cmdStr)
 		if (cmd == null)
 			cmd = matchHi5(player, cmdStr)
 		if (cmd == null)
@@ -144,7 +144,7 @@
 		if (dropCmd == null) return null
 		
 		if (cmdStr == dropCmd.trimEnd)
-			return Cmd("Pick up what?")
+			return Cmd("Drop what?")
 
 		cmdStr = cmdStr[dropCmd.size..-1] 
 		object := player.findObject(cmdStr)
@@ -259,7 +259,7 @@
 		if (takeOffCmd == null) return null
 		
 		if (cmdStr == takeOffCmd.trimEnd)
-			return Cmd("Pick up what?")
+			return Cmd("Take off what?")
 
 		cmdStr = cmdStr[takeOffCmd.size..-1] 
 		object := player.findObject(cmdStr)

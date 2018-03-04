@@ -165,19 +165,19 @@
 	
 	Describe? takeOff(Object object) {
 		descs := Describe?[,]
-		descs.add(onWear?.call(object, this))
+		descs.add(onTakeOff?.call(object, this))
 
-		if (canWear) {
-			desc := object.onWear?.call(object, this)
+		if (canTakeOff) {
+			desc := object.onTakeOff?.call(object, this)
 
-			if (object.canWear) {
+			if (object.canTakeOff) {
 				clothes.remove(object)
 				room.objects.add(object)	// place in room, as inventory may be full
 				if (desc == null)
-					desc = Describe("You pick up the ${object.name}")
+					desc = Describe("You take off the ${object.name}")
 			} else {
 				if (desc == null)
-					desc = Describe("You cannot pick up the ${object.name}")				
+					desc = Describe("You cannot take off the ${object.name}")				
 			}
 
 			descs.add(desc)
