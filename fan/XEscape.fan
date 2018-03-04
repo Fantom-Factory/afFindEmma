@@ -13,11 +13,11 @@
 				Object("dog bone", "A large bone stuffed with extra marrow."),
 				Object("dog treat", "A tasty snack for dogs"),
 			].random
-			snack.aliases = "treat biscuit chew bone treat".split
+			snack.aliases = "snack biscuit chew bone treat".split
 			snack.edible([
 				"Om nom nom. Tasty!",
 				"Yum, delicious!",
-				"Oh my god, my belly is so full!",
+				"Chomp! Chomp! Chomp!",
 				"Nom nom nom nom.",
 				"Chew. Gnaw. Chomp. Swallow.",
 				"Gulp!",
