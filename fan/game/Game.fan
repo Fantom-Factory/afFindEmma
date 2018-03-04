@@ -71,7 +71,7 @@
 			if (room.exits.isEmpty)
 				log.warn("$room.id has no exits")
 			room.exits.each |exit| {
-				this.room(exit.exitToId)
+				exit.exitTo = this.room(exit.exitToId)
 			}
 		}
 		
