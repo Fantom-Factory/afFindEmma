@@ -21,7 +21,22 @@ const mixin WebDogPage : EfanComponent {
 
 		injector.injectStylesheet.fromLocalUrl(`/css/app.min.css`)
 
-		injector.injectFantomMethod(AppDogPage#init)
+		// manually inject pods so the likes of afIoc aren't injected
+		injector.injectScript.fromLocalUrl(`/pod/sys/sys.js`)
+		injector.injectScript.fromLocalUrl(`/pod/graphics/graphics.js`)
+		injector.injectScript.fromLocalUrl(`/pod/dom/dom.js`)
+		injector.injectScript.fromLocalUrl(`/pod/afQuest/afQuest.js`)
+		injector.injectScript.withScript(
+			"if (fan.sys.TimeZone.m_cur == null)
+			     fan.sys.TimeZone.m_cur = fan.sys.TimeZone.fromStr('UTC');
+			
+			 var args  = fan.sys.List.make(fan.sys.Obj.\$type);
+			 var qname = 'afQuest::AppDogPage.init';
+			 var main  = fan.sys.Slot.findMethod(qname);
+			
+			 if (main.isStatic()) main.callList(args);
+			 else main.callOn(main.parent().make(), args);"
+		)
 	}
 	
 	override Str renderTemplate() {
@@ -35,37 +50,3 @@ const mixin WebDogPage : EfanComponent {
 		 </html>"
 	}
 }
-
-//    <script type="text/javascript" src="/pod/sys/sys.js"></script>
-//    <script type="text/javascript" src="/pod/gfx/gfx.js"></script>
-//    <script type="text/javascript" src="/pod/web/web.js"></script>
-//    <script type="text/javascript" src="/pod/dom/dom.js"></script>
-
-//require(["afQuest"], function (_afQuest) {
-//// default the tz to a sensible default that doesn't cause errors
-//if (fan.sys.TimeZone.m_cur == null)
-//    fan.sys.TimeZone.m_cur = fan.sys.TimeZone.fromStr('UTC');
-//
-//// actually, lets just load the tz database
-//require(['sysTz'], function(foo) {
-//
-//    // inject env vars
-//    var env = fan.sys.Map.make(fan.sys.Str.$type, fan.sys.Str.$type);
-//env.caseInsensitive$(true);
-//fan.sys.UriPodBase = '/pod/';
-//fan.sys.Env.cur().$setVars(env);
-//
-//    // construct method args
-//    var args = fan.sys.List.make(fan.sys.Obj.$type);
-//    
-//
-//    // find main
-//    var qname = 'afQuest::AppDogPage.init';
-//    var main = fan.sys.Slot.findMethod(qname);
-//
-//    // invoke main
-//    if (main.isStatic()) main.callList(args);
-//    else main.callOn(main.parent().make(), args);
-//});
-//
-//});
