@@ -22,18 +22,15 @@ const mixin WebDogPage : EfanComponent {
 		injector.injectStylesheet.fromLocalUrl(`/css/app.min.css`)
 
 		// manually inject pods so the likes of afIoc aren't injected
-		injector.injectScript.fromLocalUrl(`/pod/sys/sys.js`)
-		injector.injectScript.fromLocalUrl(`/pod/concurrent/concurrent.js`)
-		injector.injectScript.fromLocalUrl(`/pod/graphics/graphics.js`)
-		injector.injectScript.fromLocalUrl(`/pod/web/web.js`)
-		injector.injectScript.fromLocalUrl(`/pod/dom/dom.js`)
-		injector.injectScript.fromLocalUrl(`/pod/afQuest/afQuest.js`)
+		"sys concurrent graphics web dom afQuest".split.each |pod| {
+			injector.injectScript.fromLocalUrl(`/pod/${pod}/${pod}.js`)
+		}
 		injector.injectScript.withScript(
 			"if (fan.sys.TimeZone.m_cur == null)
 			     fan.sys.TimeZone.m_cur = fan.sys.TimeZone.fromStr('UTC');
 			
 			 var args  = fan.sys.List.make(fan.sys.Obj.\$type);
-			 var qname = 'afQuest::AppDogPage.init';
+			 var qname = '${AppDogPage#init.qname}';
 			 var main  = fan.sys.Slot.findMethod(qname);
 			
 			 if (main.isStatic()) main.callList(args);
@@ -42,13 +39,17 @@ const mixin WebDogPage : EfanComponent {
 	}
 	
 	override Str renderTemplate() {
-		"<!DOCTYPE html>
-		 <html>
-		 <head>
-		 	<title>Dog</title>
-		 </head>
-		 <body id=\"appDogPage\">
-		 </body>
-		 </html>"
+		"""<!DOCTYPE html>
+		   <html>
+		   <head>
+		   	<title>Dog</title>
+		   </head>
+		   <body id=\"appDogPage\">
+		   <footer>
+		   	<a href="http://fantom-lang.org/" class="fantomLink">Written in Fantom</a>
+		   	<a href="http://www.alienfactory.co.uk/" class="alienLink">by Alien-Factory</a>
+		   </footer>
+		   </body>
+		   </html>"""
 	}
 }
