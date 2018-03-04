@@ -17,8 +17,8 @@ class Build : BuildPod {
 			"util         1.0.70 - 1.0",
 
 			// ---- Web -------------------------
-			"dom          1.0.70 - 1.0",
 			"graphics     1.0.70 - 1.0",
+			"dom          1.0.70 - 1.0",
 
 			"afIoc        3.0.6  - 3.0",
 			"afBedSheet   1.5.10 - 1.5",
@@ -27,7 +27,7 @@ class Build : BuildPod {
 			"afDuvet      1.1.8  - 1.1",
 		]
 
-		srcDirs = [`fan/`, `fan/entities/`, `fan/syntax/`, `fan/util/`, `fan/web/`, `test/`]
+		srcDirs = [`fan/`, `fan/entities/`, `fan/game/`, `fan/util/`, `fan/web/`, `test/`]
 		resDirs = [,]
 		
 		docApi = true
