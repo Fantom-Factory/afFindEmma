@@ -1,5 +1,4 @@
 using dom
-using domkit
 using graphics
 
 @Js class AppDogPage : Commander, DomBob {
@@ -7,7 +6,7 @@ using graphics
 	override Player?	player
 	override Syntax?	syntax
 			 Elem?		screen
-			 TextField?	prompt
+			 Elem?		prompt
 
 	Str logo := "
 	                  _____^__
@@ -28,21 +27,22 @@ using graphics
 							it.setAttr("src", "/images/tv.jpg")
 						},
 					},
-					sashBox("screen", "100% 3rem".split, Dir.down) {
+					div("screen") {
 						div("output") {
-							screen = div("#screen text", "") {
+							screen = div("text") {
 								it.onEvent("click", true) { prompt.focus }
 								div("logo", logo),
 							},
 						},
 						div("input") {
-							prompt = TextField {
-								it.id = "prompt"
-								it.style.addClass("usrCmd")
+							prompt = elem("input", "usrCmd") {
+								it.setAttr("type", "text")
 								it.setAttr("autofocus", "")
-								it.onAction |t| {
-									exeCmd(t.val.trim.lower)
-									t.val = ""
+							    it.onEvent("keydown", false) |e| {
+							    	if (e.key == Key.enter) {
+										exeCmd(prompt->value->trim->lower)
+										prompt->value = ""
+							    	}
 								}
 							},
 						},
