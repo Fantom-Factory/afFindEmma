@@ -51,6 +51,7 @@ body {
 .output {
 	padding				: 1rem;
 	overflow			: hidden;
+	height				: calc(100% - 3rem);
 }
 .text {
 	white-space			: pre-wrap;
@@ -73,8 +74,7 @@ body {
 	line-height			: 2rem;
 	font-size			: 1.25rem;
 }
-.domkit-TextField {
-	color				: $c-text;
+input[type=text] {
 	background-color	: transparent;
 	width				: 100%;
 	border				: none;

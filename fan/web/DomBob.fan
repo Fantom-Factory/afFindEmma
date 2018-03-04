@@ -1,7 +1,6 @@
 using dom::Doc
 using dom::Elem
 using dom::Win
-using domkit
 
 ** Handy builder methods for domkit objects. 
 @Js mixin DomBob {
@@ -19,51 +18,6 @@ using domkit
 
 	Elem span(Str klass := "", Str text := "") {
 		elem("span", klass, text)
-	}
-	
-	Link link(Str klass := "") {
-		Link {
-			_addAttrs(klass, "", it)
-			it.uri = `#`
-		}
-	}
-	
-	Elem submit(Str klass, Str text) {
-		// domkit buttons are DIVs not buttons
-		// see http://fantom.org/forum/topic/2685
-		elem("button") {
-			butt := it
-			_addAttrs(klass, text, it)
-			it.style.addClass("domkit-control domkit-control-button domkit-Button")
-			it.onEvent("mousedown", false) |e| { butt.style.addClass   ("down") }
-			it.onEvent("mouseup", false  ) |e| { butt.style.removeClass("down") }
-		}
-	}
-	
-	Button button(Str klass, Str text := "") {
-		Button() { _addAttrs(klass, text, it) }
-	}
-	
-	FlowBox flowBox(Str klass, Str[] gaps := Str#.emptyList) {
-		FlowBox {
-			_addAttrs(klass, "", it)
-			it.gaps = gaps
-		}
-	}
-	
-	SashBox sashBox(Str klass, Str[] sizes, Dir dir := Dir.right) {
-		SashBox {
-			_addAttrs(klass, "", it)
-			it.sizes = sizes
-			it.dir	 = dir
-		}
-	}
-	
-	Dialog dialog(Str klass, Str? title, |Elem| fn) {
-		Dialog() {
-			if (title != null && !title.isEmpty) it.title = title
-			div(klass) { fn(it) },	// embed content in an extra div
-		}
 	}
 	
 	** _addAttrs("#id css class", "text", elem)
