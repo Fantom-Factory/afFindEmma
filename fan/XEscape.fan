@@ -63,7 +63,12 @@
 			it.onHi5 = |Object me, Player player -> Describe| {
 				player.room.objects.add(parcel(boots))
 				player.room.objects.remove(me)
-				player.room.findExit("north").block("But it looks so cold and windy outside.", "As soon as you step outside, the cold hits you. Brr! You dash back in side to the safety of the warm house.")
+				player.room.findExit("north")
+					.block(
+						"But it looks so cold and windy outside.", 
+						"As soon as you step outside, the cold hits you. Brr! You dash back in side to the safety of the warm house.", 
+						"Your coat keeps you warm."
+					) { !player.isWearing("coat") }
 				return Describe("You hang your paw in the air. The Postman kneels down, but instead of a 'high five' he whips out a signature scanner and collects your paw print!\n\n\"Thanks!\" he cheerfully says, tosses a parcel into the hallway, and disappears off down the garden path.")
 			}
 		}
@@ -163,7 +168,13 @@
 
 			Room("back porch", "You see damp remains of an old coal shed with condensation and filtered rain water dripping from the ceiling.") {
 				Exit(ExitType.west, `room:outHouse`),
-				Exit(ExitType.east, `room:kitchen`),
+				Exit(ExitType.east, `room:kitchen`) {
+					it.block(
+						"", 
+						"You step out onto the slippery tiles. The pads on your little legs have no grip and you start slipping and sliding everywhere. You frantically try to run but your splayed legs are in all directions. With luck and determination you manage to return back to the out house.", 
+						"Your little booties give you traction on the slippery tiles."
+					) |me, player| { !player.isWearing("boots") }
+				},
 				Exit(ExitType.north, `room:driveway`),
 				Exit(ExitType.south, `room:patio`) {
 					it.block(
@@ -225,6 +236,7 @@
 			},
 
 			Room("front lawn", "") {
+				it.namePrefix = "on the"
 				Exit(ExitType.south, `room:hallway`),
 				Exit(ExitType.west, `room:driveway`),
 			},
