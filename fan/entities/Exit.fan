@@ -40,6 +40,7 @@
 	}
 
 	override Str toStr() { id.toStr }
+	override Int compare(Obj that) { type <=> ((Exit) that).type }
 
 	Void oneTimeMsg(Str msg) {
 		onExit = oneTimeMsgFn(msg)
@@ -66,7 +67,7 @@
 }
 
 @Js enum class ExitType {
-	in, out,
+	north, south, east, west,
 	up, down,
-	north, south, east, west;
+	in, out;
 }

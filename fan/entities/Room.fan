@@ -70,7 +70,7 @@
 		if (visibleExits.isEmpty)
 			str.add("There are no exits").addChar('\n')
 		else
-			str.add("Exits are ").add(visibleExits.join(", ") { it.type.name }).addChar('.').addChar('\n')
+			str.add("Exits are ").add(visibleExits.sort.join(", ") { it.type.name }).addChar('.').addChar('\n')
 		
 		describe := str.toStr
 		if (!describe.endsWith("\n")) describe = describe + "\n"
