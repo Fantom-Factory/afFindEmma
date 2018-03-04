@@ -26,7 +26,7 @@
 			log(player.look)
 		} else {
 			// if we tried to move but were blocked, restate which room we're in
-			if (cmd.method == Player#move) {
+			if (cmd?.method == Player#move) {
 				log("\n")
 				log(player.room.lookName)				
 			}
