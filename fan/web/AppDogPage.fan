@@ -92,6 +92,7 @@ using graphics
 		
 			case "cheat":
 				cheat
+				screen.scrollPos = Point(0f, screen.scrollSize.h - screen.size.h)
 
 			default:
 				executeCmd(cmdStr)
