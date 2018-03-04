@@ -8,34 +8,8 @@ class TestPlayGame : Test, Commander {
 	Void testRunThrough() {		
 		log("\nSTART\n-----\n\n")
 		startGame
-		
+		cheat
 "
- 		look photo
- 		move out
- 		
- 		use box
- 		look in box
- 		
- 		pickup lead
- 		north
- 		use lead on door
- 		west
- 		use lead on door
- 		
- 		rollover
- 		eat snack
- 		hi5 postman
- 		rip open parcel
- 		wear boots
- 		
- 		east
- 		south
- 		west
- 		use lead on door
- 		stats
- 		open oven
- 		eat cake
- 		west
  		west
  		
  		drop lead
