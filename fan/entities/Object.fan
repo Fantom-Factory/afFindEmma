@@ -11,6 +11,7 @@
 //			Bool		canHi5		// as above - not needed if there is no default action
 			Str[]		aliases
 			Str[]		verbs
+			Str:Obj?	meta		:= Str:Obj?[:]
 
 	|Object, Player -> Describe?|?	onLook
 	|Object, Player -> Describe?|?	onPickUp
@@ -18,9 +19,7 @@
 	|Object, Player -> Describe?|?	onWear
 	|Object, Player -> Describe?|?	onTakeOff
 	|Object, Player -> Describe?|?	onHi5
-	|Object, Object?, Player -> Describe?|?	onUse
-	
-	Str:Obj?	data		:= Str:Obj?[:]
+	|Object, Object?, Player -> Describe?|?	onUse	
 
 	private new make(|This| f) { f(this) }
 

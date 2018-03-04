@@ -7,6 +7,7 @@
 	Str?			descBlocked
 	Bool			isVisible
 	Bool			isBlocked
+	Str:Obj?		meta		:= Str:Obj?[:]
 	@Transient
 	Room?			exitTo
 
@@ -48,10 +49,11 @@
 		onExit = oneTimeMsgFn(msg)
 	}
 	
-	Void block(Str onLookBlockMsg, Str onExitBlockMsg, Str? onExitOpenMsg := null, |Exit, Player->Bool|? isBlockedFn := null) {
+	Exit block(Str onLookBlockMsg, Str onExitBlockMsg, Str? onExitOpenMsg := null, |Exit, Player->Bool|? isBlockedFn := null) {
 		isBlocked	= true
 		descBlocked	= onLookBlockMsg
 		onExit  	= blockedMsgFn(onExitBlockMsg, onExitOpenMsg, isBlockedFn)
+		return this
 	}
 	
 	static |Exit, Player->Describe?| oneTimeMsgFn(Str msg) {
