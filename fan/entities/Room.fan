@@ -1,11 +1,11 @@
 
 @Js class Room : Describe {
-	Uri				id
-	Str				name
+	const Uri		id
+	const Str		name		// I guess the name doesn't have to be fixed
+	const Str?		namePrefix
 	Str				desc
 	Exit[]			exits
 	Object[]		objects
-	Str?			namePrefix
 	
 	|Room, Player -> Describe?|?	onEnter
 	|Room, Player -> Describe?|?	onLeave

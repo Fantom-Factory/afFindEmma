@@ -1,12 +1,14 @@
 
 @Js class Exit : Describe {
-	Uri				id
+	const Uri		id
+	const ExitType	type
+	const Uri		exitToId
 	Str				desc
 	Str?			descBlocked
-	ExitType		type
-	Uri				exitToId
 	Bool			isVisible
 	Bool			isBlocked
+	@Transient
+	Room?			exitTo
 
 	|Exit, Player -> Describe?|?	onExit
 
@@ -25,7 +27,7 @@
 
 	override Str describe() {
 		describe := desc.isEmpty
-			? "You see nothing special.\n"
+			? "You see the ${exitTo.name}.\n"
 			: desc
 		
 		if (isBlocked && descBlocked != null)
