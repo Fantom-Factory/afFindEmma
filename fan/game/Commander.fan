@@ -24,10 +24,18 @@
 		if (player.room != old) {
 			log("\n")
 			log(player.look)
-		} else
-		if (player.room.objects != obj && player.room.objects.size > 0) {
-			log("\n")
-			log(player.room.lookObjects)
+		} else {
+			// if we tried to move but were blocked, restate which room we're in
+			if (cmd.method == Player#move) {
+				log("\n")
+				log(player.room.lookName)				
+			}
+			
+			// if we didn't move but an object has (dis)appeared, then list it
+			if (player.room.objects != obj && player.room.objects.size > 0) {
+				log("\n")
+				log(player.room.lookObjects)
+			}
 		}
 	}
 	

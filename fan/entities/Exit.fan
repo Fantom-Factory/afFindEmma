@@ -27,7 +27,7 @@
 
 	override Str describe() {
 		describe := desc.isEmpty
-			? "You see the ${exitTo.name}.\n"
+			? "You see the ${exitTo.name}."
 			: desc
 		
 		if (isBlocked && descBlocked != null)

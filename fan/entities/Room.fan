@@ -45,36 +45,38 @@
 		objects.find { it.matches(str) }
 	}
 
+	Describe lookName() {
+		Describe(StrBuf().add("You are ").add(namePrefix ?: "in the ").add(name).addChar('.').addChar('\n'))
+	}
+
 	Describe? lookObjects() {
 		if (objects.isEmpty) return null
 		str := StrBuf()
 		str.add("You see ").add(objects.join(", ") { it.fullName }).addChar('.').addChar('\n')		
 		return Describe(str)
 	}
-	
-	override Str describe() {
+
+	Describe? lookExits() {
 		str := StrBuf()
-		str.add("You are ").add(namePrefix ?: "in the ").add(name).addChar('.').addChar('\n')
-		str.addChar('\n')
-
-		if (desc.size > 0) {
-			str.add(desc).addChar('\n')
-			str.addChar('\n')
-		}
-
-		if (objects.size > 0) {
-			str.add("You see ").add(objects.join(", ") { it.fullName }).addChar('.').addChar('\n')
-			str.addChar('\n')
-		}
-
 		if (visibleExits.isEmpty)
 			str.add("There are no exits").addChar('\n')
 		else
 			str.add("Exits are ").add(visibleExits.sort.join(", ") { it.type.name }).addChar('.').addChar('\n')
+		return Describe(str)
+	}
+	
+	override Str describe() {
+		descs := Describe?[,]
 		
-		describe := str.toStr
-		if (!describe.endsWith("\n")) describe = describe + "\n"
-		return describe
+		descs.add(lookName)
+
+		if (desc.size > 0)
+			descs.add(Describe(desc))
+
+		descs.add(lookObjects)
+		descs.add(lookExits)
+		
+		return Describe(descs).describe
 	}
 	
 	override Str toStr() { id.toStr }
