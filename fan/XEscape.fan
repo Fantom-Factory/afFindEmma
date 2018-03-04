@@ -63,13 +63,13 @@
 			it.onHi5 = |Object me, Player player -> Describe| {
 				player.room.objects.add(parcel(boots))
 				player.room.objects.remove(me)
-				player.room.findExit("north").block("As soon as you step outside, the cold hits you. Brr! You dash back in side to the safety of the warm house.", "But it looks so cold and windy outside.")
+				player.room.findExit("north").block("But it looks so cold and windy outside.", "As soon as you step outside, the cold hits you. Brr! You dash back in side to the safety of the warm house.")
 				return Describe("You hang your paw in the air. The Postman kneels down, but instead of a 'high five' he whips out a signature scanner and collects your paw print!\n\n\"Thanks!\" he cheerfully says, tosses a parcel into the hallway, and disappears off down the garden path.")
 			}
 		}
 		
 		rooms := Room[
-			Room("Cage", "The cage is just small enough for you to fit in and the floor is lined with a soft duvet. There is a pink handkerchief tied across the top, it reads, \"Ssecnirp\".") {
+			Room("cage", "The cage is just small enough for you to fit in and the floor is lined with a soft duvet. There is a pink handkerchief tied across the top, it reads, \"Ssecnirp\".") {
 				it.namePrefix = "in a"
 				Exit(ExitType.out, `room:diningRoom`, "You see the main dining room of the house and recall many a happy day stretched out in the sun as it streamed in through the wide windows.") {
 					it.oneTimeMsg("You crawl out of the cage. You arch your back, stretch out your front legs, and let out a large yawn - it was a good nights sleep!") 
@@ -81,17 +81,15 @@
 				newSnack(),
 			},
 			
-			Room("Dining Room", "The dining room is where you spend the majority of your contented days, sunning yourself in beams of light that stream through the windows.") {
+			Room("dining room", "The dining room is where you spend the majority of your contented days, sunning yourself in beams of light that stream through the windows.") {
 				Exit(ExitType.in, `room:cage`, "The cage is where you sleep at night, dreaming of chasing ducks by the canal."),
 				Exit(ExitType.north, `room:lounge`, "An open archway leads to the lounge."),
 				Exit(ExitType.west, `room:kitchen`, "The kitchen! That tiled floor looks slippery though.") {
-					it.isBlocked	= true
-					it.onExit = |Exit exit, Player player-> Describe?| {
-						exit.isBlocked = !player.isWearing("boots")
-						return exit.isBlocked
-							? Describe("You step out onto the slippery tiles. The pads on your little legs have no grip and you start slipping and sliding everywhere. You frantically try to run but your splayed legs are in all directions. With luck and determination you manage to return back to the safety of carpet and the back room.")
-							: Describe("Your little booties give you traction on the slippery tiles.")
-					}
+					it.block(
+						"", 
+						"You step out onto the slippery tiles. The pads on your little legs have no grip and you start slipping and sliding everywhere. You frantically try to run but your splayed legs are in all directions. With luck and determination you manage to return back to the safety of carpet and the back room.", 
+						"Your little booties give you traction on the slippery tiles."
+					) |me, player| { !player.isWearing("boots") }
 				},
 				Object("short lead", "A short black training lead with a loop on one end.") {
 					it.canPickUp = true
@@ -103,7 +101,7 @@
 					it.verbs   = "lookin|look in|rummage|rummage in".split('|')
 					it.onUse   = |Object me, Object? obj, Player player -> Describe?| {
 						if (obj != null) return null
-						desc  := "You thust your head into the box and have a good snort around. You rustle around the newspaper to find "
+						desc  := "You thrust your head into the box and have a good snort around. You rustle around the newspaper to find "
 						found := (0..3).random == 2
 						if (!found)
 							return Describe(desc + "nothing.")
@@ -115,32 +113,32 @@
 				newSnack(),
 			},
 			
-			Room("Lounge", "The lounge is where you spend your evenings, happily gnawing bones on the Sofa with Emma and Steve.") {
+			Room("lounge", "The lounge is where you spend your evenings, happily gnawing bones on the Sofa with Emma and Steve.") {
 				Exit(ExitType.south, `room:diningRoom`, "An open archway leads to the dining room."),
 				Exit(ExitType.west, `room:hallway`, "A door leads to the hallway.") {
-					it.block("You bang your head on the door. It remains closed.", "It is closed.")
+					it.block("It is closed.", "You bang your head on the door. It remains closed.")
 				},
 				Object("door", "The door guards the hallway. Its handle looms high overhead, out of your reach.") {
 					it.openExit("lead", "west", openDoorDesc)
 				},
 			},
 
-			Room("Hallway", "You hear a door bell ring.") {
+			Room("hallway", "You hear a door bell ring.") {
 				Exit(ExitType.east, `room:lounge`),
 				Exit(ExitType.north, `room:frontLawn`, "The font garden leads to the avenue.") {
-					it.block("You move forward and bang your head on the door. It remains closed.", "It is closed.")
+					it.block("It is closed.", "You move forward and bang your head on the door. It remains closed.")
 				},
 				Object("front door", "It is the main door to the house. Its handle looms high overhead, out of your reach.") {
 					it.aliases = "door".split
 					it.openExit("lead", "north", openDoorDesc + ".. to reveal a burly Postman!") |door, obj, exit, player| {
 						player.room.desc = ""
 						player.room.objects.add(postman)
-						exit.block("You quickly dash forward but the Postman is quicker. He blocks your exit and ushers you back inside.", "The Postman blocks your path.")
+						exit.block("The Postman blocks your path.", "You quickly dash forward but the Postman is quicker. He blocks your exit and ushers you back inside.")
 					}
 				},
 			},
 
-			Room("Kitchen", "Tall shaker style kitchen cabinets line the walls in a Cheshire Oak finish, with a real Welsh slate worktop peeking over the top. You know that food magically appears from up there somehow, if only you were a little bit taller!") {
+			Room("kitchen", "Tall shaker style kitchen cabinets line the walls in a Cheshire Oak finish, with a real Welsh slate worktop peeking over the top. You know that food magically appears from up there somehow, if only you were a little bit taller!") {
 				Exit(ExitType.east, `room:diningRoom`),
 				Exit(ExitType.west, `room:backPorch`),
 				Object("back door", "The tradesman's entrance to the house. Its handle looms high overhead, out of your reach.") {
@@ -149,9 +147,6 @@
 				},
 				Object("oven", "A frequently used oven where baked delights are born.") {
 					it.verbs = "open".split
-					it.onUse = |Object me, Object? obj, Player player -> Describe?| {
-						obj == null ? me.onLook?.call(me, player) : null
-					}
 					it.onLook = |Object oven, Player player -> Describe?| {
 						cake := Object("birthday cake", "A fat vanilla sponge with lemon drizzle on top and cream in the middle.") {
 							it.aliases = "cake".split
@@ -162,18 +157,38 @@
 						oven.onLook = null
 						return Describe("You lower the oven door to be greeted with a blast of warm air. The room fills with the sweet fragrance of edible goodies. You peer inside to find to find a Birthday cake!")
 					}
+					it.redirectOnUse(it.onLook)
 				}
 			},
 
-			Room("Back Porch", "You see damp remains of an old coal shed with condensation and filtered rain water dripping from the ceiling.") {
+			Room("back porch", "You see damp remains of an old coal shed with condensation and filtered rain water dripping from the ceiling.") {
 				Exit(ExitType.west, `room:outHouse`),
 				Exit(ExitType.east, `room:kitchen`),
 				Exit(ExitType.north, `room:driveway`),
-				Exit(ExitType.south, `room:patio`),
+				Exit(ExitType.south, `room:patio`) {
+					it.block(
+						"But it looks so cold and windy outside.", 
+						"As soon as you step outside, the cold hits you. Brr! You dash back in side to the safety of the warmth.", 
+						"Your coat keeps you warm."
+					) |me, player| { !player.isWearing("coat") }
+				},
 			},
 
-			Room("Out House", "") {
+			Room("out house", "") {
 				Exit(ExitType.east, `room:backPorch`),
+				Object("washing machine", "A front loading washing machine. It looks like it's recently finished a wash.") {
+					it.verbs = "open".split
+					it.onLook = |Object oven, Player player -> Describe?| {
+						coat := Object("coat", "A bright pink thermal dog coat, designed to keep the cold at bay.") {
+							it.canWear = true
+							it.onWear = |->Describe| { return Describe("You pull the coat on over your head and tie the velcro straps around your waist. Ahh, toasty warm!") }
+						}
+						player.room.objects.add(coat)
+						oven.onLook = null
+						return Describe("You open the washing machine door and pull out a clean and dry, pink dog coat.")
+					}
+					it.redirectOnUse(it.onLook)
+				},
 				Object("sack of peanuts", "A large 15Kg sack of peanuts.") {
 					it.aliases = "peanuts nuts".split
 					it.onPickUp = |Object food, Player player -> Describe?| {
@@ -209,18 +224,18 @@
 				},
 			},
 
-			Room("Front Lawn", "") {
+			Room("front lawn", "") {
 				Exit(ExitType.south, `room:hallway`),
 				Exit(ExitType.west, `room:driveway`),
 			},
 
-			Room("Driveway", "") {
+			Room("driveway", "") {
 				Exit(ExitType.south, `room:backPorch`),
 				Exit(ExitType.east, `room:frontLawn`),
 				Exit(ExitType.west, `room:garage`),		// ??? garage?
 				Exit(ExitType.in, `room:car`),
 			},
-			Room("Garage", "") {						// ??? garage?
+			Room("garage", "") {						// ??? garage?
 				Exit(ExitType.east, `room:driveway`),
 			},
 			Room("car", "") {
@@ -228,7 +243,7 @@
 			},
 
 			Room("patio", "") {
-				
+				it.namePrefix = "on the"
 			},
 		]
 		

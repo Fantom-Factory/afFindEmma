@@ -48,10 +48,10 @@
 		onExit = oneTimeMsgFn(msg)
 	}
 	
-	Void block(Str exitMsg, Str lookMsg) {
+	Void block(Str onLookBlockMsg, Str onExitBlockMsg, Str? onExitOpenMsg := null, |Exit, Player->Bool|? isBlockedFn := null) {
 		isBlocked	= true
-		onExit  	= blockedMsgFn(exitMsg)
-		descBlocked	= lookMsg
+		descBlocked	= onLookBlockMsg
+		onExit  	= blockedMsgFn(onExitBlockMsg, onExitOpenMsg, isBlockedFn)
 	}
 	
 	static |Exit, Player->Describe?| oneTimeMsgFn(Str msg) {
@@ -61,9 +61,11 @@
 		}
 	}
 	
-	static |Exit, Player->Describe?| blockedMsgFn(Str msg) {
+	static |Exit, Player->Describe?| blockedMsgFn(Str blockedMsg, Str? openMsg := null, |Exit, Player->Bool|? isBlockedFn := null) {
 		|Exit exit, Player player-> Describe?| {
-			exit.isBlocked ? Describe(msg) : null
+			if (isBlockedFn != null)
+				exit.isBlocked = isBlockedFn(exit, player)
+			return exit.isBlocked ? Describe(blockedMsg) : Describe(openMsg)
 		}
 	}
 }
