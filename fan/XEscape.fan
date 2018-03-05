@@ -342,16 +342,61 @@
 				Exit(ExitType.east, `room:driveway`),
 			},
 			Room("car", "A Golf 1.9 TDI. Colour, shark grey.") {
-				it.meta["noExits"] = true
-				// no exit - it's the end!
+				it.meta["noExits"] = true	// no exit - it's the end!
 			},
 			Room("the avenue", "The Avenue, also known as The Ave.") {
-				it.meta["noExits"] = true
+				it.meta["noExits"] = true	// no entrance, no exits!
 			},
 
 			Room("patio", "Large paving slabs adorn the floor.") {
 				it.namePrefix = "on the"
 				Exit(ExitType.north, `room:backPorch`),
+				Exit(ExitType.south, `room:goldfishPond`),
+			},
+
+			Room("goldfish pond", "") {
+				it.namePrefix = "next to the"
+				Exit(ExitType.east, `room:koiPond`),
+				Exit(ExitType.north, `room:patio`),
+				Exit(ExitType.south, `room:vegetablePatch`),
+			},
+
+			Room("koi pond", "") {
+				it.namePrefix = "next to the"
+				Exit(ExitType.west, `room:goldfishPond`),
+				Exit(ExitType.north, `room:backLawn`),
+				Exit(ExitType.south, `room:lawn`),
+			},
+
+			Room("back lawn", "") {
+				it.meta["isGarden"] = true
+				Exit(ExitType.south, `room:koiPond`),
+			},
+
+			Room("lawn", "") {
+				it.meta["isGarden"] = true
+				Exit(ExitType.north, `room:koiPond`),
+				Exit(ExitType.west, `room:vegetablePatch`),
+				Exit(ExitType.south, `room:summerHouse`),
+			},
+
+			Room("summer house", "") {
+				Exit(ExitType.north, `room:lawn`),
+			},
+
+			Room("vegetable patch", "") {
+				Exit(ExitType.east, `room:lawn`),
+				Exit(ExitType.north, `room:goldfishPond`),
+				Exit(ExitType.south, `room:shed`),
+				Exit(ExitType.west, `room:greenhouse`),
+			},
+
+			Room("shed", "") {
+				Exit(ExitType.north, `room:vegetablePatch`),
+			},
+
+			Room("greenhouse", "") {
+				Exit(ExitType.east, `room:vegetablePatch`),
 			},
 		]
 		
