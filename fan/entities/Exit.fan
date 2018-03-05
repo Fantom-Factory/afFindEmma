@@ -45,8 +45,9 @@
 	override Str toStr() { id.toStr }
 	override Int compare(Obj that) { type <=> ((Exit) that).type }
 
-	Void oneTimeMsg(Str msg) {
+	Exit oneTimeMsg(Str msg) {
 		onExit = oneTimeMsgFn(msg)
+		return this
 	}
 	
 	Exit block(Str onLookBlockMsg, Str onExitBlockMsg, Str? onExitOpenMsg := null, |Exit, Player->Bool|? isBlockedFn := null) {

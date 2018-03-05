@@ -2,6 +2,7 @@
 @Js class Object : Describe {
 	const	Uri			id
 	const	Str			name
+	const	Str			namePrefix
 			Str			desc
 			Bool		canPickUp
 			Bool		canDrop
@@ -36,6 +37,11 @@
 		this.verbs		= Str#.emptyList	// "use" added to verbs lower
 		
 		f?.call(this)
+		
+		if (namePrefix == null)
+			namePrefix = "iouae".chars.contains(name[0].lower) ? "an" : "a"
+		if (!namePrefix.endsWith(" ") && namePrefix.size > 0)
+			namePrefix = namePrefix + " "
 	}
 	
 	override Str describe() {
@@ -45,7 +51,7 @@
 	}
 	
 	internal Str fullName() {
-		"iouae".chars.contains(name[0].lower) ? "an ${name}" : "a ${name}"
+		namePrefix + name
 	}
 	
 	internal Bool matches(Str str) {
