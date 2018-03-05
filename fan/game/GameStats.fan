@@ -31,8 +31,8 @@
 		noOfSnacksEaten++
 		return incBellySize
 	}
-	
-	private Describe? incBellySize() {
+
+	Describe? incBellySize() {
 		oldBelly := bellySize
 		bellySize = bellySize.increment.min(9)
 		return oldBelly != bellySize || bellySize == 9
@@ -51,7 +51,7 @@
 			: null
 	}
 
-	private Describe? decBellySize() {
+	Describe? decBellySize() {
 		oldBelly := bellySize
 		bellySize = bellySize.decrement.max(0)
 		return oldBelly != bellySize || bellySize == 0

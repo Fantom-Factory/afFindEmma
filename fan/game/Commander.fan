@@ -60,12 +60,16 @@
  		eat cake
  		use lead on door
  		west
+ 		use lead on door
+ 		use lead on door
+ 		drop lead
  		west
  		open washing machine
  		wear coat
- 		east 		
- 		use lead on door
- 		south
+ 		get seed
+ 		east
+ 		north
+ 		east
 
  ".splitLines.each { executeCmd(it) }
 	}
