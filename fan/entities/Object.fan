@@ -84,8 +84,14 @@
 	
 	Void edible(Str desc) {
 		canPickUp = true
-		verbs = verbs.rw.addAll("eat chomp gnaw chew trough swallow gulp".split)
+		verbs = verbs.rw.addAll("eat chomp gnaw chew trough swallow gulp scoff".split)
 		onUse = edibleFn(desc)
+	}
+	
+	Void inedible(Str desc) {
+		canPickUp = true
+		verbs = verbs.rw.addAll("eat chomp gnaw chew trough swallow gulp scoff".split)
+		onUse = inedibleFn(desc)
 	}
 	
 	Void redirectOnUse(|Object, Player->Describe?| event) {
@@ -102,9 +108,24 @@
 		|Object food, Object? obj, Player player -> Describe?| {
 			if (obj == null) {
 				descs := Describe?[,]
-				player.room.objects.remove(food)
+				player.inventory.remove(food)		// we're not sure where the food came from
+				player.room.objects.remove(food)	// we're not sure where the food came from
 				descs.add(Describe(desc))
 				descs.add(player.gameStats.incSnacks)
+				return Describe(descs)
+			}
+			return null
+		}
+	}
+
+	static |Object, Object?, Player->Describe?| inedibleFn(Str desc, |Object, Object?, Exit, Player|? onOpen := null) {
+		|Object food, Object? obj, Player player -> Describe?| {
+			if (obj == null) {
+				descs := Describe?[,]
+				player.inventory.remove(food)		// we're not sure where the food came from
+				player.room.objects.remove(food)	// we're not sure where the food came from
+				descs.add(Describe(desc))
+				descs.add(player.gameStats.decBellySize)
 				return Describe(descs)
 			}
 			return null

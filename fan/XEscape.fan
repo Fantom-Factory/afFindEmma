@@ -28,12 +28,15 @@
 		}
 		
 		newBirds := |->Object| {
-			Object("birds", "An assortment of tits, sparrows, and chaffinchs. ") {
+			Object("birds", "An assortment of tits, sparrows, and chaffinchs. All hopping around, chirping insistently, and scoffing the food.") {
 				it.namePrefix = ""
 				it.aliases = "bird".split
 				it.verbs = "chase".split
-				// FIXME chase birds
-//				it.onUse
+				it.onPickUp = |Object me, Player player ->Describe?| {
+					player.room.objects.remove(me)
+					return Describe("You let your instinct take over and you manically sprint at the birds, tongue and drool handing out the side of your mouth. But alas, the birds are faster and fly away. All you can do is stand and watch them fly away.")
+				}
+				it.redirectOnUse(onPickUp)
 			}
 		}
 		
@@ -252,9 +255,19 @@
 					it.onPickUp = |Object food, Player player -> Describe?| {
 						player.inventory.add(Object("peanuts", "A small scoop of peanuts.") {
 							it.aliases = "peanuts nuts".split
+							it.namePrefix = ""
 							it.edible("Unable to contain your desires, you gobble down the nuts.")
+							it.onDrop = |Object seed->Describe?| {
+								if (player.room.id == `room:outHouse`) {
+									seed.canDrop = false
+									player.inventory.remove(seed)
+									return Describe("You place the peanuts back in the sack.")									
+								}
+								return null
+							}
 						})
 						return Describe("Using a small plastic tray, you grab a scoop of peanuts.")
+
 					}
 					it.redirectOnUse(it.onPickUp)
 				},
@@ -263,10 +276,18 @@
 					it.onPickUp = |Object food, Player player -> Describe?| {
 						player.inventory.add(Object("bird seed", "A small scoop of bird seed.") {
 							it.aliases = "birdseed seed".split
+							it.namePrefix = ""
 							it.edible("Unable to contain your desires, you lap up the seed.")
-							it.onDrop = |->Describe?| {
+							it.onDrop = |Object seed->Describe?| {
+								if (player.room.id == `room:outHouse`) {
+									seed.canDrop = false
+									player.inventory.remove(seed)
+									return Describe("You place the seed back in the sack.")									
+								}
 								if (player.room.meta["isGarden"] == true) {
 									player.room.objects.add(newBirds())
+									seed.canDrop = false
+									player.inventory.remove(seed)
 									// FIXME check all gardens
 									return Describe("You scatter the seed around the garden and observe in wonder as a variety of garden birds appear from the hedgerows and start devouring the bird seed.")
 								}
@@ -282,7 +303,16 @@
 					it.onPickUp = |Object food, Player player -> Describe?| {
 						player.inventory.add(Object("fish food", "A small scoop of fish food.") {
 							it.aliases = "fishfood".split
-							it.edible("Unable to contain your desires, you lap up the fish food.")
+							it.namePrefix = ""
+							it.inedible("Out of curiosity you gobble up some fish food. But an instant rumbling in your belly makes you sick it all up again. You ponder if fish food is good for dogs?")
+							it.onDrop = |Object seed->Describe?| {
+								if (player.room.id == `room:outHouse`) {
+									seed.canDrop = false
+									player.inventory.remove(seed)
+									return Describe("You place the fish food back in the box.")									
+								}
+								return null
+							}
 						})
 						return Describe("Using a small plastic tray, you grab a scoop of fish food.")
 					}
