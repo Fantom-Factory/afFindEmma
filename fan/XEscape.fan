@@ -214,7 +214,7 @@
 				},
 			},
 
-			Room("out house", "") {
+			Room("out house", "The converted coal shed is now used as a pantry and general utility room. It's been painted in an unusual yellow cream colour.") {
 				it.meta["inside"] = true
 				Exit(ExitType.east, `room:backPorch`),
 				Object("washing machine", "A front loading washing machine. It looks like it's recently finished a wash.") {
@@ -294,24 +294,32 @@
 				it.namePrefix = "on the"
 				it.meta["isGarden"] = true
 				Exit(ExitType.south, `room:hallway`, "The front door to the house leading to the hallway."),
+				Exit(ExitType.north, `room:theAvenue`).block("A heavy iron gate keeps you on the premises", "A heavy iron gate keeps you on the premises"),
 				Exit(ExitType.west, `room:driveway`),
 			},
 
-			Room("driveway", "") {
+			Room("driveway", "The concrete driveway is adjacent to the front lawn and leads down to the avenue. A car is parked in the middle.") {
 				it.namePrefix = "on the"
 				Exit(ExitType.south, `room:backPorch`),
+				Exit(ExitType.north, `room:theAvenue`).block("A heavy iron gate keeps you on the premises", "A heavy iron gate keeps you on the premises"),
 				Exit(ExitType.east, `room:frontLawn`),
-				Exit(ExitType.west, `room:garage`),
-				Exit(ExitType.in, `room:car`),
+				Exit(ExitType.west, `room:garage`, "A small garage fronted with a large vertical lift, bright red, metal door.") {
+					it.block("The door is closed.", "You sprint at the door and bounce off with a large clang. The door remains closed.")
+				},
+				Exit(ExitType.in, `room:car`, "A Golf 1.9 TDI. Colour, shark grey.").block("It is locked and all the doors are closed.", "The car is locked and all the doors are closed.")
 			},
-			Room("garage", "") {
+			Room("garage", "A new paint job hide the drab looking pre-fabricated walls.") {
 				Exit(ExitType.east, `room:driveway`),
 			},
-			Room("car", "") {
+			Room("car", "A Golf 1.9 TDI. Colour, shark grey.") {
+				it.meta["noExits"] = true
 				// no exit - it's the end!
 			},
+			Room("the avenue", "The Avenue, also known as The Ave.") {
+				it.meta["noExits"] = true
+			},
 
-			Room("patio", "") {
+			Room("patio", "Large paving slabs adorn the floor.") {
 				it.namePrefix = "on the"
 				Exit(ExitType.north, `room:backPorch`),
 			},

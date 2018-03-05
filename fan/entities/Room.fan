@@ -13,7 +13,7 @@
 	
 	private new make(|This| f) { f(this) }
 
-	internal new makeName(Str name, Str desc, |This|? f) {
+	internal new makeName(Str name, Str desc, |This|? f := null) {
 		this.name		= name
 		this.desc		= desc
 		this.id			= `room:${name.fromDisplayName}`
