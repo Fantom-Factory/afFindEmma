@@ -32,7 +32,11 @@ using graphics
 					div("screen") {
 						div("output") {
 							screen = div("text") {
-								it.onEvent("click", true) { prompt.focus }
+								it.onEvent("click", true) {
+									// let random clicks refocus the cmd box, but let users select text
+									sel := Win.eval("window.getSelection().toString()")
+									if (sel == "") prompt.focus
+								}
 								div("logo", logo),
 							},
 						},
@@ -91,6 +95,7 @@ using graphics
 				log("\n")
 				history.history.eachr { log("> $it") }
 		
+			case "ch":
 			case "cheat":
 				cheat
 				screen.scrollPos = Point(0f, screen.scrollSize.h - screen.size.h)

@@ -6,6 +6,8 @@
 	override GameData load() {
 		prelude := "You awake from a long cosy slumber and fondly remember the exciting, long walks from yesterday."
 		
+		// todo have factories that make new objects
+		
 		newSnack := |->Object| {
 			snack := [
 				Object("dog biscuit", "A crunchy dog treat."),
@@ -23,6 +25,16 @@
 				"Gulp!",
 			].random)
 			return snack
+		}
+		
+		newBirds := |->Object| {
+			Object("birds", "An assortment of tits, sparrows, and chaffinchs. ") {
+				it.namePrefix = ""
+				it.aliases = "bird".split
+				it.verbs = "chase".split
+				// FIXME chase birds
+//				it.onUse
+			}
 		}
 		
 		onRollover := |Player player -> Describe?| {
@@ -76,9 +88,8 @@
 			Room("cage", "The cage is just small enough for you to fit in and the floor is lined with a soft duvet. There is a pink handkerchief tied across the top, it reads, \"Ssecnirp\".") {
 				it.namePrefix = "in a"
 				it.meta["inside"] = true
-				Exit(ExitType.out, `room:diningRoom`, "You see the main dining room of the house and recall many a happy day stretched out in the sun as it streamed in through the wide windows.") {
-					it.oneTimeMsg("You crawl out of the cage. You arch your back, stretch out your front legs, and let out a large yawn - it was a good nights sleep!") 
-				},
+				Exit(ExitType.out, `room:diningRoom`, "You see the main dining room of the house and recall many a happy day stretched out in the sun as it streamed in through the wide windows.")
+					.oneTimeMsg("You crawl out of the cage. You arch your back, stretch out your front legs, and let out a large yawn - it was a good nights sleep!"), 
 				Object("photo of emma", "It is a photo of your favourite play pal, Emma. You really miss her and long for some tender strokes. You remember walks in the long grass, frolics, and sausage surprises. You wish you could do it all again. But where is she? You feel a mission brewing...") {
 					it.aliases = "photo emma".split
 					it.canPickUp = true
@@ -122,9 +133,8 @@
 			Room("lounge", "The lounge is where you spend your evenings, happily gnawing bones on the Sofa with Emma and Steve.") {
 				it.meta["inside"] = true
 				Exit(ExitType.south, `room:diningRoom`, "An open archway leads to the dining room."),
-				Exit(ExitType.west, `room:hallway`, "A door leads to the hallway.") {
-					it.block("It is closed.", "You bang your head on the door. It remains closed.")
-				},
+				Exit(ExitType.west, `room:hallway`, "A door leads to the hallway.")
+					.block("It is closed.", "You move forward and bang your head on the door. It remains closed."),
 				Object("door", "The door guards the hallway. Its handle looms high overhead, out of your reach.") {
 					it.openExit("lead", "west", openDoorDesc)
 				},
@@ -133,9 +143,8 @@
 			Room("hallway", "You hear a door bell ring.") {
 				it.meta["inside"] = true
 				Exit(ExitType.east, `room:lounge`),
-				Exit(ExitType.north, `room:frontLawn`, "The font garden leads to the avenue.") {
-					it.block("It is closed.", "You move forward and bang your head on the door. It remains closed.")
-				},
+				Exit(ExitType.north, `room:frontLawn`)
+					.block("It is closed.", "You move forward and bang your head on the door. It remains closed."),
 				Object("front door", "It is the main door to the house. Its handle looms high overhead, out of your reach.") {
 					it.aliases = "door".split
 					it.openExit("lead", "north", openDoorDesc + ".. to reveal a burly Postman!") |door, obj, exit, player| {
@@ -149,7 +158,8 @@
 			Room("kitchen", "Tall shaker style kitchen cabinets line the walls in a Cheshire Oak finish, with a real Welsh slate worktop peeking over the top. You know that food magically appears from up there somehow, if only you were a little bit taller!") {
 				it.meta["inside"] = true
 				Exit(ExitType.east, `room:diningRoom`),
-				Exit(ExitType.west, `room:backPorch`),
+				Exit(ExitType.west, `room:backPorch`)
+					.block("It is closed.", "You move forward and bang your head on the door. It remains closed."),
 				Object("back door", "The tradesman's entrance to the house. Its handle looms high overhead, out of your reach.") {
 					it.aliases = "door".split
 					it.openExit("lead", "west", openDoorDesc)
@@ -181,17 +191,27 @@
 					) |me, player| { !player.isWearing("boots") }
 				},
 				Exit(ExitType.north, `room:driveway`)
-					.block(
-						"But it looks so cold and windy outside.", 
-						"As soon as you step outside, the cold hits you. Brr! You dash back in side to the safety of the warmth.", 
-						"Your coat keeps you warm."
-					) |me, player| { !player.isWearing("coat") },
+					.block("It is closed.", "You move forward and bang your head on the door. It remains closed."),
 				Exit(ExitType.south, `room:patio`)
-					.block(
-						"But it looks so cold and windy outside.", 
-						"As soon as you step outside, the cold hits you. Brr! You dash back in side to the safety of the warmth.", 
-						"Your coat keeps you warm."
-					) |me, player| { !player.isWearing("coat") },
+					.block("It is closed.", "You move forward and bang your head on the door. It remains closed."),
+				Object("door", "The door to the patio outside. Its handle looms high overhead, out of your reach.") {
+					it.openExit("lead", "south", openDoorDesc) |door, obj, exit, player| {
+						exit.block(
+							"But it looks so cold and windy outside.", 
+							"As soon as you step outside, the cold hits you. Brr! You dash back in side to the safety of the warmth.", 
+							"Your coat keeps you warm."
+						) { !player.isWearing("coat") }
+					}
+				},
+				Object("door", "The door to the driveway outside. Its handle looms high overhead, out of your reach.") {
+					it.openExit("lead", "north", openDoorDesc) |door, obj, exit, player| {
+						exit.block(
+							"But it looks so cold and windy outside.", 
+							"As soon as you step outside, the cold hits you. Brr! You dash back in side to the safety of the warmth.", 
+							"Your coat keeps you warm."
+						) { !player.isWearing("coat") }
+					}
+				},
 			},
 
 			Room("out house", "") {
@@ -234,7 +254,7 @@
 							it.aliases = "peanuts nuts".split
 							it.edible("Unable to contain your desires, you gobble down the nuts.")
 						})
-						return Describe("Using a small plastic tray, you grab a small scoop of peanuts.")
+						return Describe("Using a small plastic tray, you grab a scoop of peanuts.")
 					}
 					it.redirectOnUse(it.onPickUp)
 				},
@@ -244,8 +264,16 @@
 						player.inventory.add(Object("bird seed", "A small scoop of bird seed.") {
 							it.aliases = "birdseed seed".split
 							it.edible("Unable to contain your desires, you lap up the seed.")
+							it.onDrop = |->Describe?| {
+								if (player.room.meta["isGarden"] == true) {
+									player.room.objects.add(newBirds())
+									// FIXME check all gardens
+									return Describe("You scatter the seed around the garden and observe in wonder as a variety of garden birds appear from the hedgerows and start devouring the bird seed.")
+								}
+								return null
+							}
 						})
-						return Describe("Using a small plastic tray, you grab a small scoop of bird seed.")
+						return Describe("Using a small plastic tray, you grab a scoop of bird seed.")
 					}
 					it.redirectOnUse(it.onPickUp)
 				},
@@ -256,25 +284,27 @@
 							it.aliases = "fishfood".split
 							it.edible("Unable to contain your desires, you lap up the fish food.")
 						})
-						return Describe("Using a small plastic tray, you grab a small scoop of fish food.")
+						return Describe("Using a small plastic tray, you grab a scoop of fish food.")
 					}
 					it.redirectOnUse(it.onPickUp)
 				},
 			},
 
-			Room("front lawn", "") {
+			Room("front lawn", "The front lawn is an odd triangle shaped piece of land that adjoins the driveway. It is hemmed in by a thick hedge.") {
 				it.namePrefix = "on the"
-				Exit(ExitType.south, `room:hallway`),
+				it.meta["isGarden"] = true
+				Exit(ExitType.south, `room:hallway`, "The front door to the house leading to the hallway."),
 				Exit(ExitType.west, `room:driveway`),
 			},
 
 			Room("driveway", "") {
+				it.namePrefix = "on the"
 				Exit(ExitType.south, `room:backPorch`),
 				Exit(ExitType.east, `room:frontLawn`),
-				Exit(ExitType.west, `room:garage`),		// ??? garage?
+				Exit(ExitType.west, `room:garage`),
 				Exit(ExitType.in, `room:car`),
 			},
-			Room("garage", "") {						// ??? garage?
+			Room("garage", "") {
 				Exit(ExitType.east, `room:driveway`),
 			},
 			Room("car", "") {

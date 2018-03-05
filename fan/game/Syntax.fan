@@ -1,6 +1,6 @@
 
 @Js class Syntax {
-
+	// todo should eat be its own command?
 	static const Str[]	lookSynonyms		:= "look |l "						.split('|', false)
 	static const Str[]	moveSynonyms		:= "move |go |exit "				.split('|', false)
 	static const Str[]	pickupSynonyms		:= "pickup |pick up |take |get "	.split('|', false)
@@ -8,7 +8,7 @@
 	static const Str[]	wearSynonyms		:= "wear |put on "					.split('|', false)
 	static const Str[]	takeOffSynonyms		:= "take off "						.split('|', false)
 //	static const Str[]	useSynonyms			:= "use "							.split('|', false)
-	static const Str[]	useActions			:= "to |on |at |with |against"		.split('|', false)
+	static const Str[]	useActions			:= "to |on |at |with |against |the ".split('|', false)
 
 	static const Str[]	hi5Synonyms			:= "hi5 |high five "				.split('|', false)
 	static const Str[]	rolloverSynonyms	:= "rollover "						.split('|', false)

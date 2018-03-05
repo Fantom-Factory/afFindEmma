@@ -63,7 +63,10 @@
  		west
  		open washing machine
  		wear coat
- 		
+ 		east 		
+ 		use lead on door
+ 		south
+
  ".splitLines.each { executeCmd(it) }
 	}
 	
