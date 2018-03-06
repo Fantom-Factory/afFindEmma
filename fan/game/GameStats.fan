@@ -20,7 +20,7 @@
 	Describe? incMoves() {
 		noOfMoves++
 		legWork++
-		if (legWork >= 3) {
+		if (legWork >= 4) {
 			legWork = 0
 			return decBellySize
 		}

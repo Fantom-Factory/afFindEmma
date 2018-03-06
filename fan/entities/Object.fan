@@ -66,6 +66,8 @@
 		return aliasesLower.find { str.startsWith(it) }
 	}
 	
+	override Bool equals(Obj? that) { (that as Object)?.id == id }
+	override Int hash() { id.hash }
 	override Str toStr() { id.toStr }
 	
 	private once Str[] aliasesLower() {

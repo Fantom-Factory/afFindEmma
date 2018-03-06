@@ -70,6 +70,29 @@
  		east
  		north
  		east
+ 		drop seed
+ 		west
+ 		south
+ 		west
+ 		get seed
+ 		east
+ 		south
+ 		south
+ 		east
+ 		north
+ 		drop seed
+ 		south
+ 		west
+ 		north
+ 		north
+ 		west
+ 		get seed
+ 		east
+ 		south
+ 		south
+ 		east
+ 		south
+ 		drop seed
 
  ".splitLines.each { executeCmd(it) }
 	}

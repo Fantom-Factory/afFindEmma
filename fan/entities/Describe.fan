@@ -3,6 +3,16 @@
 	** All strings MUST end with '\n'.
 	abstract Str describe()
 
+	@Operator
+	Describe plus(Describe d) {
+		DescribeMulti([this, d])
+	}
+
+	@Operator
+	Describe plusStr(Str d) {
+		DescribeMulti([this, Describe(d)])
+	}
+	
 	static new makeStr(Str? desc) {
 		desc == null ? null : DescribeStr(desc)
 	}
