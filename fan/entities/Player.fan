@@ -30,6 +30,8 @@
 	
 	new make(|This| f) { f(this) }
 
+	GameData world() { gameData }
+	
 	Describe look(Describe? at := null) {
 		if (at == null) at = room
 
@@ -80,7 +82,7 @@
 			
 			if (!exit.isBlocked) {
 				descs.add(room.onLeave?.call(room, this))
-				room = gameData.room(exit.exitToId)
+				room = world.room(exit.exitToId)
 				descs.add(room.onEnter?.call(room, this))
 			}
 		}

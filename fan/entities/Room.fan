@@ -80,5 +80,7 @@
 		return Describe(descs).describe
 	}
 	
+	override Bool equals(Obj? that) { (that as Room)?.id == id }
+	override Int hash() { id.hash }
 	override Str toStr() { id.toStr }
 }

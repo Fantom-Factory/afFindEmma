@@ -42,6 +42,8 @@
 		type == ExitType(str, false) || str == type.name[0].toChar
 	}
 
+	override Bool equals(Obj? that) { (that as Exit)?.id == id }
+	override Int hash() { id.hash }
 	override Str toStr() { id.toStr }
 	override Int compare(Obj that) { type <=> ((Exit) that).type }
 

@@ -27,17 +27,29 @@
 			return snack
 		}
 		
-		newBirds := |->Object| {
+		newBirds := |Room room->Object| {
 			Object("birds", "An assortment of tits, sparrows, and chaffinchs. All hopping around, chirping insistently, and scoffing the food.") {
 				it.namePrefix = ""
 				it.aliases = "bird".split
 				it.verbs = "chase".split
+				room.meta["birdsInGarden"] = true
 				it.onPickUp = |Object me, Player player ->Describe?| {
 					player.room.objects.remove(me)
+					player.room.meta.remove("birdsInGarden")
 					return Describe("You let your instinct take over and you manically sprint at the birds, tongue and drool handing out the side of your mouth. But alas, the birds are faster and fly away. All you can do is stand and watch them fly away.")
 				}
 				it.redirectOnUse(onPickUp)
 			}
+		}
+		
+		buzzardCheck := |Player player, Describe desc->Describe| {
+			gardens := (Room[]) [`room:lawn`, `room:backLawn`, `room:frontLawn`].map |id->Room| { player.world.room(id) }
+			if (gardens.all { it.meta["birdsInGarden"] == true }) {
+				gardens.each { it.objects = it.objects.exclude { it.id == `obj:birds` } }
+				player.room = player.world.room(`room:birdsNest`)
+				desc += "Screech!"
+			}
+			return desc
 		}
 		
 		onRollover := |Player player -> Describe?| {
@@ -284,12 +296,12 @@
 									player.inventory.remove(seed)
 									return Describe("You place the seed back in the sack.")									
 								}
-								if (player.room.meta["isGarden"] == true) {
-									player.room.objects.add(newBirds())
+								if (player.room.meta["isGarden"] == true && player.room.meta["birdsInGarden"] != true) {
+									player.room.objects.add(newBirds(player.room))
 									seed.canDrop = false
 									player.inventory.remove(seed)
-									// FIXME check all gardens
-									return Describe("You scatter the seed around the garden and observe in wonder as a variety of garden birds appear from the hedgerows and start devouring the bird seed.")
+									desc := Describe("You scatter the seed around the garden and observe in wonder as a variety of garden birds appear from the hedgerows and start devouring the bird seed.")
+									return buzzardCheck(player, desc)
 								}
 								return null
 							}
@@ -330,7 +342,7 @@
 
 			Room("driveway", "The concrete driveway is adjacent to the front lawn and leads down to the avenue. A car is parked in the middle.") {
 				it.namePrefix = "on the"
-				Exit(ExitType.south, `room:backPorch`),
+				Exit(ExitType.south, `room:backPorch`, "A door leads into the back porch."),
 				Exit(ExitType.north, `room:theAvenue`).block("A heavy iron gate keeps you on the premises", "A heavy iron gate keeps you on the premises"),
 				Exit(ExitType.east, `room:frontLawn`),
 				Exit(ExitType.west, `room:garage`, "A small garage fronted with a large vertical lift, bright red, metal door.") {
@@ -350,14 +362,14 @@
 
 			Room("patio", "Large paving slabs adorn the floor.") {
 				it.namePrefix = "on the"
-				Exit(ExitType.north, `room:backPorch`),
-				Exit(ExitType.south, `room:goldfishPond`),
+				Exit(ExitType.north, `room:backPorch`, "A door leads into the back porch."),
+				Exit(ExitType.south, `room:goldfishPond`, "A couple of stone steps lead up to the goldfish pond"),
 			},
 
-			Room("goldfish pond", "") {
+			Room("goldfish pond", "It is a shallow square pond full of weeds and goldfish.") {
 				it.namePrefix = "next to the"
 				Exit(ExitType.east, `room:koiPond`),
-				Exit(ExitType.north, `room:patio`),
+				Exit(ExitType.north, `room:patio`, "A couple of stone steps lead down to the patio."),
 				Exit(ExitType.south, `room:vegetablePatch`),
 			},
 
@@ -369,35 +381,77 @@
 			},
 
 			Room("back lawn", "") {
+				it.namePrefix = "on the"
 				it.meta["isGarden"] = true
 				Exit(ExitType.south, `room:koiPond`),
 			},
 
 			Room("lawn", "") {
+				it.namePrefix = "on the"
 				it.meta["isGarden"] = true
 				Exit(ExitType.north, `room:koiPond`),
 				Exit(ExitType.west, `room:vegetablePatch`),
-				Exit(ExitType.south, `room:summerHouse`),
+				Exit(ExitType.in, `room:summerHouse`),
 			},
 
 			Room("summer house", "") {
-				Exit(ExitType.north, `room:lawn`),
+				Exit(ExitType.out, `room:lawn`),
 			},
 
 			Room("vegetable patch", "") {
-				Exit(ExitType.east, `room:lawn`),
+				Exit(ExitType.in,    `room:shed`),
+				Exit(ExitType.east,  `room:lawn`),
 				Exit(ExitType.north, `room:goldfishPond`),
-				Exit(ExitType.south, `room:shed`),
-				Exit(ExitType.west, `room:greenhouse`),
+				Exit(ExitType.west,	 `room:greenhouse`),
 			},
 
 			Room("shed", "") {
-				Exit(ExitType.north, `room:vegetablePatch`),
+				Exit(ExitType.out, `room:vegetablePatch`),
 			},
 
 			Room("greenhouse", "") {
-				Exit(ExitType.east, `room:vegetablePatch`),
+				Exit(ExitType.out, `room:vegetablePatch`),
 			},
+			
+			Room("birds nest", "") {
+				Exit(ExitType.out, `room:tree2`),
+			},
+
+			Room("tree", "You are in a maze of twisty tree branches, all alike.") {
+				it.namePrefix = "in a"
+				it.id = `room:tree1`
+				Exit(ExitType.up,    `room:tree4`),
+				Exit(ExitType.down,  `room:tree3`),
+				Exit(ExitType.north, `room:tree2`),
+				Exit(ExitType.south, `room:tree2`),
+			},
+			Room("tree", "You are in a maze of twisty tree branches, all alike.") {
+				it.namePrefix = "in a"
+				it.id = `room:tree2`
+				Exit(ExitType.west, `room:tree1`),
+				Exit(ExitType.east, `room:tree1`),
+				Exit(ExitType.up,   `room:tree3`),
+				Exit(ExitType.down, `room:tree4`),
+			},
+			Room("tree", "You are in a maze of twisty tree branches, all alike.") {
+				it.namePrefix = "in a"
+				it.id = `room:tree3`
+				Exit(ExitType.up,    `room:tree1`),
+				Exit(ExitType.north, `room:tree4`),
+				Exit(ExitType.south, `room:tree4`),
+				Exit(ExitType.down,  `room:summerHouseRoof`, "This branch looks recognisable - not all is lost!"),
+			},
+			Room("tree", "You are in a maze of twisty tree branches, all alike.") {
+				it.namePrefix = "in a"
+				it.id = `room:tree4`
+				Exit(ExitType.down, `room:tree1`),
+				Exit(ExitType.up,   `room:tree4`),
+				Exit(ExitType.east, `room:tree3`),
+				Exit(ExitType.west, `room:tree3`),
+			},
+			Room("summer house roof", "") {
+				Exit(ExitType.down, `room:lawn`),				
+			}
 		]
 		
 		objs := Object[,]
