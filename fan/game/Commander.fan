@@ -7,7 +7,6 @@
 	Bool executeCmd(Str cmdStr) {
 		cmdStr = cmdStr.trim.lower
 		if (cmdStr.startsWith("//") || cmdStr.trim.isEmpty) return false
-		log("> ${cmdStr.upper}", "usrCmd")
 	
 		cmd := syntax.compile(player, cmdStr)
 		old := player.room
@@ -99,5 +98,5 @@
  ".splitLines.each { executeCmd(it) }
 	}
 	
-	abstract Void log(Obj? obj, Str klass := "")
+	abstract Void log(Obj? obj)
 }

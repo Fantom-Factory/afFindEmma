@@ -31,7 +31,7 @@ class TestPlayGame : Test, Commander {
 		log("---\nEND\n\n")
 	}
 	
-	override Void log(Obj? obj, Str klass := "") {
+	override Void log(Obj? obj) {
 		des := obj as Describe ?: Describe(obj?.toStr)
 		des?.with { Env.cur.out.print("\n" + des.describe) }
 	}
