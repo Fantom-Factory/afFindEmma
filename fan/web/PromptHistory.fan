@@ -26,9 +26,9 @@
 		return history[index]
 	}
 	
-	Void each(Int num, |Str, Int| fn) {
+	Void each(Int num, |Str| fn) {
 		if (history.size > num) {
-			fn("...", 0)
+			fn("...")
 			history.eachRange(-num..-1, fn)
 		} else
 			history.each(fn)
