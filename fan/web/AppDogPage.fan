@@ -85,6 +85,15 @@ using graphics
 					elem("a", "#downloadLink") {
 						it.setAttr("download", "saveEmmaCmds.txt")
 					}, 
+					elem("form", "#uploadForm") {
+						it.setAttr("action", "/dog/upload")
+						it.setAttr("method", "POST")
+						it.setAttr("enctype", "multipart/form-data")
+						elem("input") {
+							it.id = "uploadVal"
+							it.setAttr("type", "file")
+						},
+					},
 				},
 			}
 		)
@@ -97,14 +106,14 @@ using graphics
 	
 	Void exeCmd(Str cmdStr) {
 		cmdStr = cmdStr.trim.lower
+		screen.add(div("usrCmd", "\n> ${cmdStr.upper}"))
+
 		switch (cmdStr) {
 			case "help":
-				log("> ${cmdStr.upper}", "usrCmd")
 				log(help)
 			
 			case "more help":
 			case "help more":
-				log("> ${cmdStr.upper}", "usrCmd")
 				log(helpMore)
 
 			case "cls":
@@ -115,42 +124,18 @@ using graphics
 				screen.add(div("logo", logo))
 
 			case "history":
-				log("> ${cmdStr.upper}", "usrCmd")
 				msg := ""
 				promptHis.each(20) |str| { msg += "> $str\n" }
 				log(msg)
 		
 			case "save":
-				log("> ${cmdStr.upper}", "usrCmd")
 				win.localStorage["cmdHistory"] = cmdHis.save
 				log("Saved ${cmdHis.size} commands at " + cmdHis.savedAt.toLocale("D MMM YYYY, hh:mm") + ".")
 				log("You may now close the browser and restart the game at this saved point using the \"LOAD\" command.")
 
 			case "load":
-				log("> ${cmdStr.upper}", "usrCmd")
 				log("Loading saved game...")
-			
-				history := win.localStorage["cmdHistory"]
-				if (history == null)
-					log("Could not find saved game.")
-				else {
-					silent = true
-					try {
-						cmdHis = CmdHistory.load(history)
-						screen.removeAll
-						startGame
-						cmdHis.each {
-							executeCmd(it)
-							promptHis.add(it)
-						}
-					} catch (Err err) {
-						silent = false
-						log(err.traceToStr)
-					}
-					silent = false
-					log("Loaded ${cmdHis.size} commands from save point " + cmdHis.savedAt.toLocale("D MMM YYYY, hh:mm") + ".")
-					executeCmd("LOOK")
-				}
+				restoreFromLocalStorage("cmdHistory")
 			
 			case "download":
 				form := doc.elemById("downloadForm")
@@ -161,8 +146,17 @@ using graphics
 				// https://stackoverflow.com/questions/2897619/using-html5-javascript-to-generate-and-save-a-file
 //				url := Win.eval("var data = []; data.push(document.getElementById('downloadVal').value); var properties = {type: 'text/plain'}; var file; try { file = new File(data, 'saveEmmaCmds.txt', properties); } catch (e) { file = new Blob(data, properties); }; var url = URL.createObjectURL(file); url;")
 //				doc.elemById("downloadLink").setAttr("href", url.toStr)
-//				Win.eval("document.getElementById('downloadLink').click();")			
-			
+//				Win.eval("document.getElementById('downloadLink').click();")
+
+			case "upload":
+				doc.elemById("uploadVal").onEvent("uploaded", false) |e| {
+					restoreFromLocalStorage("uploadedCmds")					
+				}
+				doc.elemById("uploadVal").onEvent("change", false) |e| {
+					Win.eval("var uVal = document.getElementById('uploadVal'); var file = uVal.files[0]; if (file) { var fReader = new FileReader(); fReader.onload = function() { localStorage.setItem('uploadedCmds', fReader.result); var e = document.createEvent('HTMLEvents'); e.initEvent('uploaded', false, true); uVal.dispatchEvent(e); }; fReader.readAsText(file); }")
+				}
+				Win.eval("document.getElementById('uploadVal').click();")
+
 			case "ch":
 			case "cheat":
 				cheat
@@ -176,10 +170,34 @@ using graphics
 		scrollScreen		
 	}
 	
-	override Void log(Obj? obj, Str klass := "") {
+	Void restoreFromLocalStorage(Str key) {
+		history := win.localStorage[key]
+		if (history == null)
+			log("Could not find saved game.")
+		else {
+			silent = true
+			try {
+				cmdHis = CmdHistory.load(history)
+				screen.removeAll
+				startGame
+				cmdHis.each {
+					executeCmd(it)
+					promptHis.add(it)
+				}
+			} catch (Err err) {
+				silent = false
+				log(err.traceToStr)
+			}
+			silent = false
+			log("Loaded ${cmdHis.size} commands from save point " + cmdHis.savedAt.toLocale("D MMM YYYY, hh:mm") + ".")
+			executeCmd("LOOK")
+		}
+	}
+	
+	override Void log(Obj? obj) {
 		if (silent) return
 		des := obj as Describe ?: Describe(obj?.toStr)
-		screen.add(div(klass, "\n" + des.describe))
+		screen.add(div("", "\n" + des.describe))
 	}
 	
 	Void scrollScreen() {
@@ -236,9 +254,8 @@ using graphics
 		str.add("  - more help\n")
 		str.add("  - cls\n")
 		str.add("  - history\n")
-		str.add("  - load\n")
-		str.add("  - save\n")
-		str.add("  - download\n")
+		str.add("  - load / save\n")
+		str.add("  - upload / download\n")
 		str.add("\n")
 		str.add("Now go find Emma.\n")
 		return Describe(str)
