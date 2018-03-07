@@ -1,14 +1,20 @@
 using afIoc::Inject
+using afBedSheet::HttpRequest
+using afBedSheet::HttpResponse
+using afBedSheet::Text
 using afEfanXtra::BeforeRender
 using afEfanXtra::InitRender
 using afPillow::Page
+using afPillow::PageEvent
 using afDuvet::HtmlInjector
 using afEfanXtra::EfanComponent
 
 @Page { url=`/dog` }
 const mixin WebDogPage : EfanComponent {
 
-	@Inject abstract HtmlInjector		injector
+	@Inject abstract HtmlInjector	injector
+	@Inject abstract HttpRequest	httpReq
+	@Inject abstract HttpResponse	httpRes
 	
 	@BeforeRender
 	Void beforeRender() {
@@ -36,6 +42,13 @@ const mixin WebDogPage : EfanComponent {
 			 if (main.isStatic()) main.callList(args);
 			 else main.callOn(main.parent().make(), args);"
 		)
+	}
+	
+	@PageEvent { httpMethod="POST" }
+	Obj onDownload() {
+		cmdHis := httpReq.body.form["cmdHis"]
+		httpRes.saveAsAttachment("saveEmmaCmds.txt")
+		return Text.fromPlain(cmdHis)
 	}
 	
 	override Str renderTemplate() {

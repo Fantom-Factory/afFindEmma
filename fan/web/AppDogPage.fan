@@ -72,6 +72,19 @@ using graphics
 							},
 						},
 					},
+					elem("form", "#downloadForm") {
+						it.setAttr("action", "/dog/download")
+						it.setAttr("method", "POST")
+						elem("input") {
+							it.id = "downloadVal"
+							it.setAttr("type", "hidden")
+							it.setAttr("name", "cmdHis")
+							it.setAttr("value", "")
+						},
+					},
+					elem("a", "#downloadLink") {
+						it.setAttr("download", "saveEmmaCmds.txt")
+					}, 
 				},
 			}
 		)
@@ -138,6 +151,17 @@ using graphics
 					log("Loaded ${cmdHis.size} commands from save point " + cmdHis.savedAt.toLocale("D MMM YYYY, hh:mm") + ".")
 					executeCmd("LOOK")
 				}
+			
+			case "download":
+				form := doc.elemById("downloadForm")
+				form.children.first->value = cmdHis.save
+				Win.eval("document.getElementById('downloadForm').submit()")
+
+				// Naa - nice idea but doesn't work on FF!
+				// https://stackoverflow.com/questions/2897619/using-html5-javascript-to-generate-and-save-a-file
+//				url := Win.eval("var data = []; data.push(document.getElementById('downloadVal').value); var properties = {type: 'text/plain'}; var file; try { file = new File(data, 'saveEmmaCmds.txt', properties); } catch (e) { file = new Blob(data, properties); }; var url = URL.createObjectURL(file); url;")
+//				doc.elemById("downloadLink").setAttr("href", url.toStr)
+//				Win.eval("document.getElementById('downloadLink').click();")			
 			
 			case "ch":
 			case "cheat":
@@ -212,6 +236,9 @@ using graphics
 		str.add("  - more help\n")
 		str.add("  - cls\n")
 		str.add("  - history\n")
+		str.add("  - load\n")
+		str.add("  - save\n")
+		str.add("  - download\n")
 		str.add("\n")
 		str.add("Now go find Emma.\n")
 		return Describe(str)
