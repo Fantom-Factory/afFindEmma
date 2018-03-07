@@ -8,7 +8,8 @@ class TestPlayGame : Test, Commander {
 	Void testRunThrough() {		
 		log("START\n-----\n\n")
 		startGame
-		cheat
+		cheat.splitLines.each { log(it.trim.upper); executeCmd(it) }
+
 "
  		west
  		
@@ -24,7 +25,7 @@ class TestPlayGame : Test, Commander {
  		use bird seed
  		eat seed
  		
- ".splitLines.each { executeCmd(it) }
+ ".splitLines.each { log(it.trim.upper); executeCmd(it) }
 		
 //		 executeCmd("eat snack")
 		

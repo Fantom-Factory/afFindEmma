@@ -41,7 +41,7 @@
 		log(game.start)
 	}
 	
-	Void cheat() {
+	Str cheat() {
 "
  		move out
  		pickup lead
@@ -95,8 +95,7 @@
  		south
  		drop seed
 
- ".splitLines.each { executeCmd(it) }
-	}
+ "}
 	
 	abstract Void log(Obj? obj)
 }

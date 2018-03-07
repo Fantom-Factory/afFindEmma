@@ -1,6 +1,6 @@
 
 @Js class Exit : Describe {
-	const Uri		id
+	      Uri		id
 	const ExitType	type
 	const Uri		exitToId
 	Str				desc
