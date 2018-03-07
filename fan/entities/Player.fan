@@ -239,6 +239,14 @@
 	Bool isWearing(Str str) {
 		clothes.any { it.matches(str) }
 	}
+	
+	Bool hasSmallBelly() {
+		gameStats.bellySize <= 3
+	}
+
+	Bool hasLargeBelly() {
+		gameStats.bellySize >= 6
+	}
 
 	internal Object? findObject(Str str) {
 		obj := null as Object

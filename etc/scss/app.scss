@@ -30,11 +30,43 @@ body {
 	max-width			: calc(800px - 4rem);
 	max-height			: calc(608px - 4rem);	// 608 to make divisible by 16
 	padding				: 2rem;
+	transition			: width 0.5s, height 0.5s;
+}
+.box.maximise {
+	max-width		: none;
+	max-height		: none;
+	.minMax .sym {
+		border-width	: 0;
+		border-bottom-width	: 1px;
+	}
 }
 
 .terminal {
 	position			: relative;
 	color				: $c-text;
+}
+
+.minMax {
+	position			: absolute;
+	top					: 0.5rem;
+	right				: 0.5rem;
+	width				: 1rem;
+	height				: 1rem;
+	background-color	: $c-border;
+	color				: white;
+	z-index				: 1;
+	
+	.sym {
+		border			: 1px solid;
+		box-sizing		: content-box;
+		height			: calc(1rem - 6px);
+		width			: calc(1rem - 6px);
+		margin			: 2px;
+	}
+}
+.minMax:hover {
+	background-color	: $c-text;
+	color				: black;
 }
  
 .tvBg {
