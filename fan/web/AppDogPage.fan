@@ -8,7 +8,8 @@ using graphics
 			 Elem?			screen
 			 Elem?			prompt
 			 PromptHistory	promptHis	:= PromptHistory()
-//			 CmdHistory		cmdHis		:= CmdHistory()
+			 CmdHistory		cmdHis		:= CmdHistory()
+			 Bool			silent		:= false
 
 	Str logo := "
 	                  _____^__
@@ -85,12 +86,12 @@ using graphics
 		cmdStr = cmdStr.trim.lower
 		switch (cmdStr) {
 			case "help":
-				log("\n> ${cmdStr.upper}\n", "usrCmd")
+				log("> ${cmdStr.upper}", "usrCmd")
 				log(help)
 			
 			case "more help":
 			case "help more":
-				log("\n> ${cmdStr.upper}\n", "usrCmd")
+				log("> ${cmdStr.upper}", "usrCmd")
 				log(helpMore)
 
 			case "cls":
@@ -101,23 +102,58 @@ using graphics
 				screen.add(div("logo", logo))
 
 			case "history":
-				log("\n> ${cmdStr.upper}", "usrCmd")
+				log("> ${cmdStr.upper}", "usrCmd")
 				msg := ""
 				promptHis.each(20) |str| { msg += "> $str\n" }
 				log(msg)
 		
+			case "save":
+				log("> ${cmdStr.upper}", "usrCmd")
+				win.localStorage["cmdHistory"] = cmdHis.save
+				log("Saved ${cmdHis.size} commands at " + cmdHis.savedAt.toLocale("D MMM YYYY, hh:mm") + ".")
+				log("You may now close the browser and restart the game at this saved point using the \"LOAD\" command.")
+
+			case "load":
+				log("> ${cmdStr.upper}", "usrCmd")
+				log("Loading saved game...")
+			
+				history := win.localStorage["cmdHistory"]
+				if (history == null)
+					log("Could not find saved game.")
+				else {
+					silent = true
+					try {
+						cmdHis = CmdHistory.load(history)
+						screen.removeAll
+						startGame
+						cmdHis.each {
+							executeCmd(it)
+							promptHis.add(it)
+						}
+					} catch (Err err) {
+						silent = false
+						log(err.traceToStr)
+					}
+					silent = false
+					log("Loaded ${cmdHis.size} commands from save point " + cmdHis.savedAt.toLocale("D MMM YYYY, hh:mm") + ".")
+					executeCmd("LOOK")
+				}
+			
 			case "ch":
 			case "cheat":
 				cheat
 				screen.scrollPos = Point(0f, screen.scrollSize.h - screen.size.h)
 
 			default:
-				executeCmd(cmdStr)
+				valid := executeCmd(cmdStr)
+				if (valid)
+					cmdHis.add(cmdStr.trim.upper)
 		}
 		scrollScreen		
 	}
 	
 	override Void log(Obj? obj, Str klass := "") {
+		if (silent) return
 		des := obj as Describe ?: Describe(obj?.toStr)
 		screen.add(div(klass, "\n" + des.describe))
 	}

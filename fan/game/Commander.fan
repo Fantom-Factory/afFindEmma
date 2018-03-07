@@ -4,9 +4,9 @@
 	abstract Player?	player
 	abstract Syntax?	syntax
 
-	Void executeCmd(Str cmdStr) {
+	Bool executeCmd(Str cmdStr) {
 		cmdStr = cmdStr.trim.lower
-		if (cmdStr.startsWith("//") || cmdStr.trim.isEmpty) return
+		if (cmdStr.startsWith("//") || cmdStr.trim.isEmpty) return false
 		log("> ${cmdStr.upper}", "usrCmd")
 	
 		cmd := syntax.compile(player, cmdStr)
@@ -31,6 +31,8 @@
 			if (player.room.objects != obj && player.room.objects.size > 0)
 				log(player.room.lookObjects)
 		}
+
+		return cmd != null
 	}
 	
 	Void startGame() {
