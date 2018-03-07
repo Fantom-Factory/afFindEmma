@@ -31,7 +31,7 @@
 			Object("birds", "An assortment of tits, sparrows, and chaffinchs. All hopping around, chirping insistently, and scoffing the food.") {
 				it.namePrefix = ""
 				it.aliases = "bird".split
-				it.verbs = "chase".split
+				it.verbs = "chase eat".split
 				room.meta["birdsInGarden"] = true
 				it.onPickUp = |Object me, Player player ->Describe?| {
 					player.room.objects.remove(me)
@@ -45,9 +45,17 @@
 		buzzardCheck := |Player player, Describe desc->Describe| {
 			gardens := (Room[]) [`room:lawn`, `room:backLawn`, `room:frontLawn`].map |id->Room| { player.world.room(id) }
 			if (gardens.all { it.meta["birdsInGarden"] == true }) {
-				gardens.each { it.objects = it.objects.exclude { it.id == `obj:birds` } }
-				player.room = player.world.room(`room:birdsNest`)
-				desc += "Screech!"
+				desc += "A loud screech pierces the air and all the birds instantly scatter.\n\nDaylight is eclipsed by the shadow of the enormous wingspan of a swooping buzzard. Attracted by the constant hive of activity in the gardens, the buzzard is here to feed. Its talons take a tight grip on your coat and it pounds the air with its wings. You no longer feel the ground under your feet."
+				if (player.hasSmallBelly) {
+					gardens.each { it.objects = it.objects.exclude { it.id == `obj:birds` } }
+					player.room = player.world.room(`room:birdsNest`)
+					desc += "Before you know it, you're high above the garden looking down on the ponds below. The buzzard takes you into the trees before dropping you in a large makeshift nest and flying away, leaving you alone once more."
+				} else {
+					player.room = player.world.room(`room:lawn`)
+					desc += "The buzzard struggles with the weight of its new found prey and beats the air furiously. As much as it wanted to carry you to its lair, sheer will is no match for the size your belly. It drops you and powers away empty handed."
+					birds := player.room.findObject("birds")
+					player.room.objects.remove(birds)
+				}
 			}
 			return desc
 		}
@@ -373,20 +381,20 @@
 				Exit(ExitType.south, `room:vegetablePatch`),
 			},
 
-			Room("koi pond", "") {
+			Room("koi pond", "The koi pond is a deep picturesque pond with a slate surround, complete with a stone waterfall feature in the corner.") {
 				it.namePrefix = "next to the"
 				Exit(ExitType.west, `room:goldfishPond`),
 				Exit(ExitType.north, `room:backLawn`),
 				Exit(ExitType.south, `room:lawn`),
 			},
 
-			Room("back lawn", "") {
+			Room("back lawn", "The back lawn is a patch of grass that backs up to the dining room.") {
 				it.namePrefix = "on the"
 				it.meta["isGarden"] = true
 				Exit(ExitType.south, `room:koiPond`),
 			},
 
-			Room("lawn", "") {
+			Room("lawn", "A featureless patch of grass in front of the summer house that's popular with the local avian wildlife, should there be enough food around.") {
 				it.namePrefix = "on the"
 				it.meta["isGarden"] = true
 				Exit(ExitType.north, `room:koiPond`),
@@ -413,8 +421,9 @@
 				Exit(ExitType.out, `room:vegetablePatch`),
 			},
 			
-			Room("birds nest", "") {
-				Exit(ExitType.out, `room:tree2`),
+			Room("birds nest", "You are high in the trees with no obvious route back. The garden and house is sprawled out below you, and you see the car in the driveway. Wait! Was that movement you saw in the car just now?") {
+				it.namePrefix = "in a large"
+				Exit(ExitType.out, `room:tree2`, "Twigs give way to a precarious looking branch."),
 			},
 
 			Room("tree", "You are in a maze of twisty tree branches, all alike.") {

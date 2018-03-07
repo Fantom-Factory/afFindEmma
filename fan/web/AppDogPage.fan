@@ -21,9 +21,17 @@ using graphics
 	             \n\n\n"
 	
 	Void init() {
+		box := null as Elem
 		doc.body.add(
-			div("box") {
+			box = div("box") {
 				div("terminal") {
+					div("minMax") {
+						it.onEvent("click", false) |e| {
+							box.style.toggleClass("maximise")
+						}
+						it->title = "Min/Max Terminal"
+						div("sym"),
+					},
 					div("tvBg") {
 						elem("img") {
 							it.setAttr("src", "/images/tv.jpg")
@@ -120,7 +128,6 @@ using graphics
 	
 	Describe? help() {
 		str := StrBuf()
-		str.add("\n")
 		str.add("Game commands:\n")
 		str.add("  - look    [exit | item]\n")
 		str.add("  - move    <exit>\n")
@@ -148,7 +155,6 @@ using graphics
 
 	Describe? helpMore() {
 		str := StrBuf()
-		str.add("\n")
 		str.add("Alternative synonyms, verbs, and abbreviations are allowed:\n")
 		str.add("  - north\n")
 		str.add("  - get snack\n")
