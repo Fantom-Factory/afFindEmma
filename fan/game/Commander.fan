@@ -5,7 +5,7 @@
 	abstract Syntax?	syntax
 
 	Void executeCmd(Str cmdStr) {
-		cmdStr = cmdStr.trim
+		cmdStr = cmdStr.trim.lower
 		if (cmdStr.startsWith("//") || cmdStr.trim.isEmpty) return
 		log("> ${cmdStr.upper}", "usrCmd")
 	
