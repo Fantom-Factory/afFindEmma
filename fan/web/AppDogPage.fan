@@ -159,7 +159,7 @@ using graphics
 
 			case "ch":
 			case "cheat":
-				cheat
+				cheat.splitLines.each { executeCmd(it) }
 				screen.scrollPos = Point(0f, screen.scrollSize.h - screen.size.h)
 
 			default:
