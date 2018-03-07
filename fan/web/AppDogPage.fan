@@ -2,12 +2,13 @@ using dom
 using graphics
 
 @Js class AppDogPage : Commander, DomBob {
-	override Game?		game
-	override Player?	player
-	override Syntax?	syntax
-			 Elem?		screen
-			 Elem?		prompt
-			 CmdHistory	history	:= CmdHistory()
+	override Game?			game
+	override Player?		player
+	override Syntax?		syntax
+			 Elem?			screen
+			 Elem?			prompt
+			 PromptHistory	promptHis	:= PromptHistory()
+//			 CmdHistory		cmdHis		:= CmdHistory()
 
 	Str logo := "
 	                  _____^__
@@ -54,18 +55,18 @@ using graphics
 								it.setAttr("autofocus", "")
 							    it.onEvent("keydown", false) |e| {
 							    	if (e.key == Key.enter) {
-										exeCmd(prompt->value->trim->lower)
-										history.add(prompt->value)
+							    		promptHis.add(prompt->value)
+										exeCmd(prompt->value)
 										win.setTimeout(10ms) { prompt->value = "" }
 							    	}
 							    	if (e.key == Key.esc) {
-										history.reset
+										promptHis.reset
 										win.setTimeout(10ms) { prompt->value = "" }
 							    	}
 							    	if (e.key == Key.up)
-										win.setTimeout(10ms) { prompt->value = history.up }
+										win.setTimeout(10ms) { prompt->value = promptHis.up }
 							    	if (e.key == Key.down)
-										win.setTimeout(10ms) { prompt->value = history.down }
+										win.setTimeout(10ms) { prompt->value = promptHis.down }
 								}
 							},
 						},
@@ -81,6 +82,7 @@ using graphics
 	}
 	
 	Void exeCmd(Str cmdStr) {
+		cmdStr = cmdStr.trim.lower
 		switch (cmdStr) {
 			case "help":
 				log("\n> ${cmdStr.upper}\n", "usrCmd")
@@ -99,9 +101,10 @@ using graphics
 				screen.add(div("logo", logo))
 
 			case "history":
-				log("\n> ${cmdStr.upper}\n", "usrCmd")
-				log("\n")
-				history.history.eachr { log("> $it") }
+				log("\n> ${cmdStr.upper}", "usrCmd")
+				msg := ""
+				promptHis.each(20) |str| { msg += "> $str\n" }
+				log(msg)
 		
 			case "ch":
 			case "cheat":
