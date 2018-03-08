@@ -48,10 +48,10 @@
 				desc += "A loud screech pierces the air and all the birds instantly scatter.\n\nDaylight is eclipsed by the shadow of the enormous wingspan of a swooping buzzard. Attracted by the constant hive of activity in the gardens, the buzzard is here to feed. Its talons take a tight grip on your coat and it pounds the air with its wings. You no longer feel the ground under your feet."
 				if (player.hasSmallBelly) {
 					gardens.each { it.objects = it.objects.exclude { it.id == `obj:birds` } }
-					player.room = player.world.room(`room:birdsNest`)
+					player.transportTo(`room:birdsNest`)
 					desc += "Before you know it, you're high above the garden looking down on the ponds below. The buzzard takes you into the trees before dropping you in a large makeshift nest and flying away, leaving you alone once more."
 				} else {
-					player.room = player.world.room(`room:lawn`)
+					player.transportTo(`room:lawn`)
 					desc += "The buzzard struggles with the weight of its new found prey and beats the air furiously. As much as it wanted to carry you to its lair, sheer will is no match for the size your belly. It drops you and powers away empty handed."
 					birds := player.room.findObject("birds")
 					player.room.objects.remove(birds)
@@ -423,7 +423,14 @@
 			
 			Room("birds nest", "You are high in the trees with no obvious route back. The garden and house is sprawled out below you, and you see the car in the driveway. Wait! Was that movement you saw in the car just now?") {
 				it.namePrefix = "in a large"
-				Exit(ExitType.out, `room:tree2`, "Twigs give way to a precarious looking branch."),
+				Object("large egg", "A freshly laid bird egg.") {
+					it.aliases = "egg".split
+					it.edible("You gnaw a hole in the top and suck the contents out. A bit runny, but not bad. You use your paw to wipe your mouth and chuck the empty husk over the side.")
+//					it.canPickUp = false	// ??? it's just for the description
+				},
+				Exit(ExitType.out, `room:tree2`, "Twigs give way to a precarious looking branch.") {
+					it.oneTimeMsg("You climb out of the nest, slip, and tumble on to a branch below. The ground looks a long way down and tree climbing is not strong point of yours!")
+				},
 			},
 
 			Room("tree", "You are in a maze of twisty tree branches, all alike.") {
@@ -437,6 +444,10 @@
 			Room("tree", "You are in a maze of twisty tree branches, all alike.") {
 				it.namePrefix = "in a"
 				it.id = `room:tree2`
+				Object("silver key", "The silver key must have found its way to the nest the same you did! It's small but looks important.") {
+					it.aliases = "key".split
+					it.canPickUp = true
+				},
 				Exit(ExitType.west, `room:tree1`),
 				Exit(ExitType.east, `room:tree1`),
 				Exit(ExitType.up,   `room:tree3`),
@@ -448,7 +459,9 @@
 				Exit(ExitType.up,    `room:tree1`),
 				Exit(ExitType.north, `room:tree4`),
 				Exit(ExitType.south, `room:tree4`),
-				Exit(ExitType.down,  `room:summerHouseRoof`, "This branch looks recognisable - not all is lost!"),
+				Exit(ExitType.down,  `room:summerHouseRoof`, "This part of the tree looks recognisable, maybe all is not lost!") {
+					it.oneTimeMsg("You drop down on to the roof of the summer house. Fantastic! Salvation of the garden awaits!\n\nOnly as you look around, you realise it's still a long, bone breaking, drop to the floor. Suddenly you feel a little scared again.")
+				},
 			},
 			Room("tree", "You are in a maze of twisty tree branches, all alike.") {
 				it.namePrefix = "in a"
@@ -458,8 +471,21 @@
 				Exit(ExitType.east, `room:tree3`),
 				Exit(ExitType.west, `room:tree3`),
 			},
-			Room("summer house roof", "") {
-				Exit(ExitType.down, `room:lawn`),				
+			Room("summer house roof", "You sit on the apex and wonder what to do.") {
+				it.namePrefix = "on the"
+				Object("squirrel", "A grey squirrel with a large bushy tail sits quietly on the opposite end. It stares at you, chewing nonchalantly.") {
+					it.verbs = "chase eat grab follow".split
+					it.onUse = |Object me, Object? obj, Player player -> Describe?| {
+						if (obj == null) {
+							player.transportTo(`room:lawn`)
+							return Describe("You stare back at the fluffy squeaky thing in front of you. Your eyes widen, you can't contain yourself! Must chase!\n\nThe squirrel senses danger and darts off the roof, climbing down a wooden beam holding up the roof. Without a thought you do the same.\n\nBefore you know it, you're on the lawn. The squirrel has disappeared and you're left wondering how you got there!")
+						}
+						return null
+					}
+				},
+				Exit(ExitType.down, `room:lawn`, "You can see the garden lawn below, but it's way to far to jump!") {
+					it.block("", "You teeter to the edge but crawl back when vertigo sets in!")
+				},
 			}
 		]
 		

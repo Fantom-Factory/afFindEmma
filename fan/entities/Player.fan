@@ -82,7 +82,7 @@
 			
 			if (!exit.isBlocked) {
 				descs.add(room.onLeave?.call(room, this))
-				room = world.room(exit.exitToId)
+				room = gameData.room(exit.exitToId)
 				descs.add(room.onEnter?.call(room, this))
 			}
 		}
@@ -246,6 +246,10 @@
 
 	Bool hasLargeBelly() {
 		gameStats.bellySize >= 6
+	}
+	
+	Void transportTo(Uri roomId) {
+		room = gameData.room(roomId)
 	}
 
 	internal Object? findObject(Str str) {

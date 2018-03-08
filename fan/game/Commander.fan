@@ -94,6 +94,11 @@
  		east
  		south
  		drop seed
+ 		eat egg
+ 		out
+ 		get key
+ 		up
+ 		//l down
 
  "}
 	
