@@ -145,6 +145,7 @@ input[type=text] {
 }
 
 #uploadForm {
-	padding				: 2rem;
+	position			: absolute;
+	top					: -10rem;
 	opacity				: 0;
 }
