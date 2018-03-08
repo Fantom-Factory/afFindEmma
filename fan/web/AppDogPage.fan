@@ -105,16 +105,19 @@ using graphics
 	}
 	
 	Void exeCmd(Str cmdStr) {
-		cmdStr = cmdStr.trim.lower
+		cmdStr = cmdStr.trim
 		screen.add(div("usrCmd", "\n> ${cmdStr.upper}"))
 
-		switch (cmdStr) {
+		cmds := cmdStr.split
+		switch (cmds.first.lower) {
 			case "help":
-				log(help)
-			
-			case "more help":
-			case "help more":
-				log(helpMore)
+				if (cmds.size == 1)
+					log(help)
+				if (cmds.getSafe(1) == "more")
+					log(helpMore)
+			case "more":
+				if (cmds.getSafe(1) == "help")
+					log(helpMore)
 
 			case "cls":
 			case "clear":
@@ -129,13 +132,35 @@ using graphics
 				log(msg)
 		
 			case "save":
-				win.localStorage["cmdHistory"] = cmdHis.save
-				log("Saved ${cmdHis.size} commands at " + cmdHis.savedAt.toLocale("D MMM YYYY, hh:mm") + ".")
+				nom := cmdStr.lower == "save" ? "autosave" : cmdStr[5..-1].trim
+				win.localStorage["afQuestCmds-${nom}"] = cmdHis.save
+				log("Saved ${cmdHis.size} commands at ${cmdHis.savedAtStr}.")
 				log("You may now close the browser and restart the game at this saved point using the \"LOAD\" command.")
 
 			case "load":
-				log("Loading saved game...")
-				restoreFromLocalStorage("cmdHistory")
+				nom := cmdStr.lower == "load" ? "autosave" : cmdStr[5..-1].trim
+				restoreFromLocalStorage("afQuestCmds-${nom}")
+
+			case "delete":
+				if (cmdStr.lower == "delete") return
+				nom := cmdStr[6..-1].trim
+				win.localStorage.remove("afQuestCmds-${nom}")
+				log("Deleted $nom")
+
+			case "list":
+				size  := win.localStorage.size
+				saved := ""
+				for (i := 0; i < size; ++i) {
+					key := win.localStorage.key(i)
+					if (key.startsWith("afQuestCmds-")) {
+						nomStr := key[12..-1]
+						hisStr := win.localStorage[key]
+						cmdHis := CmdHistory.load(hisStr)
+						saved  += "${cmdHis.savedAtStr} ... ${nomStr}\n"
+					}
+				}
+				if (saved.isEmpty)	saved = "You have no saved games."
+				log(saved)
 			
 			case "download":
 				form := doc.elemById("downloadForm")
@@ -157,9 +182,23 @@ using graphics
 				}
 				Win.eval("document.getElementById('uploadVal').click();")
 
+			case "replay":
+				screen.removeAll
+				promptHis.clear
+				startGame
+				cmdHis.each {
+					screen.add(div("usrCmd", "\n> ${it.upper}"))
+					executeCmd(it)
+					promptHis.add(it)
+				}
+			
 			case "ch":
 			case "cheat":
-				cheat.splitLines.each { executeCmd(it) }
+				cheat.splitLines.each {
+					valid := executeCmd(it)
+					if (valid)
+						cmdHis.add(it.trim.upper)
+				}
 				screen.scrollPos = Point(0f, screen.scrollSize.h - screen.size.h)
 
 			default:
@@ -173,7 +212,7 @@ using graphics
 	Void restoreFromLocalStorage(Str key) {
 		history := win.localStorage[key]
 		if (history == null)
-			log("Could not find saved game.")
+			log("Could not find game.")
 		else {
 			silent = true
 			try {
@@ -181,6 +220,8 @@ using graphics
 				screen.removeAll
 				startGame
 				cmdHis.each {
+					if (!silent)
+						screen.add(div("usrCmd", "\n> ${it.upper}"))
 					executeCmd(it)
 					promptHis.add(it)
 				}
@@ -189,7 +230,7 @@ using graphics
 				log(err.traceToStr)
 			}
 			silent = false
-			log("Loaded ${cmdHis.size} commands from save point " + cmdHis.savedAt.toLocale("D MMM YYYY, hh:mm") + ".")
+			log("Loaded ${cmdHis.size} commands from save point ${cmdHis.savedAtStr}.")
 			executeCmd("LOOK")
 		}
 	}
@@ -254,7 +295,7 @@ using graphics
 		str.add("  - more help\n")
 		str.add("  - cls\n")
 		str.add("  - history\n")
-		str.add("  - load / save\n")
+		str.add("  - load [name] / save [name] / list\n")
 		str.add("  - upload / download\n")
 		str.add("\n")
 		str.add("Now go find Emma.\n")

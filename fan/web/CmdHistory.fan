@@ -15,6 +15,10 @@
 		his.toBuf.readObj
 	}
 	
+	Str savedAtStr() {
+		savedAt.toLocale("D MMM YYYY, hh:mm")
+	}
+
 	Str save() {
 		savedAt = DateTime.now(1sec)
 		buf := StrBuf()

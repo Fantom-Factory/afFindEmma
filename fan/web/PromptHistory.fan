@@ -16,12 +16,14 @@
 	}
 	
 	Str up() {
+		if (history.isEmpty) return ""
 		his := history[index]
 		index = index.decrement.max(0)
 		return his
 	}
 	
 	Str down() {
+		if (history.isEmpty) return ""
 		index = index.increment.min(history.size-1)
 		return history[index]
 	}
@@ -32,5 +34,10 @@
 			history.eachRange(-num..-1, fn)
 		} else
 			history.each(fn)
+	}
+	
+	Void clear() {
+		history.clear
+		index = 0
 	}
 }
