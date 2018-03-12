@@ -1,16 +1,26 @@
 
 @Js class GameStats {
 	Duration	startTime	:= startTime = Duration.now
+	Duration?	timePlayed
 	Int			noOfCmds		{ private set }
 	Int			noOfMoves 		{ private set }
 	Int			noOfSnacksEaten { private set }
 	Int			bellySize := 5	{ private set }
+	Int			parcelsOpened	{ private set }
 	private Int	legWork
+	
 	
 	// TODO have a list of Game durations to allow pausing / saving
 	
 	Duration gameTime() {
-		Duration.now - startTime
+		d := Duration.now - startTime
+		if (timePlayed != null)
+			d += timePlayed
+		return d
+	}
+
+	Void incParcelsOpened() {
+		parcelsOpened++
 	}
 
 	Void incCmds() {
@@ -76,6 +86,7 @@
 		str.add("Commands entered ... ${noOfCmds}\n")
 		str.add("Moves made ......... ${noOfMoves}\n")
 		str.add("Snacks eaten ....... ${noOfSnacksEaten}\n")
+		str.add("Parcels opened...... ${parcelsOpened} / 6\n")
 		str.add("Belly size ......... (" + ("X" * bellySize) + ")\n")
 		return str.toStr
 	}

@@ -133,7 +133,7 @@ using graphics
 		
 			case "save":
 				nom := cmdStr.lower == "save" ? "autosave" : cmdStr[5..-1].trim
-				win.localStorage["afQuestCmds-${nom}"] = cmdHis.save
+				win.localStorage["afQuestCmds-${nom}"] = cmdHis.save(game.player.gameStats.gameTime)
 				log("Saved ${cmdHis.size} commands at ${cmdHis.savedAtStr}.")
 				log("You may now close the browser and restart the game at this saved point using the \"LOAD\" command.")
 
@@ -164,7 +164,7 @@ using graphics
 			
 			case "download":
 				form := doc.elemById("downloadForm")
-				form.children.first->value = cmdHis.save
+				form.children.first->value = cmdHis.save(game.player.gameStats.gameTime)
 				Win.eval("document.getElementById('downloadForm').submit()")
 
 				// Naa - nice idea but doesn't work on FF!
@@ -225,6 +225,7 @@ using graphics
 					executeCmd(it)
 					promptHis.add(it)
 				}
+				game.player.gameStats.timePlayed = cmdHis.timePlayed
 			} catch (Err err) {
 				silent = false
 				log(err.traceToStr)
