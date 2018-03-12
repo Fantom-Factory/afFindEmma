@@ -1,6 +1,28 @@
 
-// FIXME open door with lead
+// FIXME open door with lead OR simplify use?
 
+** Rhubarb patch
+** clear spiders with rubarb - find bucket - find spade
+** koi in deep pond
+** snorkel in garage (with brick a brack) - wear - show photo to koi
+** 
+** delete shed - use summer house - go IN greenhouse
+** squirrel?
+** 
+** dig veg patch to find... carrots? potatoes? nom
+** dig lawn to find... mole! show photo
+** 
+** hose in patio
+** harness in garage
+** 
+** spawn in greenhouse -> use hose to add water
+** pickup (endless) spawn (with bucket)
+** drop spawn in koi pond -> fish food!
+** drop spawn in gold fish pond -> nothing, but set onEnter action (x2 ?) to make frogs -> pressie!
+** 
+** back lawn -> peanuts -> badger -> pressie
+** 
+** finish: backlawn, washing line (+buck+harnes+lead) -> new room, top of pole, garage roof, buzzard, car
 @Js class XEscape : Loader {
 	
 	private static const Str openDoorDesc := "You toss the lead into the air and its loop catches on the handle. You grasp the other end with your teeth and give it a tug. The door swings open."
@@ -45,10 +67,11 @@
 		
 		present1 := Object("bottle of gin", "An expensive bottle of fine English gin.") {
 			it.aliases = "gin".split
-			it.verbs = "drink".split
+			it.verbs = "drink swig sip gulp".split
 			it.canPickUp = true
 			it.onUse = |Object me, Object? obj, Player player -> Describe?| {
 				if (obj == null) {
+					// TODO max 5 swigs - stagger about to exits-2, exits-1
 					return Describe("You swig the gin. You feel woozy.")
 				}
 				return null
