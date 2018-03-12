@@ -20,7 +20,7 @@
 	|Object, Player -> Describe?|?	onWear
 	|Object, Player -> Describe?|?	onTakeOff
 	|Object, Player -> Describe?|?	onHi5
-	|Object, Object?, Player -> Describe?|?	onUse	
+	|Object, Player -> Describe?|?	onUse	
 
 	private new make(|This| f) { f(this) }
 
@@ -80,7 +80,8 @@
 		["use"].addAll(verbs.map { it.lower })
 	}
 	
-	Void openExit(Str objStr, Str exitStr, Str onOpenMsg, |Object, Object?, Exit, Player|? onOpen := null) {
+	Void openExit(Str objStr, Str exitStr, Str onOpenMsg, |Object, Exit, Player|? onOpen := null) {
+		verbs = verbs.rw.addAll("open".split)
 		onUse = openExitFn(objStr, exitStr, onOpenMsg, onOpen)
 	}
 	
@@ -100,50 +101,59 @@
 		onUse = redirectOnUseFn(event)
 	}
 	
-	static |Object, Object?, Player->Describe?| redirectOnUseFn(|Object, Player->Describe?| event) {
-		|Object me, Object? obj, Player player -> Describe?| {
-			obj == null ? event.call(me, player) : null
-		}
+	Void redirectOnUseTo(Str[] objs) {
+		if (objs.any { this.matches(it) })
+			throw Err("Redirection causes recursion!")
+		onUse = redirectOnUseToFn(objs)
 	}
-
-	static |Object, Object?, Player->Describe?| edibleFn(Str desc, |Object, Object?, Exit, Player|? onOpen := null) {
-		|Object food, Object? obj, Player player -> Describe?| {
-			if (obj == null) {
-				descs := Describe?[,]
-				player.inventory.remove(food)		// we're not sure where the food came from
-				player.room.objects.remove(food)	// we're not sure where the food came from
-				descs.add(Describe(desc))
-				descs.add(player.gameStats.incSnacks)
-				return Describe(descs)
-			}
+	
+	static |Object, Player->Describe?| redirectOnUseToFn(Str[] objs) {
+		|Object me, Player player -> Describe?| {
+			obj := (Object?) objs.eachrWhile { player.room.findObject(it) }
+			if (obj != null)
+				return obj.onUse?.call(obj, player)
 			return null
 		}
 	}
-
-	static |Object, Object?, Player->Describe?| inedibleFn(Str desc, |Object, Object?, Exit, Player|? onOpen := null) {
-		|Object food, Object? obj, Player player -> Describe?| {
-			if (obj == null) {
-				descs := Describe?[,]
-				player.inventory.remove(food)		// we're not sure where the food came from
-				player.room.objects.remove(food)	// we're not sure where the food came from
-				descs.add(Describe(desc))
-				descs.add(player.gameStats.decBellySize)
-				return Describe(descs)
-			}
-			return null
+	
+	static |Object, Player->Describe?| redirectOnUseFn(|Object, Player->Describe?| event) {
+		|Object me, Player player -> Describe?| {
+			event.call(me, player)
 		}
 	}
 
-	static |Object, Object?, Player->Describe?| openExitFn(Str objStr, Str exitStr, Str onUseMsg, |Object, Object?, Exit, Player|? onOpen := null) {
-		|Object door, Object? obj, Player player -> Describe?| {
-			if (obj != null && obj.matches(objStr)) {
+	static |Object, Player->Describe?| edibleFn(Str desc, |Object, Exit, Player|? onOpen := null) {
+		|Object food, Player player -> Describe?| {
+			descs := Describe?[,]
+			player.inventory.remove(food)		// we're not sure where the food came from
+			player.room.objects.remove(food)	// we're not sure where the food came from
+			descs.add(Describe(desc))
+			descs.add(player.gameStats.incSnacks)
+			return Describe(descs)
+		}
+	}
+
+	static |Object, Player->Describe?| inedibleFn(Str desc, |Object, Object?, Exit, Player|? onOpen := null) {
+		|Object food, Player player -> Describe?| {
+			descs := Describe?[,]
+			player.inventory.remove(food)		// we're not sure where the food came from
+			player.room.objects.remove(food)	// we're not sure where the food came from
+			descs.add(Describe(desc))
+			descs.add(player.gameStats.decBellySize)
+			return Describe(descs)
+		}
+	}
+
+	static |Object, Player->Describe?| openExitFn(Str objStr, Str exitStr, Str onUseMsg, |Object, Exit, Player|? onOpen := null) {
+		|Object door, Player player -> Describe?| {
+			if (player.has(objStr)) {
 				exit := player.room.findExit(exitStr) ?: throw Err("$player.room has no exit $exitStr")
 				exit.isBlocked = false
 				player.room.objects.remove(door)
-				onOpen?.call(door, obj, exit, player)
+				onOpen?.call(door, exit, player)
 				return Describe(onUseMsg)
 			}
-			return null
+			return Describe("How would you do that?")
 		}		
 	}
 }

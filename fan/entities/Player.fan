@@ -19,10 +19,10 @@
 	|Object, Player -> Describe?|?	onDrop
 	|Object, Player -> Describe?|?	onWear
 	|Object, Player -> Describe?|?	onTakeOff
-	|Object, Object?, Player -> Describe?|?	onUse
+	|Object, Player -> Describe?|?	onUse
 	|Object?, Player -> Describe?|?	onHi5
 	|Player -> Describe?|?			onRollover
-	
+
 	GameStats	gameStats	:= GameStats()
 	
 	@Transient
@@ -189,16 +189,12 @@
 		return Describe(descs)
 	}
 	
-	Describe? use(Object object1, Object? object2) {
+	Describe? use(Object object1) {
 		descs := Describe?[,]
-		descs.add(onUse?.call(object1, object2, this))
+		descs.add(onUse?.call(object1, this))
 
 		if (canUse) {
-			desc := null as Describe
-			if (object2 != null)
-				desc = object2.onUse?.call(object2, object1, this)
-			else
-				desc = object1.onUse?.call(object1, null, this)
+			desc := object1.onUse?.call(object1, this)
 			
 			if (desc == null)
 				desc = Describe("Apparently, nothing of interest happened.")
@@ -238,6 +234,14 @@
 	
 	Bool isWearing(Str str) {
 		clothes.any { it.matches(str) }
+	}
+	
+	Bool isHolding(Str str) {
+		inventory.any { it.matches(str) }
+	}
+	
+	Bool has(Str str) {
+		isHolding(str) || isWearing(str)
 	}
 	
 	Bool hasSmallBelly() {

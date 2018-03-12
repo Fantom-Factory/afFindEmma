@@ -1,6 +1,4 @@
 
-// FIXME open door with lead OR simplify use?
-
 ** Rhubarb patch
 ** clear spiders with rubarb - find bucket - find spade
 ** koi in deep pond
@@ -23,6 +21,9 @@
 ** back lawn -> peanuts -> badger -> pressie
 ** 
 ** finish: backlawn, washing line (+buck+harnes+lead) -> new room, top of pole, garage roof, buzzard, car
+** 
+** FIXME Moar Hi5s!!!
+** FIXME Moar rollover!!!
 @Js class XEscape : Loader {
 	
 	private static const Str openDoorDesc := "You toss the lead into the air and its loop catches on the handle. You grasp the other end with your teeth and give it a tug. The door swings open."
@@ -56,7 +57,7 @@
 				it.canPickUp = true
 				it.aliases = Str[,]
 				it.verbs = "open|rip open|tear open|rip|tear".split('|')
-				it.onUse = |Object me, Object? obj, Player player -> Describe| {
+				it.onUse = |Object me, Player player -> Describe| {
 					player.room.objects.add(inside)
 					player.room.objects.remove(me)
 					player.gameStats.incParcelsOpened
@@ -69,12 +70,9 @@
 			it.aliases = "gin".split
 			it.verbs = "drink swig sip gulp".split
 			it.canPickUp = true
-			it.onUse = |Object me, Object? obj, Player player -> Describe?| {
-				if (obj == null) {
-					// TODO max 5 swigs - stagger about to exits-2, exits-1
-					return Describe("You swig the gin. You feel woozy.")
-				}
-				return null
+			it.onUse = |Object me, Player player -> Describe?| {
+				// TODO max 5 swigs - stagger about to exits-2, exits-1
+				return Describe("You swig the gin. You feel woozy.")
 			}
 		}
 
@@ -91,10 +89,9 @@
 				}
 				it.redirectOnUse(onPickUp)
 				birds := it
-				it.onUse = |Object me, Object? obj, Player player -> Describe?| {
-					if (obj == null) return birds.onPickUp.call(me, player)
-					else if (obj.matches("photo")) {
-						desc := Describe("The birds gather round and chirp excitedly at the sight of their feeder. You point at the photo and shrug your shoulders to ask where Emma may be. A couple of crows land and yell, \"Carr, Carr!\" You think they may be trying to tell you something.")
+				it.onUse = |Object me, Player player -> Describe?| {
+					if (player.has("photo of emma")) {
+						desc := Describe("You show the birds the photo of Emma. The birds gather round and chirp excitedly at the sight of their feeder. You point at the photo and shrug your shoulders to ask where Emma may be. A couple of crows land and yell, \"Carr, Carr!\" You think they may be trying to tell you something.")
 						if (player.meta.containsKey("present.birds"))
 							return desc
 						else {
@@ -102,8 +99,8 @@
 							player.meta["present.birds"] = true
 							return desc += "In appreciation of their favourite feeder, the birds drop a present for you."
 						}
-					}
-					return null
+					} else
+						return birds.onPickUp.call(me, player)
 				}
 			}
 		}
@@ -170,6 +167,7 @@
 					it.aliases = "photo emma".split
 					it.verbs = "show give".split
 					it.canPickUp = true
+					it.redirectOnUseTo("birds".split)
 				},
 				newSnack(),
 			},
@@ -189,12 +187,12 @@
 					it.canPickUp = true
 					it.aliases = ["Lead"]
 					it.verbs = "throw".split
+					it.redirectOnUseTo("door".split)
 				},
 				Object("mystery box", "A cardboard box filled with scrunched up newspaper, although your nose also detects traces of food.") {
 					it.aliases = "box".split('|')
 					it.verbs   = "lookin|look in|rummage|rummage in".split('|')
-					it.onUse   = |Object me, Object? obj, Player player -> Describe?| {
-						if (obj != null) return null
+					it.onUse   = |Object me, Player player -> Describe?| {
 						desc  := "You thrust your head into the box and have a good snort around. You rustle around the newspaper to find "
 						found := (0..3).random == 2
 						if (!found)
@@ -224,7 +222,7 @@
 					.block("It is closed.", "You move forward and bang your head on the door. It remains closed."),
 				Object("front door", "It is the main door to the house. Its handle looms high overhead, out of your reach.") {
 					it.aliases = "door".split
-					it.openExit("lead", "north", openDoorDesc + ".. to reveal a burly Postman!") |door, obj, exit, player| {
+					it.openExit("lead", "north", openDoorDesc + ".. to reveal a burly Postman!") |door, exit, player| {
 						player.room.desc = ""
 						player.room.objects.add(postman)
 						exit.block("The Postman blocks your path.", "You quickly dash forward but the Postman is quicker. He blocks your exit and ushers you back inside.")
@@ -272,7 +270,7 @@
 				Exit(ExitType.south, `room:patio`)
 					.block("It is closed.", "You move forward and bang your head on the door. It remains closed."),
 				Object("door", "The door to the patio outside. Its handle looms high overhead, out of your reach.") {
-					it.openExit("lead", "south", openDoorDesc) |door, obj, exit, player| {
+					it.openExit("lead", "south", openDoorDesc) |door, exit, player| {
 						exit.block(
 							"But it looks so cold and windy outside.", 
 							"As soon as you step outside, the cold hits you. Brr! You dash back in side to the safety of the warmth.", 
@@ -281,7 +279,7 @@
 					}
 				},
 				Object("door", "The door to the driveway outside. Its handle looms high overhead, out of your reach.") {
-					it.openExit("lead", "north", openDoorDesc) |door, obj, exit, player| {
+					it.openExit("lead", "north", openDoorDesc) |door, exit, player| {
 						exit.block(
 							"But it looks so cold and windy outside.", 
 							"As soon as you step outside, the cold hits you. Brr! You dash back in side to the safety of the warmth.", 
@@ -541,12 +539,9 @@
 				it.namePrefix = "on the"
 				Object("squirrel", "A grey squirrel with a large bushy tail sits quietly on the opposite end. It stares at you, chewing nonchalantly.") {
 					it.verbs = "chase|eat|grab|follow|stare at".split('|')
-					it.onUse = |Object me, Object? obj, Player player -> Describe?| {
-						if (obj == null) {
-							player.transportTo(`room:lawn`)
-							return Describe("You stare back at the fluffy squeaky thing in front of you. Your eyes widen, you can't contain yourself! Must chase!\n\nThe squirrel senses danger and darts off the roof, climbing down a wooden beam holding up the roof. Without a thought you do the same.\n\nBefore you know it, you're on the lawn. The squirrel has disappeared and you're left wondering how you got there!")
-						}
-						return null
+					it.onUse = |Object me, Player player -> Describe?| {
+						player.transportTo(`room:lawn`)
+						return Describe("You stare back at the fluffy squeaky thing in front of you. Your eyes widen, you can't contain yourself! Must chase!\n\nThe squirrel senses danger and darts off the roof, climbing down a wooden beam holding up the roof. Without a thought you do the same.\n\nBefore you know it, you're on the lawn. The squirrel has disappeared and you're left wondering how you got there!")
 					}
 				},
 				Exit(ExitType.down, `room:lawn`, "You can see the garden lawn below, but it's way to far to jump!") {

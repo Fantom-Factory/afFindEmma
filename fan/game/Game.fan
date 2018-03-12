@@ -46,7 +46,7 @@
 	|Object, Player -> Describe?|?	onDrop
 	|Object, Player -> Describe?|?	onWear
 	|Object, Player -> Describe?|?	onTakeOff
-	|Object, Object?, Player -> Describe?|?	onUse
+	|Object, Player -> Describe?|?	onUse
 	|Object?, Player -> Describe?|?	onHi5
 	|Player -> Describe?|?			onRollover
 
