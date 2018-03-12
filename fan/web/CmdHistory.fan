@@ -3,6 +3,7 @@
 @Js class CmdHistory {
 	
 			DateTime?	savedAt
+			Duration?	timePlayed
 	private Str[]		history	:= Str[,]
 	
 	new make(|This|? f := null) { f?.call(this) }
@@ -19,8 +20,9 @@
 		savedAt.toLocale("D MMM YYYY, hh:mm")
 	}
 
-	Str save() {
+	Str save(Duration gameTime) {
 		savedAt = DateTime.now(1sec)
+		timePlayed = gameTime
 		buf := StrBuf()
 		buf.out.writeObj(this)
 		return buf.toStr
