@@ -24,6 +24,8 @@
 ** 
 ** FIXME Moar Hi5s!!!
 ** FIXME Moar rollover!!!
+** 
+** Wear moar clothes - just because!
 @Js class XEscape : Loader {
 	
 	private static const Str openDoorDesc := "You toss the lead into the air and its loop catches on the handle. You grasp the other end with your teeth and give it a tug. The door swings open."
@@ -489,7 +491,7 @@
 				it.namePrefix = "in a large"
 				Object("large egg", "A freshly laid bird egg.") {
 					it.aliases = "egg".split
-					it.edible("You gnaw a hole in the top and suck the contents out. A bit runny, but not bad. You use your paw to wipe your mouth and chuck the empty husk over the side.")
+					it.edible("You gnaw a hole in the top and suck the contents out. A bit runny, but not bad. You use your paw to wipe your mouth and toss the empty husk over the side.")
 //					it.canPickUp = false	// ??? it's just for the description
 				},
 				Exit(ExitType.out, `room:tree2`, "Twigs give way to a precarious looking branch.") {

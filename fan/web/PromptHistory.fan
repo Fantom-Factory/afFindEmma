@@ -30,10 +30,14 @@
 	
 	Void each(Int num, |Str| fn) {
 		if (history.size > num) {
-			fn("...")
+			fn("... ${history.size - num} more ...")
 			history.eachRange(-num..-1, fn)
 		} else
 			history.each(fn)
+	}
+	
+	Int size() {
+		history.size
 	}
 	
 	Void clear() {

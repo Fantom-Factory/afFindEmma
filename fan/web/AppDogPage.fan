@@ -110,6 +110,14 @@ using graphics
 
 		cmds := cmdStr.split
 		switch (cmds.first.lower) {
+			case "inv":
+			case "inventory":
+				log(player.listInventory)
+
+			case "stats":
+			case "statistics":
+				log(player.statistics)
+			
 			case "help":
 				if (cmds.size == 1)
 					log(help)
@@ -126,6 +134,7 @@ using graphics
 			case "logo":
 				screen.add(div("logo", logo))
 
+			case "his":
 			case "history":
 				msg := ""
 				promptHis.each(20) |str| { msg += "> $str\n" }
@@ -287,10 +296,11 @@ using graphics
 		str.add("  - cls\n")
 		str.add("  - history\n")
 		str.add("  - list\n")
-		str.add("  - load [game]\n")
-		str.add("  - save [game]\n")
+		str.add("  - load     [game]\n")
+		str.add("  - save     [game]\n")
+		str.add("  - delete   [game]\n")
+		str.add("  - download [game]\n")
 		str.add("  - upload\n")
-		str.add("  - download\n")
 		str.add("\n")
 		str.add("Now go find Emma.\n")
 		return Describe(str)
