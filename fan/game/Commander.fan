@@ -43,12 +43,12 @@
 	
 	Str cheat() {
 "
- 		move out
- 		pickup lead
+ 		out
+ 		get lead
  		north
- 		use lead on door
+ 		open door
  		west
- 		use lead on door
+ 		open door
  		rollover
  		eat snack
  		hi5 postman
@@ -59,10 +59,10 @@
  		west
  		open oven
  		eat cake
- 		use lead on door
+ 		open door
  		west
- 		use lead on door
- 		use lead on door
+ 		open door
+ 		open door
  		drop lead
  		west
  		open washing machine

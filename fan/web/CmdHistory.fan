@@ -1,7 +1,7 @@
 
 @Serializable
 @Js class CmdHistory {
-	
+			Version?	version
 			DateTime?	savedAt
 			Duration?	timePlayed
 	private Str[]		history	:= Str[,]
@@ -17,10 +17,11 @@
 	}
 	
 	Str savedAtStr() {
-		savedAt.toLocale("D MMM YYYY, hh:mm")
+		savedAt.toLocale("D MMM YYYY, hh:mm").justr(18)
 	}
 
 	Str save(Duration gameTime) {
+		version = typeof.pod.version
 		savedAt = DateTime.now(1sec)
 		timePlayed = gameTime
 		buf := StrBuf()
