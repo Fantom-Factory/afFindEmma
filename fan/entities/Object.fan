@@ -80,8 +80,8 @@
 		["use"].addAll(verbs.map { it.lower })
 	}
 	
-	Void openExit(Str objStr, Str exitStr, Str desc, |Object, Object?, Exit, Player|? onOpen := null) {
-		onUse = openExitFn(objStr, exitStr, desc, onOpen)
+	Void openExit(Str objStr, Str exitStr, Str onOpenMsg, |Object, Object?, Exit, Player|? onOpen := null) {
+		onUse = openExitFn(objStr, exitStr, onOpenMsg, onOpen)
 	}
 	
 	Void edible(Str desc) {
@@ -134,14 +134,14 @@
 		}
 	}
 
-	static |Object, Object?, Player->Describe?| openExitFn(Str objStr, Str exitStr, Str desc, |Object, Object?, Exit, Player|? onOpen := null) {
+	static |Object, Object?, Player->Describe?| openExitFn(Str objStr, Str exitStr, Str onUseMsg, |Object, Object?, Exit, Player|? onOpen := null) {
 		|Object door, Object? obj, Player player -> Describe?| {
 			if (obj != null && obj.matches(objStr)) {
 				exit := player.room.findExit(exitStr) ?: throw Err("$player.room has no exit $exitStr")
 				exit.isBlocked = false
 				player.room.objects.remove(door)
 				onOpen?.call(door, obj, exit, player)
-				return Describe(desc)
+				return Describe(onUseMsg)
 			}
 			return null
 		}		

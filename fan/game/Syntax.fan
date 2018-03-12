@@ -8,7 +8,7 @@
 	static const Str[]	wearSynonyms		:= "wear |put on "					.split('|', false)
 	static const Str[]	takeOffSynonyms		:= "take off "						.split('|', false)
 //	static const Str[]	useSynonyms			:= "use "							.split('|', false)
-	static const Str[]	useActions			:= "to |on |at |with |against |the ".split('|', false)
+	static const Str[]	useActions			:= "to |on |at |with |against |the |to open".split('|', false)
 
 	static const Str[]	hi5Synonyms			:= "hi5 |high five "				.split('|', false)
 	static const Str[]	rolloverSynonyms	:= "rollover "						.split('|', false)

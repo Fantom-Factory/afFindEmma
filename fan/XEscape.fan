@@ -1,4 +1,6 @@
 
+// FIXME open door with lead
+
 @Js class XEscape : Loader {
 	
 	private static const Str openDoorDesc := "You toss the lead into the air and its loop catches on the handle. You grasp the other end with your teeth and give it a tug. The door swings open."
@@ -27,6 +29,32 @@
 			return snack
 		}
 		
+		parcelUp := |Object inside->Object| {
+			Object("parcel", "A small parcel wrapped up in gift paper. I wonder what's inside?") {
+				it.canPickUp = true
+				it.aliases = Str[,]
+				it.verbs = "open|rip open|tear open|rip|tear".split('|')
+				it.onUse = |Object me, Object? obj, Player player -> Describe| {
+					player.room.objects.add(inside)
+					player.room.objects.remove(me)
+					player.gameStats.incParcelsOpened
+					return Describe("You excitedly rip open the parcel, sending wrapping paper everywhere, to reveal ${inside.fullName}.")
+				}
+			}
+		}
+		
+		present1 := Object("bottle of gin", "An expensive bottle of fine English gin.") {
+			it.aliases = "gin".split
+			it.verbs = "drink".split
+			it.canPickUp = true
+			it.onUse = |Object me, Object? obj, Player player -> Describe?| {
+				if (obj == null) {
+					return Describe("You swig the gin. You feel woozy.")
+				}
+				return null
+			}
+		}
+
 		newBirds := |Room room->Object| {
 			Object("birds", "An assortment of tits, sparrows, and chaffinchs. All hopping around, chirping insistently, and scoffing the food.") {
 				it.namePrefix = ""
@@ -39,6 +67,21 @@
 					return Describe("You let your instinct take over and you manically sprint at the birds, tongue and drool handing out the side of your mouth. But alas, the birds are faster and fly away. All you can do is stand and watch them fly away.")
 				}
 				it.redirectOnUse(onPickUp)
+				birds := it
+				it.onUse = |Object me, Object? obj, Player player -> Describe?| {
+					if (obj == null) return birds.onPickUp.call(me, player)
+					else if (obj.matches("photo")) {
+						desc := Describe("The birds gather round and chirp excitedly at the sight of their feeder. You point at the photo and shrug your shoulders to ask where Emma may be. A couple of crows land and yell, \"Carr, Carr!\" You think they may be trying to tell you something.")
+						if (player.meta.containsKey("present.birds"))
+							return desc
+						else {
+							player.room.objects.add(parcelUp(present1))
+							player.meta["present.birds"] = true
+							return desc += "In appreciation of their favourite feeder, the birds drop a present for you."
+						}
+					}
+					return null
+				}
 			}
 		}
 		
@@ -79,23 +122,10 @@
 			it.canWear = true
 			it.onWear = |->Describe| { Describe("You slip the booties on over your back paws and fasten the velcro. They're a nice snug fit.") }
 		}
-
-		parcel := |Object inside->Object| {
-			Object("parcel", "A small parcel wrapped up in brown paper. I wonder what's inside?") {
-				it.canPickUp = true
-				it.aliases = Str[,]
-				it.verbs = "open|rip open|tear open|rip|tear".split('|')
-				it.onUse = |Object me, Object? obj, Player player -> Describe| {
-					player.room.objects.add(inside)
-					player.room.objects.remove(me)					
-					return Describe("You excitedly rip open the parcel, sending wrapping paper everywhere, to reveal ${inside.fullName}.")
-				}
-			}
-		}
 		
 		postman := Object("Postman", "You see a burly figure in red costume carrying a large sack of goodies.") {
 			it.onHi5 = |Object me, Player player -> Describe| {
-				player.room.objects.add(parcel(boots))
+				player.room.objects.add(parcelUp(boots))
 				player.room.objects.remove(me)
 				player.room.findExit("north")
 					.block(
@@ -115,6 +145,7 @@
 					.oneTimeMsg("You crawl out of the cage. You arch your back, stretch out your front legs, and let out a large yawn - it was a good nights sleep!"), 
 				Object("photo of emma", "It is a photo of your favourite play pal, Emma. You really miss her and long for some tender strokes. You remember walks in the long grass, frolics, and sausage surprises. You wish you could do it all again. But where is she? You feel a mission brewing...") {
 					it.aliases = "photo emma".split
+					it.verbs = "show give".split
 					it.canPickUp = true
 				},
 				newSnack(),
@@ -344,7 +375,7 @@
 				it.namePrefix = "on the"
 				it.meta["isGarden"] = true
 				Exit(ExitType.south, `room:hallway`, "The front door to the house leading to the hallway."),
-				Exit(ExitType.north, `room:theAvenue`).block("A heavy iron gate keeps you on the premises", "A heavy iron gate keeps you on the premises"),
+				Exit(ExitType.north, `room:theAvenue`).block("A heavy iron gate keeps you on the premises.", "A heavy iron gate keeps you on the premises"),
 				Exit(ExitType.west, `room:driveway`),
 			},
 
@@ -356,9 +387,14 @@
 				Exit(ExitType.west, `room:garage`, "A small garage fronted with a large vertical lift, bright red, metal door.") {
 					it.block("The door is closed.", "You sprint at the door and bounce off with a large clang. The door remains closed.")
 				},
-				Exit(ExitType.in, `room:car`, "A Golf 1.9 TDI. Colour, shark grey.").block("It is locked and all the doors are closed.", "The car is locked and all the doors are closed.")
+				Exit(ExitType.in, `room:car`, "A Golf 1.9 TDI. Colour, shark grey.").block("It is locked and all the doors are closed.", "The car is locked and all the doors are closed."),
+
+				Object("garage door", "It is a large vertical lift, bright red, metal door.") {
+					it.aliases = "door".split
+					it.openExit("silver key", "west", "You use the key to unlock the door. The sprung hinge at the top lifts the door up and into the garage. ")
+				},
 			},
-			Room("garage", "A new paint job hide the drab looking pre-fabricated walls.") {
+			Room("garage", "A new paint job hides the drab looking pre-fabricated concrete walls.") {
 				Exit(ExitType.east, `room:driveway`),
 			},
 			Room("car", "A Golf 1.9 TDI. Colour, shark grey.") {
@@ -399,7 +435,9 @@
 				it.meta["isGarden"] = true
 				Exit(ExitType.north, `room:koiPond`),
 				Exit(ExitType.west, `room:vegetablePatch`),
-				Exit(ExitType.in, `room:summerHouse`),
+				Exit(ExitType.in, `room:summerHouse`) {
+//					it.block(onLookBlockMsg, onExitBlockMsg)
+				},
 			},
 
 			Room("summer house", "") {
@@ -407,13 +445,18 @@
 			},
 
 			Room("vegetable patch", "") {
-				Exit(ExitType.in,    `room:shed`),
+				Exit(ExitType.in,    `room:shed`) {
+					it.block(
+						"A sea of dusty cobwebs roll from the shed door to the nether reaches of the back walls.",
+						"You disturb the sea of dusty cobwebs as you enter. Spiders scuttle out from all directions and then stop. They hunch down, waiting, staring. All 8 of their eyes watching, anticipating your next movement. Which, unsurprisingly, is to leg it back out of the shed!",
+						"Without webs to trap and ensnare, the spiders remain in hiding.")
+				},
 				Exit(ExitType.east,  `room:lawn`),
 				Exit(ExitType.north, `room:goldfishPond`),
 				Exit(ExitType.west,	 `room:greenhouse`),
 			},
 
-			Room("shed", "") {
+			Room("shed", "The shed is a dark and foreboding place. Amongst the muddy garden tools a hundred eyes shine back at you from within the dim light.") {
 				Exit(ExitType.out, `room:vegetablePatch`),
 			},
 
@@ -474,7 +517,7 @@
 			Room("summer house roof", "You sit on the apex and wonder what to do.") {
 				it.namePrefix = "on the"
 				Object("squirrel", "A grey squirrel with a large bushy tail sits quietly on the opposite end. It stares at you, chewing nonchalantly.") {
-					it.verbs = "chase eat grab follow".split
+					it.verbs = "chase|eat|grab|follow|stare at".split('|')
 					it.onUse = |Object me, Object? obj, Player player -> Describe?| {
 						if (obj == null) {
 							player.transportTo(`room:lawn`)
