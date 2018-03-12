@@ -11,9 +11,6 @@
 
 	static const Str[]	hi5Synonyms			:= "hi5 |high five "				.split('|', false)
 	static const Str[]	rolloverSynonyms	:= "rollover "						.split('|', false)
-
-	static const Str[]	statisticsSynonyms	:= "stats |statistics "				.split('|', false)
-	static const Str[]	inventorySynonyms	:= "inv |inventory "				.split('|', false)
 	
 //	static const Str	lookSyntax			:= "^(?:CMD)(?: (EXIT|ROOM.OBJECT|USER.OBJECT))?\$"
 //	static const Str	moveSyntax			:= "^(?:CMD) (EXIT)\$"
@@ -50,10 +47,6 @@
 			cmd = matchHi5(player, cmdStr)
 		if (cmd == null)
 			cmd = matchRollover(player, cmdStr)
-		if (cmd == null)
-			cmd = matchStatistics(player, cmdStr)
-		if (cmd == null)
-			cmd = matchInventory(player, cmdStr)
 
 		return cmd
 	}
@@ -270,26 +263,6 @@
 		
 		return Cmd {
 			it.method	= Player#rollover
-			it.args		= Obj#.emptyList
-		}
-	}
-
-	Cmd? matchStatistics(Player player, Str cmdStr) {
-		moveCmd := statisticsSynonyms.find { cmdStr.startsWith(it) || cmdStr == it.trimEnd }
-		if (moveCmd == null) return null
-		
-		return Cmd {
-			it.method	= Player#statistics
-			it.args		= Obj#.emptyList
-		}
-	}
-	
-	Cmd? matchInventory(Player player, Str cmdStr) {
-		moveCmd := inventorySynonyms.find { cmdStr.startsWith(it) || cmdStr == it.trimEnd }
-		if (moveCmd == null) return null
-		
-		return Cmd {
-			it.method	= Player#listInventory
 			it.args		= Obj#.emptyList
 		}
 	}
