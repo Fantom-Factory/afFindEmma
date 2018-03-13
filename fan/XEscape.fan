@@ -1,17 +1,13 @@
 
-** Rhubarb patch
-** clear spiders with rubarb - find bucket - find spade
 ** koi in deep pond
-** snorkel in garage (with brick a brack) - wear - show photo to koi
+** snorkel in garage - wear - show photo to koi
 ** 
-** delete shed - use summer house - go IN greenhouse
 ** squirrel?
 ** 
 ** dig veg patch to find... carrots? potatoes? nom
 ** dig lawn to find... mole! show photo
 ** 
 ** hose in patio
-** harness in garage
 ** 
 ** spawn in greenhouse -> use hose to add water
 ** pickup (endless) spawn (with bucket)
@@ -41,6 +37,7 @@
 				Object("dog chew", "Real rawhide coated with chicken flavouring."),
 				Object("dog bone", "A large bone stuffed with extra marrow."),
 				Object("dog treat", "A tasty snack for dogs"),
+				Object("scooby snack", "Scooby, scooby, doo!"),
 			].random
 			snack.aliases = "snack biscuit chew bone treat".split
 			snack.edible([
@@ -50,6 +47,7 @@
 				"Nom nom nom nom.",
 				"Chew. Gnaw. Chomp. Swallow.",
 				"Gulp!",
+				"Bursting with energy, you feel ready for action like Scrappy Doo!",
 			].random)
 			return snack
 		}
@@ -298,6 +296,7 @@
 					it.verbs = "open".split
 					it.onLook = |Object oven, Player player -> Describe?| {
 						coat := Object("coat", "A bright pink thermal dog coat, designed to keep the cold at bay.") {
+							it.canPickUp = true
 							it.canWear	 = true
 							it.onWear	 = |->Describe| {
 								if (player.meta["tooColdToMove"] == true) {
@@ -407,22 +406,30 @@
 				Exit(ExitType.south, `room:backPorch`, "A door leads into the back porch."),
 				Exit(ExitType.north, `room:theAvenue`).block("A heavy iron gate keeps you on the premises", "A heavy iron gate keeps you on the premises"),
 				Exit(ExitType.east, `room:frontLawn`),
-				Exit(ExitType.west, `room:garage`, "A small garage fronted with a large vertical lift, bright red, metal door.") {
+				Exit(ExitType.in, `room:garage`, "A small garage fronted with a large bright red, vertical lift, metal door.") {
 					it.block("The door is closed.", "You sprint at the door and bounce off with a large clang. The door remains closed.")
 				},
-				Exit(ExitType.in, `room:car`, "A Golf 1.9 TDI. Colour, shark grey.").block("It is locked and all the doors are closed.", "The car is locked and all the doors are closed."),
+				
+				Object("car", "A Golf 1.9 TDI. Colour, shark grey. The car is locked and all the doors are closed."),
 
 				Object("garage door", "It is a large vertical lift, bright red, metal door.") {
 					it.aliases = "door".split
-					it.openExit("silver key", "west", "You use the key to unlock the door. The sprung hinge at the top lifts the door up and into the garage. ")
+					it.openExit("silver key", "in", "You use the key to unlock the door. The sprung hinge at the top lifts the door up and into the garage.") |Object door, Exit exit, Player player| {
+						key := player.findObject("silver key")
+						player.inventory.remove(key)
+					}
 				},
 			},
-			Room("garage", "A new paint job hides the drab looking pre-fabricated concrete walls.") {
-				Exit(ExitType.east, `room:driveway`),
+			Room("garage", "A new paint job hides the drab looking pre-fabricated concrete walls. The garage is filled with boxes and bric-a-brac.") {
+				Exit(ExitType.out, `room:driveway`),
+				Object("harness", "A black and yellow walking harness adorned with the words, \"Dog's Trust\".") {
+					it.canPickUp = true
+					it.canWear = true
+					it.onWear = |->Describe| { Describe("You slip the harness on over your coat and snap the buckles closed.") }
+				},
+				newSnack(),
 			},
-			Room("car", "A Golf 1.9 TDI. Colour, shark grey.") {
-				it.meta["noExits"] = true	// no exit - it's the end!
-			},
+
 			Room("the avenue", "The Avenue, also known as The Ave.") {
 				it.meta["noExits"] = true	// no entrance, no exits!
 			},
@@ -451,6 +458,7 @@
 				it.namePrefix = "on the"
 				it.meta["isGarden"] = true
 				Exit(ExitType.south, `room:koiPond`),
+				Object("washing line", ""),
 			},
 
 			Room("lawn", "A featureless patch of grass in front of the summer house that's popular with the local avian wildlife, should there be enough food around.") {
@@ -458,29 +466,54 @@
 				it.meta["isGarden"] = true
 				Exit(ExitType.north, `room:koiPond`),
 				Exit(ExitType.west, `room:vegetablePatch`),
-				Exit(ExitType.in, `room:summerHouse`) {
-//					it.block(onLookBlockMsg, onExitBlockMsg)
+				Exit(ExitType.in, `room:summerHouse`, "A patchwork of rotting wood that once was decking leads up to a small decaying door.") {
+					it.isBlocked	= true
+					it.descBlocked	= "A sea of dusty cobwebs roll from the summer house door to the nether reaches of the back walls."
+					it.onExit = |Exit exit, Player player -> Describe?| {
+						if (!player.has("rhubarb"))
+							return Describe("You disturb the sea of dusty cobwebs as you enter. Spiders scuttle out from all directions and then stop. They hunch down, waiting, staring. All eight of their eyes watching, anticipating your next movement. Which, unsurprisingly, is to leg it back out of the summer house!")
+						exit.isBlocked = false
+						exit.onExit = |->Describe?| { Describe("Without webs to trap and ensnare, the spiders remain in hiding.") }
+						return Describe("Gripping the the rhubarb firmly between your teeth you fearlessly bound into the summer house. You swing your head from side to side and brandish the stalk like a crazed sword fighter. With the cobwebs now all but destroyed the spiders retreat into the dark recesses of the cabin.")
+					}
 				},
 			},
 
-			Room("summer house", "") {
+			Room("summer house", "Constructed of rotting wood the summer house is a dark and foreboding death trap. Inside, amongst the muddy garden tools a hundred eyes shine back at you from within the dim light.") {
 				Exit(ExitType.out, `room:lawn`),
+				Object("bucket", "A plastic yellow bucket with a handle, useful for carrying.") {
+					it.canPickUp = true
+				},
+				Object("spade", "A stout digging utensil.") {
+					it.canPickUp = true
+				},
+				newSnack(),
 			},
 
-			Room("vegetable patch", "") {
-				Exit(ExitType.in,    `room:shed`) {
-					it.block(
-						"A sea of dusty cobwebs roll from the shed door to the nether reaches of the back walls.",
-						"You disturb the sea of dusty cobwebs as you enter. Spiders scuttle out from all directions and then stop. They hunch down, waiting, staring. All 8 of their eyes watching, anticipating your next movement. Which, unsurprisingly, is to leg it back out of the shed!",
-						"Without webs to trap and ensnare, the spiders remain in hiding.")
-				},
+			Room("vegetable patch", "An old vegetable patch that's now mostly covered in wild strawberry creepers. In the corner sits a huge crown of rhubarb.") {
 				Exit(ExitType.east,  `room:lawn`),
 				Exit(ExitType.north, `room:goldfishPond`),
-				Exit(ExitType.west,	 `room:greenhouse`),
-			},
-
-			Room("shed", "The shed is a dark and foreboding place. Amongst the muddy garden tools a hundred eyes shine back at you from within the dim light.") {
-				Exit(ExitType.out, `room:vegetablePatch`),
+				Exit(ExitType.in,	 `room:greenhouse`),
+				Object("rhubarb", "The rhubarb has eagerly grown into huge monster of a plant as if it were auditioning for a role in The Little Shop of Horrors! Its size means it gives a seemingly endless supply of stalks.") {
+					it.namePrefix = ""
+					it.aliases = "stick|stalk|stalk of rhubarb|stick of rhubarb".split('|')
+					it.onPickUp = |Object food, Player player -> Describe?| {
+						player.inventory.add(Object("stalk of rhubarb", "A large sturdy red stick of rhubarb.") {
+							it.aliases = "rhubarb stick stalk".split
+							it.edible("Nibbling on the bulbous red end, you decide it's almost as tasty as rawhide.")
+							it.onDrop = |Object rhubarb->Describe?| {
+								if (player.room.id == `room:vegetablePatch`) {
+									rhubarb.canDrop = false
+									player.inventory.remove(rhubarb)
+									return Describe("You drop the rhubarb back in the patch.")
+								}
+								return null
+							}
+						})
+						return Describe("You jam your head into the plant and snap off a juicy stalk.")
+					}
+					it.redirectOnUse(it.onPickUp)
+				},
 			},
 
 			Room("greenhouse", "") {
