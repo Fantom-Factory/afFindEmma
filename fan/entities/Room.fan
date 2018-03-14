@@ -46,6 +46,10 @@
 		objects.find { it.matches(str) }
 	}
 
+	Bool has(Str str) {
+		objects.find { it.matches(str) } != null
+	}
+
 	Describe lookName() {
 		Describe(StrBuf().add("You are ").add(namePrefix ?: "in the ").add(name).addChar('.').addChar('\n'))
 	}
