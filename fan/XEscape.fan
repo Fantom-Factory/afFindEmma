@@ -2,7 +2,8 @@
 ** koi in deep pond
 ** snorkel in garage - wear - show photo to koi
 ** 
-** squirrel?
+** hi5 spider to get out, rollover in web? greenhouse
+** squirrel? say climb the washling line, that's what we do!
 ** 
 ** dig veg patch to find... carrots? potatoes? nom
 ** dig lawn to find... mole! show photo
@@ -156,6 +157,41 @@
 				return Describe("You hang your paw in the air. The Postman kneels down, but instead of a 'high five' he whips out a signature scanner and collects your paw print!\n\n\"Thanks!\" he cheerfully says, tosses a parcel into the hallway, and disappears off down the garden path.")
 			}
 		}
+
+		climbWashingLine := |Object obj, Player player->Describe?| {
+			if (player.room.id != `room:backLawn`) return null
+
+			if (obj.matches("hosepipe")) {
+				hosepipe := obj
+				if (player.meta["washingLine.clipped"] == true) {
+					player.inventory.remove(hosepipe)
+					player.room.add(hosepipe)
+					player.transportTo(`room:washingLine`)
+					return Describe("You aim the hosepipe nozzle at the suspended bucket and pull the trigger. Excitement mounts as the bucket begins to fill with water.\n\nAt first, the washing line sags. But then, the line tightens. As the bucket gets heavier, the laws of physics pull you sky ward. Nearing the washing line itself you scrabble and grab hold of the iron pipe support.\n\nYou unclip the lead, drop the hose, and look around.")
+				}
+				return null
+			}
+			
+			canClimbWashingLine :=
+				(player.has("lead"  ) || player.room.has("lead"  )) &&
+				(player.has("bucket") || player.room.has("bucket")) &&
+				 player.isWearing("harness")
+
+			if (canClimbWashingLine) {
+				if (player.meta["washingLine.clipped"] == true) {
+					player.meta.remove("washingLine.clipped")
+					player.canMove = true
+					player.onMove = null
+					return Describe("You unclip yourself and the bucket from the home made pully system.")
+				} else {
+					player.meta["washingLine.clipped"] = true
+					player.canMove = false
+					player.onMove = |->Describe| { Describe("You move forward but are pulled back by the harness / bucket contraption to which you're attached.") }
+					return Describe("You clip one end of the lead to your harness and the other to the bucket, which you swing over the washing line. Looking at the bucket swaying in the air above you, you note that it could make a good pully system; if only you had something to fill it with to counter balance your weight!")
+				}
+			}
+			return null
+		}
 		
 		rooms := Room[
 			Room("cage", "The cage is just small enough for you to fit in and the floor is lined with a soft duvet. There is a pink handkerchief tied across the top, it reads, \"Ssecnirp\".") {
@@ -187,7 +223,14 @@
 					it.canPickUp = true
 					it.aliases = ["Lead"]
 					it.verbs = "throw".split
-					it.redirectOnUseTo("door".split)
+					it.onUse = 	|Object lead, Player player -> Describe?| {
+						desc := climbWashingLine(lead, player)
+						if (desc != null) return desc
+						door := player.room.findObject("door")
+						if (door != null)
+							return door.onUse?.call(door, player)
+						return null
+					}
 				},
 				Object("mystery box", "A cardboard box filled with scrunched up newspaper, although your nose also detects traces of food.") {
 					it.aliases = "box".split('|')
@@ -438,6 +481,15 @@
 				it.namePrefix = "on the"
 				Exit(ExitType.north, `room:backPorch`, "A door leads into the back porch."),
 				Exit(ExitType.south, `room:goldfishPond`, "A couple of stone steps lead up to the goldfish pond"),
+				Object("expandable hosepipe", "A long expandable hosepipe with spray nozzle attachment.") {
+					it.aliases = "hose|hosepipe|hose pipe".split('|')
+					it.canPickUp = true
+					it.onUse = |Object hosepipe, Player player -> Describe?| {
+						desc := climbWashingLine(hosepipe, player)
+						if (desc != null) return desc
+						return null
+					}
+				}
 			},
 
 			Room("goldfish pond", "It is a shallow square pond full of weeds and goldfish.") {
@@ -458,7 +510,14 @@
 				it.namePrefix = "on the"
 				it.meta["isGarden"] = true
 				Exit(ExitType.south, `room:koiPond`),
-				Object("washing line", ""),
+				Object("washing line", "A tall cast iron pipe sunk deep in the ground has a series of pullies at the top that holds up a make shift washing line. There must be quite a view from the top!") {
+					it.aliases = "line".split
+					it.onUse = |Object washingLine, Player player -> Describe?| {
+						desc := climbWashingLine(washingLine, player)
+						if (desc != null) return desc
+						return null
+					}
+				}
 			},
 
 			Room("lawn", "A featureless patch of grass in front of the summer house that's popular with the local avian wildlife, should there be enough food around.") {
@@ -483,6 +542,11 @@
 				Exit(ExitType.out, `room:lawn`),
 				Object("bucket", "A plastic yellow bucket with a handle, useful for carrying.") {
 					it.canPickUp = true
+					it.onUse = |Object bucket, Player player -> Describe?| {
+						desc := climbWashingLine(bucket, player)
+						if (desc != null) return desc
+						return null
+					}
 				},
 				Object("spade", "A stout digging utensil.") {
 					it.canPickUp = true
@@ -570,6 +634,7 @@
 				Exit(ExitType.east, `room:tree3`),
 				Exit(ExitType.west, `room:tree3`),
 			},
+
 			Room("summer house roof", "You sit on the apex and wonder what to do.") {
 				it.namePrefix = "on the"
 				Object("squirrel", "A grey squirrel with a large bushy tail sits quietly on the opposite end. It stares at you, chewing nonchalantly.") {
@@ -582,7 +647,11 @@
 				Exit(ExitType.down, `room:lawn`, "You can see the garden lawn below, but it's way to far to jump!") {
 					it.block("", "You teeter to the edge but crawl back when vertigo sets in!")
 				},
-			}
+			},
+
+			Room("washing line", "Yikes!") {
+				it.namePrefix = "on the"
+			},
 		]
 		
 		objs := Object[,]
