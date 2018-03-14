@@ -38,6 +38,7 @@ body {
 	.minMax .sym {
 		border-width	: 0;
 		border-bottom-width	: 1px;
+		border-radius	: 0;
 	}
 }
 
@@ -53,11 +54,13 @@ body {
 	width				: 1rem;
 	height				: 1rem;
 	background-color	: $c-border;
+	border-radius		: 0.25rem;
 	color				: white;
 	z-index				: 1;
 	
 	.sym {
 		border			: 1px solid;
+		border-radius	: 0.125rem;
 		box-sizing		: content-box;
 		height			: calc(1rem - 6px);
 		width			: calc(1rem - 6px);
