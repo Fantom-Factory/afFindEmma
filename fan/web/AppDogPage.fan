@@ -112,7 +112,7 @@ using graphics
 		switch (cmds.first.lower) {
 			case "inv":
 			case "inventory":
-				log(player.listInventory)
+				log(player.lookInventory + player.lookClothes)
 
 			case "stats":
 			case "statistics":

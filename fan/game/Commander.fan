@@ -11,6 +11,8 @@
 		cmd := syntax.compile(player, cmdStr)
 		old := player.room
 		obj := player.room.objects.dup
+		inv := player.inventory.dup
+		clo := player.clothes.dup
 		des := cmd?.execute(player)
 		if (des != null)
 			log(des)
@@ -26,9 +28,23 @@
 			if (cmd?.method == Player#move)
 				log(player.room.lookName)				
 			
+			wasPickUpCmd	:= (player.room.objects.size == obj.size - 1) && (player.inventory.size == inv.size + 1)
+			wasDropCmd		:= (player.room.objects.size == obj.size + 1) && (player.inventory.size == inv.size - 1)
+			wasWearCmd		:= (player.room.objects.size == obj.size - 1) && (player.clothes.size == clo.size + 1)
+			wasTakeOffCmd	:= (player.room.objects.size == obj.size + 1) && (player.clothes.size == clo.size - 1)
+			
 			// if we didn't move but an object has (dis)appeared, then list it
-			if (player.room.objects != obj && player.room.objects.size > 0)
+			if (player.room.objects != obj && !wasPickUpCmd && !wasDropCmd && !wasWearCmd && !wasTakeOffCmd)
+				// suppress basic uneventful cmds because: "You drop a spade; You see a spade" is a bit much!
 				log(player.room.lookObjects)
+
+			// if we didn't move but an object has (dis)appeared, then list it
+			if (player.inventory != inv && !wasPickUpCmd && !wasDropCmd)
+				log(player.lookInventory)
+
+			// if we didn't move but an object has (dis)appeared, then list it
+			if (player.clothes != clo && !wasWearCmd && !wasTakeOffCmd)
+				log(player.lookClothes)
 		}
 
 		return cmd != null

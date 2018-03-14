@@ -48,28 +48,23 @@
 		Describe(gameStats.print)
 	}
 	
-	Describe listInventory() {
+	Describe lookInventory() {
 		str := StrBuf()
-		
 		if (inventory.isEmpty)
 			str.add("You hold nothing.\n")
 		else {
-			str.add("You are holding:\n")
-			inventory.each {
-				str.add("  - ${it.fullName}\n")
-			}
+			str.add("You are holding ").add(inventory.join(", ") { it.fullName }).addChar('.').addChar('\n')
 		}
-		str.addChar('\n')
-		
+		return Describe(str)		
+	}
+	
+	Describe lookClothes() {
+		str := StrBuf()
 		if (clothes.isEmpty)
 			str.add("You wear nothing.\n")
 		else {
-			str.add("You are wearing:\n")
-			clothes.each {
-				str.add("  - ${it.fullName}\n")
-			}
+			str.add("You are wearing ").add(clothes.join(", ") { it.fullName }).addChar('.').addChar('\n')
 		}
-
 		return Describe(str)		
 	}
 
@@ -103,10 +98,10 @@
 				room.objects.remove(object)
 				inventory.add(object)
 				if (desc == null)
-					desc = Describe("You pick up the ${object.name}")
+					desc = Describe("You pick up the ${object.name}.")
 			} else {
 				if (desc == null)
-					desc = Describe("You cannot pick up the ${object.name}")				
+					desc = Describe("You cannot pick up the ${object.name}.")				
 			}
 
 			descs.add(desc)
@@ -127,10 +122,10 @@
 				inventory.remove(object)
 				room.objects.add(object)
 				if (desc == null)
-					desc = Describe("You drop the ${object.name}")
+					desc = Describe("You drop the ${object.name}.")
 			} else {
 				if (desc == null)
-					desc = Describe("You cannot drop the ${object.name}")				
+					desc = Describe("You cannot drop the ${object.name}.")				
 			}
 
 			descs.add(desc)
@@ -152,10 +147,10 @@
 				room.objects.remove(object)	// remove from both as we're not sure where it came from
 				inventory.remove(object)
 				if (desc == null)
-					desc = Describe("You wear ${object.fullName}")
+					desc = Describe("You wear ${object.fullName}.")
 			} else {
 				if (desc == null)
-					desc = Describe("You cannot wear ${object.fullName}")				
+					desc = Describe("You cannot wear ${object.fullName}.")				
 			}
 
 			descs.add(desc)
@@ -176,10 +171,10 @@
 				clothes.remove(object)
 				room.objects.add(object)	// place in room, as inventory may be full
 				if (desc == null)
-					desc = Describe("You take off the ${object.name}")
+					desc = Describe("You take off the ${object.name}.")
 			} else {
 				if (desc == null)
-					desc = Describe("You cannot take off the ${object.name}")				
+					desc = Describe("You cannot take off the ${object.name}.")				
 			}
 
 			descs.add(desc)
