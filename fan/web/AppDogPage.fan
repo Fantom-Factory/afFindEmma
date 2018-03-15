@@ -105,6 +105,15 @@ using graphics
 	}
 	
 	Void exeCmd(Str cmdStr) {
+		try doExeCmd(cmdStr)
+		catch (Err err) {
+			screen.add(div("cmdErr", err.traceToStr))
+			scrollScreen
+			throw err	// log in browser for more detail
+		}
+	}
+
+	private Void doExeCmd(Str cmdStr) {
 		cmdStr = cmdStr.trim
 		screen.add(div("usrCmd", "\n> ${cmdStr.upper}"))
 

@@ -6,7 +6,7 @@
 	Str				desc
 	Str?			descBlocked
 	Bool			isVisible
-	Bool			isBlocked
+	Bool			isBlocked	// todo add canExit()
 	Str:Obj?		meta		:= Str:Obj?[:]
 	@Transient
 	Room?			exitTo
