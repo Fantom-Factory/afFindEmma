@@ -8,6 +8,7 @@
 	Object[]		objects
 	Str:Obj?		meta		:= Str:Obj?[:]
 
+	// todo canLeave? canEnter?
 	|Room, Player -> Describe?|?	onEnter
 	|Room, Player -> Describe?|?	onLeave
 	

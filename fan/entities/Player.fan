@@ -14,6 +14,8 @@
 
 	Str:Obj?	meta		:= Str:Obj?[:]
 
+	// todo to avoid future bugs, these should err if you attempt to overwrite a non-null value
+	// thus forcing you to explicitly set null first
 	|Exit  , Player -> Describe?|?	onMove
 	|Object, Player -> Describe?|?	onPickUp
 	|Object, Player -> Describe?|?	onDrop

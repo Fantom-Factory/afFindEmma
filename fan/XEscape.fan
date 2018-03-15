@@ -19,10 +19,13 @@
 ** 
 ** finish: backlawn, washing line (+buck+harnes+lead) -> new room, top of pole, garage roof, buzzard, car
 ** 
-** FIXME Moar Hi5s!!!
+** FIXME Moar Hi5s!!! tv in lounge
 ** FIXME Moar rollover!!!
 ** 
 ** Wear moar clothes - just because!
+** 
+** Known Bug - if you take off your coat just before hoisting yourself up the washing line, you can wander the map without it on.
+** If can then become trapped inside as you can't go outside without a coat. 
 @Js class XEscape : Loader {
 	
 	private static const Str openDoorDesc := "You toss the lead into the air and its loop catches on the handle. You grasp the other end with your teeth and give it a tug. The door swings open."
@@ -31,6 +34,8 @@
 		prelude := "You awake from a long cosy slumber and fondly remember the exciting, long walks from yesterday."
 		
 		// todo have factories that make new objects
+		
+		msgFn := |Str msg-> |->Describe| | { |->Describe| { Describe(msg) } }
 		
 		newSnack := |->Object| {
 			snack := [
@@ -116,7 +121,7 @@
 					desc += "Before you know it, you're high above the garden looking down on the ponds below. The buzzard takes you into the trees before dropping you in a large makeshift nest and flying away, leaving you alone once more."
 				} else {
 					player.transportTo(`room:lawn`)
-					desc += "The buzzard struggles with the weight of its new found prey and beats the air furiously. As much as it wanted to carry you to its lair, sheer will is no match for the size your belly. It drops you and powers away empty handed."
+					desc += "The buzzard struggles with the weight of its new found prey and beats the air furiously. As much as it wanted to carry you to its lair, sheer will is no match for the size your belly. It drops you and powers away empty handed.\n\nAs thankful as you are that the danger has passed, you do wonder where you may have been taken otherwise."
 					birds := player.room.findObject("birds")
 					player.room.objects.remove(birds)
 				}
@@ -133,6 +138,10 @@
 				postman.meta["snacksGiven"] = snacksGiven + 1
 				player.room.objects.add(newSnack())
 				return Describe("You rollover onto your back and the Postman rubs your belly. Amidst cries of \"You're so cute!\" the Postie digs around in his pocket, fishes out a dog treat, and tosses it into the hall.")
+			}
+			if (player.room.id == `room:garageRoof`) {
+				player.room.meta["buzzard.avoided"] = true
+				return Describe("A loud screech once again pierces the air and a buzzard swoops in from behind. You react fast and rollover.\n\nSparks explode around you as powerful talons drag across the roof and claws grasp nothing. Momentum carries the buzzard onward and it is forced to fly away empty handed. The danger has passed.") 
 			}
 			return null
 		}
@@ -164,9 +173,18 @@
 			if (obj.matches("hosepipe")) {
 				hosepipe := obj
 				if (player.meta["washingLine.clipped"] == true) {
-					player.inventory.remove(hosepipe)
-					player.room.add(hosepipe)
+
+					// drop whatever you're holding - it makes no sense to jump with it
+					hose := player.inventory.first
+					if (hose != null) {
+						player.inventory.remove(hose)
+						player.room.add(hose)
+					}
+
 					player.transportTo(`room:washingLine`)
+					player.meta.remove("washingLine.clipped")
+					player.canMove = true
+					player.onMove = null
 					return Describe("You aim the hosepipe nozzle at the suspended bucket and pull the trigger. Excitement mounts as the bucket begins to fill with water.\n\nAt first, the washing line sags. But then, the line tightens. As the bucket gets heavier, the laws of physics pull you sky ward. Nearing the washing line itself you scrabble and grab hold of the iron pipe support.\n\nYou unclip the lead, drop the hose, and look around.")
 				}
 				return null
@@ -187,7 +205,7 @@
 					player.meta["washingLine.clipped"] = true
 					player.canMove = false
 					player.onMove = |->Describe| { Describe("You move forward but are pulled back by the harness / bucket contraption to which you're attached.") }
-					return Describe("You clip one end of the lead to your harness and the other to the bucket, which you swing over the washing line. Looking at the bucket swaying in the air above you, you note that it could make a good pully system; if only you had something to fill it with to counter balance your weight!")
+					return Describe("You clip one end of the lead to your harness and the other to the bucket, which you swing over the washing line.\n\nLooking at the bucket swaying in the air above you, you note that it could make a good pully system; if only you had something to fill it with to counter balance your weight!")
 				}
 			}
 			return null
@@ -236,9 +254,14 @@
 					it.aliases = "box".split('|')
 					it.verbs   = "lookin|look in|rummage|rummage in".split('|')
 					it.onUse   = |Object me, Player player -> Describe?| {
+						win := [1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0]
+						idx := (Int) me.meta.getOrAdd("win") { -1 }
+						idx ++
+						if (idx >= win.size) idx = 0
+						me.meta["win"] = idx
+						
 						desc  := "You thrust your head into the box and have a good snort around. You rustle around the newspaper to find "
-						found := (0..3).random == 2
-						if (!found)
+						if (win[idx] == 0)
 							return Describe(desc + "nothing.")
 						snack := newSnack()
 						player.room.objects.add(snack)
@@ -452,7 +475,7 @@
 				Exit(ExitType.in, `room:garage`, "A small garage fronted with a large bright red, vertical lift, metal door.") {
 					it.block("The door is closed.", "You sprint at the door and bounce off with a large clang. The door remains closed.")
 				},
-				
+
 				Object("car", "A Golf 1.9 TDI. Colour, shark grey. The car is locked and all the doors are closed."),
 
 				Object("garage door", "It is a large vertical lift, bright red, metal door.") {
@@ -506,10 +529,12 @@
 				Exit(ExitType.south, `room:lawn`),
 			},
 
-			Room("back lawn", "The back lawn is a patch of grass that backs up to the dining room.") {
+			Room("back lawn", "The back lawn is a patch of grass that backs up to the dining room window.") {
 				it.namePrefix = "on the"
 				it.meta["isGarden"] = true
 				Exit(ExitType.south, `room:koiPond`),
+				Exit(ExitType.up, `room:washingLine`)
+					.block("A tall cast iron pipe sunk deep in the ground leads up into the sky to support the washing line.", "You make like a squirrel and frantically paw, scrabble, and clamber at the washing line support. But as you slide back down the pipe you realise you're not a squirrel.", ""),
 				Object("washing line", "A tall cast iron pipe sunk deep in the ground has a series of pullies at the top that holds up a make shift washing line. There must be quite a view from the top!") {
 					it.aliases = "line".split
 					it.onUse = |Object washingLine, Player player -> Describe?| {
@@ -649,8 +674,59 @@
 				},
 			},
 
-			Room("washing line", "Yikes!") {
+			Room("washing line", "Yikes! The ground looks much further away than you expected. You cling to the top of the pipe and look around at the garden and all the animals. Looking over the garage you see the car. The sun-roof is open and there appears to be a person inside.") {
 				it.namePrefix = "on the"
+				Exit(ExitType.down, `room:backLawn`, "You see the back lawn, a long way down.") {
+					it.onExit = msgFn("You make like a squirrel and scamper down the pipe head first to the safety of Mother Earth.")
+				},
+				Exit(ExitType.north, `room:garageRoof`, "A vast expanse of thin air separates you and the corrugated metal roof of the garage.") {
+					it.onExit = |Exit exit, Player player -> Describe?| {
+						if (!player.isWearing("coat")) {
+							exit.isBlocked = true
+							return Describe("You have a plan! But it requires your coat...")
+						}
+						exit.isBlocked = false
+						return Describe("All that time watching superhero films on the couch with Emma and Steve seemed to have paid off, because you have a plan! It's quite an easy one too.\n\nYou check your coat. It's loose and flappy enough to be considered a cape. And as every superdog knows, if you have a cape... you can fly!\n\nYou tense all the muscles in your legs then release an enormous burst of energy that sends you hurtling through the sky. But then gravity starts to take hold.\n\nYou begin to fall and the garage roof approaches fast. Your outstretched arms just manage to grab hold, quickly followed by a frantic scrabble of the hind legs.")
+					}
+				},
+			},
+
+			Room("garage roof", "The new roof is of polished corrugated steel. With the garden behind you, you peer over the north edge to see the driveway and the car. Ah, the car! That gateway to wondrous walks.\n\nStaring through the open sun-roof you see... Emma! Your heart quickens, there is no time to waste!") {
+				it.namePrefix = "on the"
+				Exit(ExitType.north, `room:car`, "The car and the open sun-roof is but a short jump away. You're sure you can make it!") {
+					it.onExit = |Exit exit, Player player->Describe?| {
+						buzzardAvoided := player.room.meta["buzzard.avoided"] == true
+						player.room.meta.remove("buzzard.avoided")
+						if (buzzardAvoided) {
+							exit.isBlocked = false
+							return Describe("Heart racing, you make one final heroic leap towards the car and the open sun-roof. You tuck your head and legs in, travel through the opening, and land on the passenger seat.")
+						}
+							
+						desc := Describe("A loud screech once again pierces the air and you freeze with fear.\n\nFrom behind the buzzard swoops in and snatches you up in huge claws. You rise into the air as the powerful wings beat the air around.") 
+						if (player.hasSmallBelly) {
+							exit.isBlocked = true
+							player.transportTo(`room:birdsNest`)
+							desc += "Before you know it, you're high above the garden looking down on the ponds below. The buzzard takes you into the trees, drops you its nest, and flies away.\n\nYou berate yourself for being so close to your goal, and yet so careless. But what could you have done differently?"
+						} else { 
+							exit.isBlocked = true
+							player.transportTo(`room:driveway`)
+							desc += "The buzzard's eyes were larger than its stomach and it beats the air furiously as it struggles with your weight. You start to loose altitude, the buzzard finally gives up its breakfast and lets you go.\n\nYou wriggle in mid air to see where you're falling, and it appears to be towards the car! But alas, you bounce off the bonnet and land heavily on the floor. You curse yourself for being so careless, but what could you have done differently?"
+						}
+
+						return desc
+					}
+				},
+			},
+
+			Room("car", "") {
+				// oh, you're all dressed ready to go out!
+				Exit(ExitType.north, `room:backSeat`, "") {
+					
+				},				
+			},
+
+			Room("back seat", "") {
+				meta["noExits"] = true
 			},
 		]
 		
