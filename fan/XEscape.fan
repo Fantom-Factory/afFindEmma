@@ -394,11 +394,12 @@
 					}
 					it.redirectOnUse(it.onLook)
 				},
-				Object("sack of peanuts", "A large 15Kg sack of peanuts.") {
+				Object("sack of peanuts", "A large 15Kg sack of peanuts. There's a note pinned to it that reads, \"Larry the Badger's favourite.\"") {
 					it.aliases = "peanuts nuts".split
 					it.onPickUp = |Object food, Player player -> Describe?| {
 						player.inventory.add(Object("peanuts", "A small scoop of peanuts.") {
 							it.aliases = "peanuts nuts".split
+//							it.verbs = "throw scatter feed".split	// this is for eating!
 							it.namePrefix = ""
 							it.edible("Unable to contain your desires, you gobble down the nuts.")
 							it.onDrop = |Object seed->Describe?| {
@@ -415,11 +416,12 @@
 					}
 					it.redirectOnUse(it.onPickUp)
 				},
-				Object("sack of bird seed", "A large 15Kg sack of bird seed.") {
+				Object("sack of bird seed", "A large 15Kg sack of bird seed. There's a note pinned to it that reads, \"If you feed them, they will come.\"") {
 					it.aliases = "bird seed|birdseed|seed".split('|')
 					it.onPickUp = |Object food, Player player -> Describe?| {
 						player.inventory.add(Object("bird seed", "A small scoop of bird seed.") {
 							it.aliases = "birdseed seed".split
+//							it.verbs = "throw scatter feed".split	// this is for eating!
 							it.namePrefix = ""
 							it.edible("Unable to contain your desires, you lap up the seed.")
 							it.onDrop = |Object seed->Describe?| {
@@ -442,18 +444,31 @@
 					}
 					it.redirectOnUse(it.onPickUp)
 				},
-				Object("box of fish food", "A large biscuit tin full of fish food.") {
+				Object("box of fish food", "A large biscuit tin full of fish food. There's a note pinned to it that reads, \"If you feed them, they will come.\"") {
 					it.aliases = "fish food|fishfood|food".split('|')
-					it.onPickUp = |Object food, Player player -> Describe?| {
+					it.onPickUp = |Object tin, Player player -> Describe?| {
 						player.inventory.add(Object("fish food", "A small scoop of fish food.") {
-							it.aliases = "fishfood".split
+							it.aliases = "fishfood food".split
+//							it.verbs = "throw scatter feed".split	// this is for eating!
 							it.namePrefix = ""
 							it.inedible("Out of curiosity you gobble up some fish food. But an instant rumbling in your belly makes you sick it all up again. You ponder if fish food is good for dogs?")
-							it.onDrop = |Object seed->Describe?| {
+							it.onDrop = |Object food->Describe?| {
 								if (player.room.id == `room:outHouse`) {
-									seed.canDrop = false
-									player.inventory.remove(seed)
+									food.canDrop = false
+									player.inventory.remove(food)
 									return Describe("You place the fish food back in the box.")									
+								}
+								if (player.room.id == `room:goldfishPond`) {
+									food.canDrop = false
+									player.inventory.remove(food)
+									if (player.room.has("goldfish")) {
+										return Describe("You scatter the food about the pond and the goldfish dart about, nibbling for nourishment.")									
+									} else {
+										player.room.add(Object("goldfish", "A plethora of gold, yellow, and mottled white gold fish.") {
+											it.namePrefix = ""
+										})
+										return Describe("You scatter the food about the pond and then, out from behind rocks, weeds, and crevices, goldfish begin to appear!")									
+									}
 								}
 								return null
 							}
@@ -505,7 +520,7 @@
 				it.meta["noExits"] = true	// no entrance, no exits!
 			},
 
-			Room("patio", "Large paving slabs adorn the floor.") {
+			Room("patio", "Large paving slabs adorn the floor, lined with potted trees and shrubs.") {
 				it.namePrefix = "on the"
 				Exit(ExitType.north, `room:backPorch`, "A door leads into the back porch."),
 				Exit(ExitType.south, `room:goldfishPond`, "A couple of stone steps lead up to the goldfish pond"),
@@ -520,7 +535,7 @@
 				}
 			},
 
-			Room("goldfish pond", "It is a shallow square pond full of weeds and goldfish.") {
+			Room("goldfish pond", "It is a shallow square pond full of weeds.") {
 				it.namePrefix = "next to the"
 				Exit(ExitType.east, `room:koiPond`),
 				Exit(ExitType.north, `room:patio`, "A couple of stone steps lead down to the patio."),

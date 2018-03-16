@@ -153,7 +153,7 @@ using graphics
 				nom := cmdStr.lower == "save" ? "autosave" : cmdStr[5..-1].trim
 				win.localStorage["afQuestCmds-${nom}"] = cmdHis.save(game.player.gameStats.gameTime)
 				log("Saved ${cmdHis.size} commands at ${cmdHis.savedAtStr}.")
-				log("You may now close the browser and restart the game at this saved point using the \"LOAD\" command.")
+				log("You may now close the browser and restart the game at this saved point using the command:\n\n> LOAD " + (nom=="autosave" ? "" : nom.upper))
 
 			case "load":
 				nom := cmdStr.lower == "load" ? "autosave" : cmdStr[5..-1].trim
@@ -257,7 +257,8 @@ using graphics
 	override Void log(Obj? obj) {
 		if (silent) return
 		des := obj as Describe ?: Describe(obj?.toStr)
-		screen.add(div("", "\n" + des.describe))
+		if (des != null)
+			screen.add(div("", "\n" + des.describe))
 	}
 	
 	Void scrollScreen() {
