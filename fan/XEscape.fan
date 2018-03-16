@@ -8,16 +8,12 @@
 ** dig veg patch to find... carrots? potatoes? nom
 ** dig lawn to find... mole! show photo
 ** 
-** hose in patio
-** 
 ** spawn in greenhouse -> use hose to add water
 ** pickup (endless) spawn (with bucket)
 ** drop spawn in koi pond -> fish food!
 ** drop spawn in gold fish pond -> nothing, but set onEnter action (x2 ?) to make frogs -> pressie!
 ** 
 ** back lawn -> peanuts -> badger -> pressie
-** 
-** finish: backlawn, washing line (+buck+harnes+lead) -> new room, top of pole, garage roof, buzzard, car
 ** 
 ** FIXME Moar Hi5s!!! tv in lounge
 ** FIXME Moar rollover!!!
@@ -142,6 +138,15 @@
 			if (player.room.id == `room:garageRoof`) {
 				player.room.meta["buzzard.avoided"] = true
 				return Describe("A loud screech once again pierces the air and a buzzard swoops in from behind. You react fast and rollover.\n\nSparks explode around you as powerful talons drag across the roof and claws grasp nothing. Momentum carries the buzzard onward and it is forced to fly away empty handed. The danger has passed.") 
+			}
+			emma := player.room.findObject("emma")
+			if (emma!= null) {
+				snacksGiven := (emma.meta["snacksGiven"] as Int) ?: 0
+				if (snacksGiven >= 5)
+					return Describe("Aww, Emma is all out of dog treats.")
+				emma.meta["snacksGiven"] = snacksGiven + 1
+				player.room.objects.add(newSnack())
+				return Describe("You rollover onto your back and Emma rubs your belly. You writhe your head in joy as Emma cries out \"Who's a good girl!?\" She's so impressed!\n\nEmma digs around in her coat pocket and fishes out a dog treat.")
 			}
 			return null
 		}
@@ -718,15 +723,25 @@
 				},
 			},
 
-			Room("car", "") {
+			Room("car", "\"Oh boy, oh boy, it's Emma the feeder, Emma the walker! Right here, next to me!\" You're so excited!\n\nYou run around on the seat, jump up at her, and lick her face. \"Oh there you are!\" says Emma, pushing you back down on the seat. \"I've been wondering where you got to, I've been waiting to take you out on a walk to the waterfalls, you'd like that wouldn't you!?\"\n\n\"And good, I see you're already dressed and ready to go out! Hop on the back seat then, and we'll go!\"\n\nWow, this all sounds fantastic!") {
 				// oh, you're all dressed ready to go out!
-				Exit(ExitType.north, `room:backSeat`, "") {
-					
-				},				
+				Exit(ExitType.north, `room:backSeatOfTheCar`, "The back seat of the car. It is covered in a dog blanket to keep mud and hair off the seat."),
+				Object("Emma", "A beautiful Welsh woman dressed in wellies and a rain jacket.") {
+					it.namePrefix = ""
+					it.onHi5 = |Object emma, Player player -> Describe| {
+						snacksGiven := (emma.meta["snacksGiven"] as Int) ?: 0
+						if (snacksGiven >= 5)
+							return Describe("Aww, Emma is all out of dog treats.")
+						emma.meta["snacksGiven"] = snacksGiven + 1
+						player.room.objects.add(newSnack())
+						return Describe("You high five Emma and Emma high fives back. It's what best buddies do! She digs around in her coat pocket and fishes out a dog treat.")
+					}
+				},
 			},
 
-			Room("back seat", "") {
+			Room("back seat of the car", "You're so happy you've found Emma, all the morning's adventures were worth it! But the day is not over yet, and there may be more adventures to come.\n\nYou look eagerly out of the window as Emma starts the engine. This is going to be a great day!\n\n  - THE END -\n\n\n\n") {
 				meta["noExits"] = true
+				it.onEnter = |Room room, Player player->Describe?| { player.endThis; return null }
 			},
 		]
 		
