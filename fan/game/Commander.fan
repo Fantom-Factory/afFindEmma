@@ -30,8 +30,8 @@
 			
 			wasPickUpCmd	:= (player.room.objects.size == obj.size - 1) && (player.inventory.size == inv.size + 1)
 			wasDropCmd		:= (player.room.objects.size == obj.size + 1) && (player.inventory.size == inv.size - 1)
-			wasWearCmd		:= (player.room.objects.size == obj.size - 1) && (player.clothes.size == clo.size + 1)
-			wasTakeOffCmd	:= (player.room.objects.size == obj.size + 1) && (player.clothes.size == clo.size - 1)
+			wasWearCmd		:= (player.room.objects.size == obj.size - 1) && (player.clothes  .size == clo.size + 1)
+			wasTakeOffCmd	:= (player.room.objects.size == obj.size + 1) && (player.clothes  .size == clo.size - 1)
 			
 			// if we didn't move but an object has (dis)appeared, then list it
 			if (player.room.objects != obj && !wasPickUpCmd && !wasDropCmd && !wasWearCmd && !wasTakeOffCmd)
@@ -59,7 +59,9 @@
 	
 	Str cheat() {
 "
+ 		get photo
  		out
+ 		drop photo
  		get lead
  		north
  		open door
