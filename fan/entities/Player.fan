@@ -32,6 +32,8 @@
 	
 	new make(|This| f) { f(this) }
 
+	Void endThis() { }	// rename to onEnd()?
+	
 	GameData world() { gameData }
 	
 	Describe look(Describe? at := null) {
