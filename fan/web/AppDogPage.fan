@@ -23,9 +23,28 @@ using graphics
 	             \n\n\n"
 	
 	Void init() {
-		box := null as Elem
-		doc.body.add(
+		box 	:= null as Elem
+		cbox	:= null as CardBox
+		doc.body.insertBefore(
 			box = div("box") {
+				div("topNav") {
+					it.onEvent("click", false) |e| {
+						href := e.target.get("href")
+						if (href == null) return
+						switch (href) {
+							case "#game"		: cbox.selIndex = 0; prompt.focus
+							case "#about"		: cbox.selIndex = 1
+							case "#princess"	: cbox.selIndex = 2
+							case "#hallOfFame"	: cbox.selIndex = 3
+						}
+						doc.querySelector(".topNav .active").style.removeClass("active")
+						e.target.style.addClass("active")
+					}
+					elem("a", "active", "Game") 	{ it.setAttr("href", "#game") },
+					elem("a", "", "About")			{ it.setAttr("href", "#about") },
+					elem("a", "", "Princess")		{ it.setAttr("href", "#princess") },
+					elem("a", "", "Hall of fame")	{ it.setAttr("href", "#hallOfFame") },
+				},
 				div("terminal") {
 					div("minMax") {
 						it.onEvent("click", false) |e| {
@@ -39,37 +58,49 @@ using graphics
 							it.setAttr("src", "/images/tv.jpg")
 						},
 					},
-					div("screen") {
-						div("output") {
-							screen = div("text") {
-								it.onEvent("click", true) {
-									// let random clicks refocus the cmd box, but let users select text
-									sel := Win.eval("window.getSelection().toString()")
-									if (sel == "") prompt.focus
-								}
-								div("logo", logo),
+					cbox = CardBox {
+						it.style.addClass("screen")
+						div("screen game") {
+							div("output") {
+								screen = div("text") {
+									it.onEvent("click", true) {
+										// let random clicks refocus the cmd box, but let users select text
+										sel := Win.eval("window.getSelection().toString()")
+										if (sel == "") prompt.focus
+									}
+									div("logo", logo),
+								},
 							},
+							div("input") {
+								prompt = elem("input", "usrCmd") {
+									it.setAttr("type", "text")
+									it.setAttr("autofocus", "")
+								    it.onEvent("keydown", false) |e| {
+								    	if (e.key == Key.enter) {
+								    		promptHis.add(prompt->value)
+											exeCmd(prompt->value)
+											win.setTimeout(10ms) { prompt->value = "" }
+								    	}
+								    	if (e.key == Key.esc) {
+											promptHis.reset
+											win.setTimeout(10ms) { prompt->value = "" }
+								    	}
+								    	if (e.key == Key.up)
+											win.setTimeout(10ms) { prompt->value = promptHis.up }
+								    	if (e.key == Key.down)
+											win.setTimeout(10ms) { prompt->value = promptHis.down }
+									}
+								},
+							},								
 						},
-						div("input") {
-							prompt = elem("input", "usrCmd") {
-								it.setAttr("type", "text")
-								it.setAttr("autofocus", "")
-							    it.onEvent("keydown", false) |e| {
-							    	if (e.key == Key.enter) {
-							    		promptHis.add(prompt->value)
-										exeCmd(prompt->value)
-										win.setTimeout(10ms) { prompt->value = "" }
-							    	}
-							    	if (e.key == Key.esc) {
-										promptHis.reset
-										win.setTimeout(10ms) { prompt->value = "" }
-							    	}
-							    	if (e.key == Key.up)
-										win.setTimeout(10ms) { prompt->value = promptHis.up }
-							    	if (e.key == Key.down)
-										win.setTimeout(10ms) { prompt->value = promptHis.down }
-								}
-							},
+						div("screen about") {
+							div("output", "blah\nblah,"),
+						},
+						div("screen princess") {
+							
+						},
+						div("screen hallOfFame") {
+							
 						},
 					},
 					elem("form", "#downloadForm") {
@@ -96,7 +127,7 @@ using graphics
 					},
 				},
 			}
-		)
+		, doc.body.querySelector("footer"))
 	
 		prompt.focus
 		

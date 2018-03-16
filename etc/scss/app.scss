@@ -26,11 +26,23 @@ body {
 	min-height			: 16rem;
 }
 
+a {
+	color				: #383;
+	padding				: 0 0.5rem;
+	height				: 1rem;
+	line-height			: 1rem;
+}
+a:hover {
+	color				: white !important;
+	background-color	: $c-borderDark;
+}
+
 .box {
 	max-width			: calc(800px - 4rem);
 	max-height			: calc(608px - 4rem);	// 608 to make divisible by 16
-	padding				: 2rem;
+	padding				: 2rem 2rem 2rem 2rem;
 	transition			: width 0.5s, height 0.5s;
+	position			: relative;				// for topNav
 }
 .box.maximise {
 	max-width		: none;
@@ -39,6 +51,17 @@ body {
 		border-width	: 0;
 		border-bottom-width	: 1px;
 		border-radius	: 0;
+	}
+}
+
+.topNav {
+	position			: absolute;
+	top					: 0.5rem;
+	a {
+		margin-left		: 1rem;
+	}
+	.active {
+		color			: #BBB;
 	}
 }
 
@@ -85,6 +108,7 @@ body {
 .screen {
 	position			: absolute;
 }
+
 .output {
 	padding				: 1rem;
 	overflow			: hidden;
@@ -140,17 +164,15 @@ input[type=text] {
 .fantomLink {
 	text-decoration		: none;
 	position			: absolute;
-	bottom				: 0.5rem;
+	bottom				: 0.25rem;
 	left				: 0.5rem;
-	height				: 1rem;
 }
 
 .alienLink {
 	text-decoration		: none;
 	position			: absolute;
-	bottom				: 0.5rem;
+	bottom				: 0.25rem;
 	right				: 0.5rem;
-	height				: 1rem;
 }
 
 #uploadForm {
