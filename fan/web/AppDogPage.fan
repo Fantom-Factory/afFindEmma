@@ -242,9 +242,10 @@ using graphics
 					promptHis.add(it)
 				}
 			
-			case "ch":
 			case "cheat":
+			case "supercalifragilisticexpialidocious":
 				cheat.splitLines.each {
+					screen.add(div("usrCmd", "\n> ${it.trim.upper}"))
 					valid := executeCmd(it)
 					if (valid)
 						cmdHis.add(it.trim.upper)

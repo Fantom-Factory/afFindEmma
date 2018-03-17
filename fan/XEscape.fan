@@ -5,8 +5,6 @@
 ** dig veg patch to find... carrots? potatoes? nom
 ** dig lawn to find... mole! show photo
 ** 
-** Achievements - list hi-5s!
-** 
 ** spawn in greenhouse -> use hose to add water
 ** pickup (endless) spawn (with bucket)
 ** drop spawn in koi pond -> fish food!
@@ -93,30 +91,37 @@
 				it.onUse = |Object me, Player player -> Describe?| {
 					if (player.room.has("birds")) {
 						desc := Describe("You show the birds the photo of Emma. The birds gather round and chirp excitedly at the sight of their feeder. You point at the photo and shrug your shoulders to ask where Emma may be. A couple of crows land and yell, \"Carr, Carr!\" You think they may be trying to tell you something.")
-						if (player.meta.containsKey("present.birds"))
+						if (player.hasOpenedParcel("birds"))
 							return desc
 						player.room.objects.add(parcelUp(present1, "birds"))
-						player.meta["present.birds"] = true
 						return desc += "In appreciation of their favourite feeder, the birds drop a present for you."
 					}
 					if (player.room.has("goldfish")) {
 						desc := Describe("You show the goldfish the photo of Emma. They swim around in excited circles - they love the sight of their feeder!")
-						if (player.meta.containsKey("present.goldfish"))
+						if (player.hasOpenedParcel("goldfish"))
 							return desc
 						player.room.objects.add(parcelUp(present2, "goldfish"))
-						player.meta["present.goldfish"] = true
 						return desc += "So much so, they nose up a little gift from the bottom of the pond!"
 					}
 					if (player.room.has("koi carp")) {
 						if (!player.isWearing("snorkel"))
 							return Describe("You try to show the koi the photo of Emma, but from the bottom of the pond they can't see it.")
 
+						if (!player.room.has("bubbles")) {
+							player.room.add(Object("Bubbles the Koi Carp", "A large joyful, orange and white fish who likes to swim by the surface and blow bubbles!") {
+								it.aliases = "bubbles".split
+								it.onHi5 = |->Describe| {
+									player.incHi5("Bubbles")
+									return Describe("Bubbles rolls onto his side to expose a fishy fin. You slap paw and fin and exclaim, \"High five!\" Bubbles then performs a victory roll in acknowledgement.")
+								}
+							})
+						}
+
 						desc1 := Describe("With the mask and snorkel firmly attached, you thrust your head deep into the pond. When the bubbles clear, giant fish appear.\n\n\"I am Ginger.\" said one, \"The king of the wet lands. And this is Bubbles.\" Bubbles blew some. It seems he's quite aptly named.\n\nGinger continued, \"To find the feeder, thou shalt require a water containment vessel.\"")
 						desc2 := Describe("You try talking back, but it doesn't work, what with the snorkel and all. So you just wave goodbye instead.")
-						if (player.meta.containsKey("present.goldfish"))
+						if (player.hasOpenedParcel("koi carp"))
 							return desc1 + desc2 
 						player.room.objects.add(parcelUp(present3, "koi carp"))
-						player.meta["present.goldfish"] = true
 						return desc1 + "\"And here is a small gift to help you on your quest.\"" + desc2
 					}
 					return null
@@ -212,6 +217,7 @@
 						"As soon as you step outside, the cold hits you. Brr! You dash back in side to the safety of the warm house.", 
 						"Your coat keeps you warm."
 					) { !player.isWearing("coat") }
+				player.incHi5("Postman")
 				return Describe("You hang your paw in the air. The Postman kneels down, but instead of a 'high five' he whips out a signature scanner and collects your paw print!\n\n\"Thanks!\" he cheerfully says, tosses a parcel into the hallway, and disappears off down the garden path.")
 			}
 		}
@@ -322,6 +328,18 @@
 					.block("It is closed.", "You move forward and bang your head on the door. It remains closed."),
 				Object("door", "The door guards the hallway. Its handle looms high overhead, out of your reach.") {
 					it.openExit("lead", "west", openDoorDesc)
+				},
+				Object("television", "The door guards the hallway. Its handle looms high overhead, out of your reach.") {
+					it.aliases = "tv".split
+					it.onHi5 = |Object tv, Player player->Describe?| {
+						player.incHi5("TV")
+						if (tv.meta["on"] == true) {
+							tv.meta.remove("on")
+							return Describe("You slap the power button once more and the TV flickers off.")
+						}
+						tv.meta["on"] = true
+						return Describe("You high five the TV and slap the power button. The TV blinks, flashes, then tunes in.\n\nIt's a TV show about flying super heros, all dressed in capes and everything! If only Emma and Steve were here to watch it with you!")
+					}
 				},
 			},
 
@@ -615,6 +633,7 @@
 					.block("A tall cast iron pipe sunk deep in the ground leads up into the sky to support the washing line.", "You make like a squirrel and frantically paw, scrabble, and clamber at the washing line support. But as you slide back down the pipe you realise you're not a squirrel.", ""),
 				Object("washing line", "A tall cast iron pipe sunk deep in the ground has a series of pullies at the top that holds up a make shift washing line. There must be quite a view from the top!") {
 					it.aliases = "line".split
+					it.verbs = "climb".split
 					it.onUse = |Object washingLine, Player player -> Describe?| {
 						desc := climbWashingLine(washingLine, player)
 						if (desc != null) return desc
@@ -807,12 +826,13 @@
 							return Describe("Aww, Emma is all out of dog treats.")
 						emma.meta["snacksGiven"] = snacksGiven + 1
 						player.room.objects.add(newSnack())
+						player.incHi5("Emma")
 						return Describe("You high five Emma and Emma high fives back. It's what best buddies do! She digs around in her coat pocket and fishes out a dog treat.")
 					}
 				},
 			},
 
-			Room("back seat of the car", "You're so happy you've found Emma, all the morning's adventures were worth it! But the day is not over yet, and there may be more adventures to come.\n\nYou look eagerly out of the window as Emma starts the engine. This is going to be a great day!\n\n  - THE END -\n\n\n\n") {
+			Room("back seat of the car", "You're so happy you've found Emma, all the morning's adventures were worth it! But the day is not over yet, and there may be more adventures to come.\n\nYou look eagerly out of the window as Emma starts the engine. This is going to be a great day!\n\n  - THE END -\n\n") {
 				meta["noExits"] = true
 				it.onEnter = |Room room, Player player->Describe?| { player.endThis; return null }
 			},

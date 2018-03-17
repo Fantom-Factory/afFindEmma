@@ -64,9 +64,10 @@
 
 	Describe? lookExits() {
 		str := StrBuf()
-		if (visibleExits.isEmpty)
-			str.add("There are no exits.").addChar('\n')
-		else
+		if (visibleExits.isEmpty) {
+			if (id != `room:backSeatOfTheCar`)
+				str.add("There are no exits.").addChar('\n')
+		} else
 			str.add("Exits are ").add(visibleExits.sort.join(", ") { it.type.name }).addChar('.').addChar('\n')
 		return Describe(str)
 	}

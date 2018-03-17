@@ -75,6 +75,7 @@
  		rip open parcel
  		wear boots
  		east
+ 		hi5 tv
  		south
  		west
  		open oven
@@ -161,6 +162,7 @@
  		north
  		open garage
  		in
+ 		wear harness
 
  	// koi carp
  		wear snorkel
@@ -175,28 +177,45 @@
  		drop fishfood
  		show photo
  		open parcel		// parcel koi
+ 		hi5 bubbles
  		
+ 		west
+ 		south
  		
- 		
- 		
- 		
- 		
- 		
- 		
- 		
- 		
- 		
- 		
- 		
- 		
- 		
- 		
- 		
- 		
- 		
- 		
- 		
-
+ 	// finale from veg patch
+ 		get rhubarb
+ 		east
+ 		in
+ 		eat rhubarb
+ 		get bucket
+ 		out
+ 		north
+ 		north
+ 		drop bucket
+ 		south
+ 		west
+ 		north
+ 		north
+ 		get lead
+ 		south
+ 		south
+ 		east
+ 		north
+ 		drop lead
+ 		south
+ 		west
+ 		north
+ 		get hosepipe
+ 		south
+ 		east
+ 		north
+ 		use washing line
+ 		use hosepipe
+ 		north
+ 		rollover
+ 		north
+ 		hi5 emma
+ 		north
  "}
 	
 	abstract Void log(Obj? obj)
