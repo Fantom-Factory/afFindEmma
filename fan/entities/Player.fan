@@ -44,7 +44,6 @@
 		if (at is Object)
 			descs.add(((Object) at).onLook?.call(at, this))
 		
-		gameStats.incCmds
 		return Describe(descs)
 	}
 	
@@ -216,7 +215,7 @@
 		descs = descs.exclude { it == null }
 		if (descs.isEmpty)
 			descs.add(Describe("You high five! But sadly, the ${object.name} leaves you hanging. It's kind of embarrassing."))				
-		
+
 		gameStats.incCmds
 		return Describe(descs)
 	}
@@ -261,6 +260,10 @@
 	
 	Void openParcel(Str name) {
 		gameStats.openParcel(name)		
+	}
+	
+	Void incHi5(Str who) {
+		gameStats.hi5(who)		
 	}
 
 	internal Object? findObject(Str str) {

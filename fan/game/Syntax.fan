@@ -193,7 +193,8 @@
 			return null
 
 		if (!cmdStr.trimEnd.isEmpty)
-			return Cmd("Too much information!")
+			if (cmdStr.startsWith(" "))	// allow hosepipe if user types hose
+				return Cmd("Too much information!")
 
 		return Cmd {
 			it.method	= Player#use

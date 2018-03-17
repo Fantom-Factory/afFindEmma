@@ -7,7 +7,8 @@
 	Int			noOfSnacksEaten { private set }
 	Int			bellySize := 5	{ private set }
 	private Int	legWork
-	private Str[]	parcels	:= Str[,]
+	private Str[]	parcels		:= Str[,]
+	private Str[]	hi5s		:= Str[,]
 	
 	
 	// TODO have a list of Game durations to allow pausing / saving
@@ -17,6 +18,11 @@
 		if (timePlayed != null)
 			d += timePlayed
 		return d
+	}
+	
+	Void hi5(Str what) {
+		if (!hi5s.contains(what))
+			hi5s.add(what)
 	}
 	
 	Bool hasOpenedParcel(Str name) {
@@ -92,6 +98,7 @@
 		str.add("Moves made ......... ${noOfMoves}\n")
 		str.add("Snacks eaten ....... ${noOfSnacksEaten}\n")
 		str.add("Belly size ......... ${bellySize}/9 (" + ("X" * bellySize) + ")\n")
+		str.add("High fives given ... ${hi5s.size}/4" + (hi5s.isEmpty ? "" : (" - " + hi5s.join(", "))) + "\n")
 		str.add("Parcels opened...... ${parcels.size}/6" + (parcels.isEmpty ? "" : (" - " + parcels.join(", "))) + "\n")
 		return str.toStr
 	}
