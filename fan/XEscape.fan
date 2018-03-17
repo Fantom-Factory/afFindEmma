@@ -1,12 +1,11 @@
 
-** koi in deep pond
-** snorkel in garage - wear - show photo to koi
-** 
 ** hi5 spider to get out, rollover in web? greenhouse
 ** squirrel? say climb the washling line, that's what we do!
 ** 
 ** dig veg patch to find... carrots? potatoes? nom
 ** dig lawn to find... mole! show photo
+** 
+** Achievements - list hi-5s!
 ** 
 ** spawn in greenhouse -> use hose to add water
 ** pickup (endless) spawn (with bucket)
@@ -53,8 +52,8 @@
 			].random)
 			return snack
 		}
-		
-		parcelUp := |Object inside->Object| {
+
+		parcelUp := |Object inside, Str from->Object| {
 			Object("parcel", "A small parcel wrapped up in gift paper. I wonder what's inside?") {
 				it.canPickUp = true
 				it.aliases = Str[,]
@@ -62,19 +61,66 @@
 				it.onUse = |Object me, Player player -> Describe| {
 					player.room.objects.add(inside)
 					player.room.objects.remove(me)
-					player.gameStats.incParcelsOpened
+					player.openParcel(from)
 					return Describe("You excitedly rip open the parcel, sending wrapping paper everywhere, to reveal ${inside.fullName}.")
 				}
 			}
 		}
-		
+
 		present1 := Object("bottle of gin", "An expensive bottle of fine English gin.") {
 			it.aliases = "gin".split
 			it.verbs = "drink swig sip gulp".split
 			it.canPickUp = true
 			it.onUse = |Object me, Player player -> Describe?| {
-				// TODO max 5 swigs - stagger about to exits-2, exits-1
-				return Describe("You swig the gin. You feel woozy.")
+				// TODO max 3 swigs - stagger about to exits-2, exits-1
+				return Describe("You swig the gin. You feel woozy.") + player.gameStats.incSnacks
+			}
+		}
+		present2 := Object("box of chocolates", "A small box of assorted milk chocolates.") {
+			it.aliases = "box chocolates".split
+			it.edible("You scoff the chocolates with all the finesse you'd expect from a dog.")
+		}
+		present3 := Object("box of chocolates", "A small box of assorted milk chocolates.") {
+			it.aliases = "box chocolates".split
+			it.edible("You scoff the chocolates with all the finesse you'd expect from a dog.")
+		}
+
+		photoOfEmma := |->Object| {
+				Object("photo of emma", "It is a photo of your favourite play pal, Emma. You really miss her and long for some tender strokes. You remember walks in the long grass, frolics, and sausage surprises. You wish you could do it all again. But where is she? You feel a mission brewing...") {
+				it.aliases = "photo emma".split
+				it.verbs = "show give".split
+				it.canPickUp = true
+				it.onUse = |Object me, Player player -> Describe?| {
+					if (player.room.has("birds")) {
+						desc := Describe("You show the birds the photo of Emma. The birds gather round and chirp excitedly at the sight of their feeder. You point at the photo and shrug your shoulders to ask where Emma may be. A couple of crows land and yell, \"Carr, Carr!\" You think they may be trying to tell you something.")
+						if (player.meta.containsKey("present.birds"))
+							return desc
+						player.room.objects.add(parcelUp(present1, "birds"))
+						player.meta["present.birds"] = true
+						return desc += "In appreciation of their favourite feeder, the birds drop a present for you."
+					}
+					if (player.room.has("goldfish")) {
+						desc := Describe("You show the goldfish the photo of Emma. They swim around in excited circles - they love the sight of their feeder!")
+						if (player.meta.containsKey("present.goldfish"))
+							return desc
+						player.room.objects.add(parcelUp(present2, "goldfish"))
+						player.meta["present.goldfish"] = true
+						return desc += "So much so, they nose up a little gift from the bottom of the pond!"
+					}
+					if (player.room.has("koi carp")) {
+						if (!player.isWearing("snorkel"))
+							return Describe("You try to show the koi the photo of Emma, but from the bottom of the pond they can't see it.")
+
+						desc1 := Describe("With the mask and snorkel firmly attached, you thrust your head deep into the pond. When the bubbles clear, giant fish appear.\n\n\"I am Ginger.\" said one, \"The king of the wet lands. And this is Bubbles.\" Bubbles blew some. It seems he's quite aptly named.\n\nGinger continued, \"To find the feeder, thou shalt require a water containment vessel.\"")
+						desc2 := Describe("You try talking back, but it doesn't work, what with the snorkel and all. So you just wave goodbye instead.")
+						if (player.meta.containsKey("present.goldfish"))
+							return desc1 + desc2 
+						player.room.objects.add(parcelUp(present3, "koi carp"))
+						player.meta["present.goldfish"] = true
+						return desc1 + "\"And here is a small gift to help you on your quest.\"" + desc2
+					}
+					return null
+				}
 			}
 		}
 
@@ -90,20 +136,6 @@
 					return Describe("You let your instinct take over and you manically sprint at the birds, tongue and drool handing out the side of your mouth. But alas, the birds are faster and fly away. All you can do is stand and watch them fly away.")
 				}
 				it.redirectOnUse(onPickUp)
-				birds := it
-				it.onUse = |Object me, Player player -> Describe?| {
-					if (player.has("photo of emma")) {
-						desc := Describe("You show the birds the photo of Emma. The birds gather round and chirp excitedly at the sight of their feeder. You point at the photo and shrug your shoulders to ask where Emma may be. A couple of crows land and yell, \"Carr, Carr!\" You think they may be trying to tell you something.")
-						if (player.meta.containsKey("present.birds"))
-							return desc
-						else {
-							player.room.objects.add(parcelUp(present1))
-							player.meta["present.birds"] = true
-							return desc += "In appreciation of their favourite feeder, the birds drop a present for you."
-						}
-					} else
-						return birds.onPickUp.call(me, player)
-				}
 			}
 		}
 		
@@ -135,6 +167,18 @@
 				player.room.objects.add(newSnack())
 				return Describe("You rollover onto your back and the Postman rubs your belly. Amidst cries of \"You're so cute!\" the Postie digs around in his pocket, fishes out a dog treat, and tosses it into the hall.")
 			}
+			if (player.room.id == `room:goldfishPond`) {
+				goldfish := player.room.findObject("goldfish")
+				player.room.objects.remove(goldfish)
+				return Describe("You roll on to your back, teeter on the edge of the pond, and loose your balance.\n\nSplosh!\n\nAs fast you fell in, you spring right out again - hoping nobody saw you. You give a little shake, trying to act cool. It may have worked too, if it wasn't for the pond weed on your head!\n\nIt impressed no-one.") 				
+			}
+			if (player.room.id == `room:koiPond`) {
+				koiCarp := player.room.findObject("koi carp")
+				bubbles := player.room.findObject("bubbles")
+				player.room.objects.remove(koiCarp)
+				player.room.objects.remove(bubbles)
+				return Describe("You roll on to your back, teeter on the edge of the pond, and loose your balance.\n\nSplosh!\n\nAs fast you fell in, you spring right out again - hoping nobody saw you. You give a little shake, trying to act cool. It may have worked too, if it wasn't for the pond weed on your head!\n\nIt impressed no-one.") 				
+			}
 			if (player.room.id == `room:garageRoof`) {
 				player.room.meta["buzzard.avoided"] = true
 				return Describe("A loud screech once again pierces the air and a buzzard swoops in from behind. You react fast and rollover.\n\nSparks explode around you as powerful talons drag across the roof and claws grasp nothing. Momentum carries the buzzard onward and it is forced to fly away empty handed. The danger has passed.") 
@@ -160,7 +204,7 @@
 		
 		postman := Object("Postman", "You see a burly figure in red costume carrying a large sack of goodies.") {
 			it.onHi5 = |Object me, Player player -> Describe| {
-				player.room.objects.add(parcelUp(boots))
+				player.room.objects.add(parcelUp(boots, "Postman"))
 				player.room.objects.remove(me)
 				player.room.findExit("north")
 					.block(
@@ -222,12 +266,7 @@
 				it.meta["inside"] = true
 				Exit(ExitType.out, `room:diningRoom`, "You see the main dining room of the house and recall many a happy day stretched out in the sun as it streamed in through the wide windows.")
 					.oneTimeMsg("You crawl out of the cage. You arch your back, stretch out your front legs, and let out a large yawn - it was a good nights sleep!"), 
-				Object("photo of emma", "It is a photo of your favourite play pal, Emma. You really miss her and long for some tender strokes. You remember walks in the long grass, frolics, and sausage surprises. You wish you could do it all again. But where is she? You feel a mission brewing...") {
-					it.aliases = "photo emma".split
-					it.verbs = "show give".split
-					it.canPickUp = true
-					it.redirectOnUseTo("birds".split)
-				},
+				photoOfEmma(),
 				newSnack(),
 			},
 			
@@ -470,6 +509,19 @@
 										return Describe("You scatter the food about the pond and then, out from behind rocks, weeds, and crevices, goldfish begin to appear!")									
 									}
 								}
+								if (player.room.id == `room:koiPond`) {
+									food.canDrop = false
+									player.inventory.remove(food)
+									if (player.room.has("koi carp")) {
+										return Describe("You scatter the food about the pond and the koi largely ignore it, instead waiting for it to sink to the bottom before picking at it. It's not the feeding frenzy you were expecting!")									
+									} else {
+										player.room.add(Object("koi carp", "You see several orange, white, and gold mottled koi fish - although they keep themselves fairly well hidden at the bottom of the pond.") {
+											it.namePrefix = ""
+											it.aliases = "koi carp fish".split
+										})
+										return Describe("You scatter the food about the pond and then, from the murky depths below, several koi carp appear!")									
+									}
+								}
 								return null
 							}
 						})
@@ -479,7 +531,7 @@
 				},
 			},
 
-			Room("front lawn", "The front lawn is an odd triangle shaped piece of land that adjoins the driveway. It is hemmed in by a thick hedge.") {
+			Room("front lawn", "The front lawn is an odd triangle shaped piece of land that adjoins the driveway. It is hemmed in by a thick hedge.\n\nThere's a bird table in the middle which suggests Emma feeds the birds here.") {
 				it.namePrefix = "on the"
 				it.meta["isGarden"] = true
 				Exit(ExitType.south, `room:hallway`, "The front door to the house leading to the hallway."),
@@ -499,7 +551,7 @@
 				Object("car", "A Golf 1.9 TDI. Colour, shark grey. The car is locked and all the doors are closed."),
 
 				Object("garage door", "It is a large vertical lift, bright red, metal door.") {
-					it.aliases = "door".split
+					it.aliases = "door garage".split
 					it.openExit("silver key", "in", "You use the key to unlock the door. The sprung hinge at the top lifts the door up and into the garage.") |Object door, Exit exit, Player player| {
 						key := player.findObject("silver key")
 						player.inventory.remove(key)
@@ -512,6 +564,12 @@
 					it.canPickUp = true
 					it.canWear = true
 					it.onWear = |->Describe| { Describe("You slip the harness on over your coat and snap the buckles closed.") }
+				},
+				Object("mask and snorkel", "A well used, but perfectly adequate, mask and snorkel.") {
+					it.aliases = "mask snorkel".split
+					it.canPickUp = true
+					it.canWear = true
+					it.onWear = |->Describe| { Describe("You pull the mask on over your head and fix the snorkel in your mouth.") }
 				},
 				newSnack(),
 			},
@@ -542,14 +600,14 @@
 				Exit(ExitType.south, `room:vegetablePatch`),
 			},
 
-			Room("koi pond", "The koi pond is a deep picturesque pond with a slate surround, complete with a stone waterfall feature in the corner.") {
+			Room("koi pond", "The koi pond is a deep picturesque garden pond with a slate surround, complete with a cascading waterfall feature in the corner.") {
 				it.namePrefix = "next to the"
 				Exit(ExitType.west, `room:goldfishPond`),
 				Exit(ExitType.north, `room:backLawn`),
 				Exit(ExitType.south, `room:lawn`),
 			},
 
-			Room("back lawn", "The back lawn is a patch of grass that backs up to the dining room window.") {
+			Room("back lawn", "The back lawn is a patch of grass that backs up to the dining room window.\n\nIt is a popular feeding ground for birds and other animals as the adjoining hedgerow gives plenty of shelter.") {
 				it.namePrefix = "on the"
 				it.meta["isGarden"] = true
 				Exit(ExitType.south, `room:koiPond`),
@@ -607,7 +665,7 @@
 					it.namePrefix = ""
 					it.aliases = "stick|stalk|stalk of rhubarb|stick of rhubarb".split('|')
 					it.onPickUp = |Object food, Player player -> Describe?| {
-						player.inventory.add(Object("stalk of rhubarb", "A large sturdy red stick of rhubarb.") {
+						player.inventory.add(Object("stalk of rhubarb", "A large sturdy red stick of rhubarb. Good for whacking things with!") {
 							it.aliases = "rhubarb stick stalk".split
 							it.edible("Nibbling on the bulbous red end, you decide it's almost as tasty as rawhide.")
 							it.onDrop = |Object rhubarb->Describe?| {
