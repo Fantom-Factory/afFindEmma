@@ -39,6 +39,7 @@ using graphics
 						}
 						doc.querySelector(".topNav .active").style.removeClass("active")
 						e.target.style.addClass("active")
+						e.stop
 					}
 					elem("a", "active", "Game") 	{ it.setAttr("href", "#game") },
 					elem("a", "", "About")			{ it.setAttr("href", "#about") },

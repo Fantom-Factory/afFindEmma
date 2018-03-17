@@ -254,6 +254,14 @@
 	Void transportTo(Uri roomId) {
 		room = gameData.room(roomId)
 	}
+	
+	Bool hasOpenedParcel(Str name) {
+		gameStats.hasOpenedParcel(name)
+	}
+	
+	Void openParcel(Str name) {
+		gameStats.openParcel(name)		
+	}
 
 	internal Object? findObject(Str str) {
 		obj := null as Object

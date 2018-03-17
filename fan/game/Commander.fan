@@ -7,6 +7,8 @@
 	Bool executeCmd(Str cmdStr) {
 		cmdStr = cmdStr.trim.lower
 		if (cmdStr.startsWith("//") || cmdStr.trim.isEmpty) return false
+		ds := cmdStr.index("//")
+		if (ds != null) cmdStr = cmdStr[0..<ds].trim
 	
 		cmd := syntax.compile(player, cmdStr)
 		old := player.room
@@ -26,7 +28,7 @@
 		} else {
 			// if we tried to move but were blocked, restate which room we're in
 			if (cmd?.method == Player#move)
-				log(player.room.lookName)				
+				log(player.room.lookName)
 			
 			wasPickUpCmd	:= (player.room.objects.size == obj.size - 1) && (player.inventory.size == inv.size + 1)
 			wasDropCmd		:= (player.room.objects.size == obj.size + 1) && (player.inventory.size == inv.size - 1)
@@ -59,7 +61,7 @@
 	
 	Str cheat() {
 "
- 		get photo
+ 		get photo		// start
  		out
  		drop photo
  		get lead
@@ -85,6 +87,30 @@
  		west
  		open washing machine
  		wear coat
+ 		
+ 	// goldfish
+ 		get fishfood
+ 		east
+ 		south
+ 		south
+ 		drop fishfood
+ 		north
+ 		north
+ 		east
+ 		east
+ 		get photo
+ 		west
+ 		west
+ 		south
+ 		south
+ 		show photo
+ 		open parcel		// parcel goldfish
+ 		drop photo
+ 		north
+ 		north
+ 		west
+ 		
+ 	// birds
  		get seed
  		east
  		north
@@ -102,6 +128,14 @@
  		drop seed
  		south
  		west
+ 		get photo
+ 		east
+ 		north
+ 		show photo
+ 		open parcel		// parcel birds
+ 		south
+ 		drop photo		// photo by koi
+ 		west
  		north
  		north
  		west
@@ -111,12 +145,57 @@
  		south
  		east
  		south
+
+ 	// buzzard
  		drop seed
  		eat egg
  		out
  		get key
  		up
- 		//l down
+ 		down
+ 		follow squirrel
+ 		west
+ 		north
+ 		north
+ 		north
+ 		north
+ 		open garage
+ 		in
+
+ 	// koi carp
+ 		wear snorkel
+ 		out
+ 		south
+ 		west
+ 		get fishfood
+ 		east
+ 		south
+ 		south
+ 		east
+ 		drop fishfood
+ 		show photo
+ 		open parcel		// parcel koi
+ 		
+ 		
+ 		
+ 		
+ 		
+ 		
+ 		
+ 		
+ 		
+ 		
+ 		
+ 		
+ 		
+ 		
+ 		
+ 		
+ 		
+ 		
+ 		
+ 		
+ 		
 
  "}
 	
