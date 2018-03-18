@@ -110,15 +110,18 @@ a:hover {
 }
 
 .output {
+	white-space			: pre-wrap;
+	line-height			: 1rem;
 	padding				: 1rem;
 	overflow			: hidden;
 	height				: calc(100% - 3rem);
+	a {
+		padding			: 0 !important;
+	}
 }
 .text {
-	white-space			: pre-wrap;
 	overflow-x			: hidden;
 	height				: 100%;
-	line-height			: 1rem;
 	
 	// hide the scroll bar, but still allow scrolling!
 	overflow-y			: auto;

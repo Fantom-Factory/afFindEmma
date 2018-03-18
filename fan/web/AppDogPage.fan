@@ -95,13 +95,47 @@ using graphics
 							},								
 						},
 						div("screen about") {
-							div("output", "blah\nblah,"),
+							div("output") {
+								elem("span", "", "\"Find Emma\" is a Birthday present for my wife, Emma.\n\n"),
+
+								elem("span", "", "It is a retro text adventure game in the ilk of "),
+								elem("a", "", "Zork") { it.setAttr("href", "https://en.wikipedia.org/wiki/Zork") },
+								elem("span", "", " and "),
+								elem("a", "", "Colossal Cave Adventure") { it.setAttr("href", "https://en.wikipedia.org/wiki/Colossal_Cave_Adventure") },
+								elem("span", "", ".\n\n"),
+
+								elem("span", "", "The main protagonist, Princess, is a little dog we're currently fostering until she finds her forever home. "),
+								elem("span", "", "The game map, including the house and gardens, is a representation of our village home in the valleys of South Wales, UK.\n\n"),
+								elem("span", "", "We do have an extraordinary amount of wildlife visiting our gardens, and Emma does spend an extraordinary amount of time feeding them all! "),
+								elem("span", "", "So this game was an attempt to capture it all through the eyes of our newest house member.\n\n"),
+								elem("span", "", "\n"),
+								elem("span", "", "               -----------------------------------------\n"),
+								elem("span", "", "           --=% H A P P Y   B I R T H D A Y   E M M A ! %=--\n"),
+								elem("span", "", "               -----------------------------------------\n"),
+								elem("span", "", "\n"),
+								elem("span", "", "Steve.\n"),
+								elem("span", "", "\n"),
+								elem("span", "", "23rd March 2018.\n"),
+							},
 						},
 						div("screen princess") {
-							
+							div("output") {
+								elem("span", "", "Princess is little 2 year old Staffordshire Bull Terrier who was picked up as a stray when just a puppy and handed over to the Dogs Trust charity. She's since spend her entire life in kennels and has never had a home.\n\n"),
+								elem("span", "", "Emma and I (well, mainly Emma!) are fostering Princess until she can find her forever home. That is, we've welcomed her into our home on a temporary basis.\n\n"),
+								elem("span", "", "Unfortunately Princess has wonky back legs due to a suspected spinal abnormality, which means she scuffs her back feet and wears her toes down until they bleed. It sounds bad, but on the plus side, it's nothing that dog booties and a bit of love and attention can't fix!\n\n"),
+								elem("span", "", "Princess is more Bull Dozer than Bull Terrier, but she's a perfect pet. Loveable and adorable, she's also house trained, quiet as a ninja, and non-destructive in the house. She's also inquisitive, adventurous, and loves to run around in fields! Parts of us don't want to see her leave.\n\n"),
+								elem("span", "", "To know more, follow the adoption link below:\n\n\n"),
+								elem("span", "", "          --=%=-- "),
+								elem("a", "", "-Princess's Profile on Dogs Trust-") { it.setAttr("href", "https://www.dogstrust.org.uk/rehoming/dogs/dog/filters/bri~308~~~~n~/1174940/princess") },
+								elem("span", "", " --=%=-- "),
+							},
 						},
 						div("screen hallOfFame") {
-							
+							div("output") {
+								elem("span", "", "The \"Find Emma\" Hall of Fame!\n\n\nNo one has found found Emma yet!  :(\n\n\nIf you do, email me the completed save file and I'll add your details to this screen!\n\nContact details to be found on "),
+								elem("a", "", "Alien-Factory") { it.setAttr("href", "http://www.alienfactory.co.uk/") },
+								elem("span", "", "."),
+							},
 						},
 					},
 					elem("form", "#downloadForm") {
@@ -147,6 +181,7 @@ using graphics
 
 	private Void doExeCmd(Str cmdStr) {
 		cmdStr = cmdStr.trim
+//		if (cmdStr.isEmpty) return
 		screen.add(div("usrCmd", "\n> ${cmdStr.upper}"))
 
 		cmds := cmdStr.split
@@ -332,6 +367,8 @@ using graphics
 		str.add("  - stats\n")
 		str.add("  - get snack\n")
 		str.add("  - open door\n")
+		str.add("\n")
+		str.add("Note some actions require items to be dropped or gathered together in the same room.\n")
 		str.add("\n")
 		str.add("Terminal commands:\n")
 		str.add("  - help\n")
