@@ -12,9 +12,6 @@
 ** 
 ** back lawn -> peanuts -> badger -> pressie
 ** 
-** FIXME Moar Hi5s!!! tv in lounge
-** FIXME Moar rollover!!!
-** 
 ** Wear moar clothes - just because!
 ** 
 ** Known Bug - if you take off your coat just before hoisting yourself up the washing line, you can wander the map without it on.
@@ -465,6 +462,19 @@
 									player.inventory.remove(seed)
 									return Describe("You place the peanuts back in the sack.")									
 								}
+								if (player.room.id == `room:backLawn`) {
+									food.canDrop = false
+									player.inventory.remove(food)
+									// FIXME larry!
+									if (player.room.has("badger")) {
+										return Describe("????")									
+									} else {
+										player.room.add(Object("Larry the badger", "?????") {
+											it.namePrefix = ""
+										})
+										return Describe("????")									
+									}
+								}
 								return null
 							}
 						})
@@ -642,7 +652,7 @@
 				}
 			},
 
-			Room("lawn", "A featureless patch of grass in front of the summer house that's popular with the local avian wildlife, should there be enough food around.") {
+			Room("lawn", "A featureless patch of grass in front of the summer house that's popular with the local avian wildlife, should there be enough food around.\n\nThe lawn also sports a lot of earth mounds and a couple of small holes.") {
 				it.namePrefix = "on the"
 				it.meta["isGarden"] = true
 				Exit(ExitType.north, `room:koiPond`),
@@ -672,6 +682,15 @@
 				},
 				Object("spade", "A stout digging utensil.") {
 					it.canPickUp = true
+					it.onUse = |Object spade, Player player -> Describe?| {
+						if (player.room.id == `room:vegetablePatch`) {
+							
+						}
+						if (player.room.id == `room:lawn`) {
+							// FIXME mole
+						}
+						return null
+					}
 				},
 				newSnack(),
 			},
@@ -704,6 +723,7 @@
 
 			Room("greenhouse", "") {
 				Exit(ExitType.out, `room:vegetablePatch`),
+				// FIXME Spider Fight!
 			},
 			
 			Room("birds nest", "You are high in the trees with no obvious route back. The garden and house is sprawled out below you, and you see the car in the driveway. Wait! Was that movement you saw in the car just now?") {
