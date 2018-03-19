@@ -14,6 +14,9 @@
 ** 
 ** Wear moar clothes - just because!
 ** 
+** Use tap to turn on hose
+** default actions for using hose in house and out
+** 
 ** Known Bug - if you take off your coat just before hoisting yourself up the washing line, you can wander the map without it on.
 ** If can then become trapped inside as you can't go outside without a coat. 
 @Js class XEscape : Loader {
@@ -62,7 +65,7 @@
 			}
 		}
 
-		present1 := Object("bottle of gin", "An expensive bottle of fine English gin.") {
+		presentBirds := Object("bottle of gin", "An expensive bottle of fine English gin.") {
 			it.aliases = "gin".split
 			it.verbs = "drink swig sip gulp".split
 			it.canPickUp = true
@@ -71,13 +74,20 @@
 				return Describe("You swig the gin. You feel woozy.") + player.gameStats.incSnacks
 			}
 		}
-		present2 := Object("box of chocolates", "A small box of assorted milk chocolates.") {
+		presentGoldfish := Object("box of chocolates", "A small box of assorted milk chocolates.") {
 			it.aliases = "box chocolates".split
 			it.edible("You scoff the chocolates with all the finesse you'd expect from a dog.")
 		}
-		present3 := Object("box of chocolates", "A small box of assorted milk chocolates.") {
+		presentKoi := Object("box of chocolates", "A small box of assorted milk chocolates.") {
 			it.aliases = "box chocolates".split
 			it.edible("You scoff the chocolates with all the finesse you'd expect from a dog.")
+		}
+		presentLarry := Object("women's underwear", "A pair of racy red, slinky women's underwear. Your size too!") {
+			it.namePrefix = ""
+			it.aliases = "underwear knickers".split
+			it.canPickUp = true
+			it.canWear = true
+			it.onWear = msgFn("You slip the knickers on over your back legs. You're not too sure about the frilly bits, but at least they don't make your bum look big!")
 		}
 
 		photoOfEmma := |->Object| {
@@ -90,14 +100,14 @@
 						desc := Describe("You show the birds the photo of Emma. The birds gather round and chirp excitedly at the sight of their feeder. You point at the photo and shrug your shoulders to ask where Emma may be. A couple of crows land and yell, \"Carr, Carr!\" You think they may be trying to tell you something.")
 						if (player.hasOpenedParcel("birds"))
 							return desc
-						player.room.objects.add(parcelUp(present1, "birds"))
+						player.room.objects.add(parcelUp(presentBirds, "birds"))
 						return desc += "In appreciation of their favourite feeder, the birds drop a present for you."
 					}
 					if (player.room.has("goldfish")) {
 						desc := Describe("You show the goldfish the photo of Emma. They swim around in excited circles - they love the sight of their feeder!")
 						if (player.hasOpenedParcel("goldfish"))
 							return desc
-						player.room.objects.add(parcelUp(present2, "goldfish"))
+						player.room.objects.add(parcelUp(presentGoldfish, "goldfish"))
 						return desc += "So much so, they nose up a little gift from the bottom of the pond!"
 					}
 					if (player.room.has("koi carp")) {
@@ -118,8 +128,15 @@
 						desc2 := Describe("You try talking back, but it doesn't work, what with the snorkel and all. So you just wave goodbye instead.")
 						if (player.hasOpenedParcel("koi carp"))
 							return desc1 + desc2 
-						player.room.objects.add(parcelUp(present3, "koi carp"))
+						player.room.objects.add(parcelUp(presentKoi, "koi carp"))
 						return desc1 + "\"And here is a small gift to help you on your quest.\"" + desc2
+					}
+					if (player.room.has("larry the badger")) {
+						desc := Describe("You show the photo of Emma to Larry. Larry whistles and says, \"Yeah, she's hot alright!\"")
+						if (player.hasOpenedParcel("Larry"))
+							return desc
+						player.room.objects.add(parcelUp(presentLarry, "Larry"))
+						return desc += "\"Actually,\" says Larry, \"That reminds me. Here's a little something I found. Just don't ask me where I got it!\""
 					}
 					return null
 				}
@@ -186,13 +203,22 @@
 				return Describe("A loud screech once again pierces the air and a buzzard swoops in from behind. You react fast and rollover.\n\nSparks explode around you as powerful talons drag across the roof and claws grasp nothing. Momentum carries the buzzard onward and it is forced to fly away empty handed. The danger has passed.") 
 			}
 			emma := player.room.findObject("emma")
-			if (emma!= null) {
+			if (emma != null && !emma.name.contains("photo")) {
 				snacksGiven := (emma.meta["snacksGiven"] as Int) ?: 0
 				if (snacksGiven >= 5)
 					return Describe("Aww, Emma is all out of dog treats.")
 				emma.meta["snacksGiven"] = snacksGiven + 1
 				player.room.objects.add(newSnack())
 				return Describe("You rollover onto your back and Emma rubs your belly. You writhe your head in joy as Emma cries out \"Who's a good girl!?\" She's so impressed!\n\nEmma digs around in her coat pocket and fishes out a dog treat.")
+			}
+			larry := player.room.findObject("larry the badger")
+			if (larry != null) {
+				snacksGiven := (larry.meta["snacksGiven"] as Int) ?: 0
+				if (snacksGiven >= 5)
+					return Describe("Aww, Larry is all out of dog treats.")
+				larry.meta["snacksGiven"] = snacksGiven + 1
+				player.room.objects.add(newSnack())
+				return Describe("You rollover onto your back and on to your front again. Larry watches in amazement before doing the same! He giggles at learning a new trick and hands you a treat in appreciation.\n\n\"Thanks for all the peanuts.\" says Larry, \"Say, if you've not already, try feeding all the birds round here, they're looking a bit hungry too!\"")
 			}
 			return null
 		}
@@ -456,23 +482,46 @@
 //							it.verbs = "throw scatter feed".split	// this is for eating!
 							it.namePrefix = ""
 							it.edible("Unable to contain your desires, you gobble down the nuts.")
-							it.onDrop = |Object seed->Describe?| {
+							it.onDrop = |Object nuts->Describe?| {
 								if (player.room.id == `room:outHouse`) {
-									seed.canDrop = false
-									player.inventory.remove(seed)
+									nuts.canDrop = false
+									player.inventory.remove(nuts)
 									return Describe("You place the peanuts back in the sack.")									
 								}
 								if (player.room.id == `room:backLawn`) {
-									food.canDrop = false
-									player.inventory.remove(food)
-									// FIXME larry!
+									nuts.canDrop = false
+									player.inventory.remove(nuts)
 									if (player.room.has("badger")) {
-										return Describe("????")									
+										return Describe("Larry thanks you for the nuts and quickly gobbles them up!")
 									} else {
-										player.room.add(Object("Larry the badger", "?????") {
-											it.namePrefix = ""
-										})
-										return Describe("????")									
+										player.room.onEnter = |Room backLawn->Describe?| {
+											times := (Int) backLawn.meta.get("onEnter.num", 0)
+											backLawn.meta["onEnter.num"] = ++times
+											if (times < 2)
+												return Describe("Nope, the garden guest has still not arrived.")
+											if (times == 2) {
+												player.room.add(Object("Larry the Badger", "Larry is a large black and white striped mammal, the same size as yourself. He is rare to see and a sight to behold.") {
+													it.namePrefix = ""
+													it.aliases = "larry badger".split
+													it.onHi5 = |Object larry->Describe?| {
+														player.incHi5("Larry")
+														return Describe("You raise your paw and exclaim, \"High Five!\" Larry raises his paw also and gives a little excited badger grunt. Paw on paw, you slap some skin. Yeah, garden buddies for life!")
+													}
+												})
+												return Describe("You freeze. He's here! The majestic beast know as Larry the Badger is snuffling about on the lawn, hovering up peanuts as he goes!")
+											}
+											if (times < 5)
+												return Describe("Larry the Badger is busy hovering up peanuts.")
+											if (times == 5) {
+												backLawn.meta.remove("onEnter.num")
+												player.room.onEnter = null
+												badger := backLawn.findObject("badger")
+												backLawn.objects.remove(badger)
+												return Describe("As you enter, Larry the Badger leaves in search of more food, wagging his stumpy tail as he goes.")
+											}
+											return null
+										}
+										return Describe("You pile the peanuts on a paving slab in the corner and wait for a special guest to arrive.")
 									}
 								}
 								return null
