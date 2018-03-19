@@ -8,7 +8,7 @@ class TestPlayGame : Test, Commander {
 	Void testRunThrough() {		
 		log("START\n-----\n\n")
 		startGame
-		cheat.splitLines.each { log(it.trim.upper); executeCmd(it) }
+		solution.splitLines.each { log(it.trim.upper); executeCmd(it) }
 
 //"
 // 		west

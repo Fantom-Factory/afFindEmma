@@ -132,8 +132,8 @@ using graphics
 						},
 						div("screen hallOfFame") {
 							div("output") {
-								elem("span", "", "The \"Find Emma\" Hall of Fame!\n\n\nNo one has found found Emma yet!  :(\n\n\nIf you do, email me the completed save file and I'll add your details to this screen!\n\nContact details to be found on "),
-								elem("a", "", "Alien-Factory") { it.setAttr("href", "http://www.alienfactory.co.uk/") },
+								elem("span", "", "The \"Find Emma\" Hall of Fame!\n\n\nNo one has found found Emma yet!  :(\n\n\nIf you do, email me the completed save file and I'll add your details to this screen!\n\nContact details can be found on "),
+								elem("a", "", "Fantom-Factory") { it.setAttr("href", "http://www.fantomfactory.org/") },
 								elem("span", "", "."),
 							},
 						},
@@ -279,7 +279,7 @@ using graphics
 			
 			case "cheat":
 			case "supercalifragilisticexpialidocious":
-				cheat.splitLines.each {
+				solution.splitLines.each {
 					screen.add(div("usrCmd", "\n> ${it.trim.upper}"))
 					valid := executeCmd(it)
 					if (valid)

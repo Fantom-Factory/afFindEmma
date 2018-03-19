@@ -6,7 +6,7 @@
 	static const Str[]	pickupSynonyms		:= "pickup |pick up |take |get "	.split('|', false)
 	static const Str[]	dropSynonyms		:= "drop "							.split('|', false)
 	static const Str[]	wearSynonyms		:= "wear |put on "					.split('|', false)
-	static const Str[]	takeOffSynonyms		:= "take off "						.split('|', false)
+	static const Str[]	takeOffSynonyms		:= "take off |remove "				.split('|', false)
 //	static const Str[]	useSynonyms			:= "use "							.split('|', false)
 
 	static const Str[]	hi5Synonyms			:= "hi5 |high five "				.split('|', false)
