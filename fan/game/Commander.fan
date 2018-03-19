@@ -178,9 +178,34 @@
  		show photo
  		open parcel		// parcel koi
  		hi5 bubbles
- 		
+
+ 	// larry the badger
  		west
+ 		north
+ 		north
+ 		west
+ 		get peanuts
+ 		east
  		south
+ 		south
+ 		east
+ 		north
+ 		drop nuts
+ 		south
+ 		get photo
+ 		north
+ 		drop photo
+ 		south
+ 		north
+ 		rollover
+ 		hi5 larry
+ 		show photo
+ 		open parcel		// parcel larry
+ 		wear underwear
+ 		
+ 		south
+ 		south
+ 		west
  		
  	// finale from veg patch
  		get rhubarb
