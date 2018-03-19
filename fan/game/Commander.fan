@@ -59,7 +59,7 @@
 		log(game.start)
 	}
 	
-	Str cheat() {
+	Str solution() {
 "
  		get photo		// start
  		out
@@ -203,15 +203,35 @@
  		open parcel		// parcel larry
  		wear underwear
  		
+ 	// the mole
+ 		get photo
  		south
  		south
+ 		drop photo
  		west
- 		
- 	// finale from veg patch
  		get rhubarb
  		east
  		in
  		eat rhubarb
+ 		get spade
+ 		out
+ 		use spade
+ 		rollover
+ 		hi5 mole
+ 		show photo
+ 		drop knickers
+ 		open parcel
+ 		l
+ 		
+ 		west
+ 		use spade
+ 		eat slug
+ 		drop spade
+
+ 		
+ 	// finale from veg patch
+ 		east
+ 		in
  		get bucket
  		out
  		north

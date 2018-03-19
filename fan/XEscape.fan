@@ -1,18 +1,11 @@
 
 ** hi5 spider to get out, rollover in web? greenhouse
-** squirrel? say climb the washling line, that's what we do!
-** 
-** dig veg patch to find... carrots? potatoes? nom
-** dig lawn to find... mole! show photo
+** squirrel? say climb the washing line, that's what we do!
 ** 
 ** spawn in greenhouse -> use hose to add water
 ** pickup (endless) spawn (with bucket)
 ** drop spawn in koi pond -> fish food!
 ** drop spawn in gold fish pond -> nothing, but set onEnter action (x2 ?) to make frogs -> pressie!
-** 
-** back lawn -> peanuts -> badger -> pressie
-** 
-** Wear moar clothes - just because!
 ** 
 ** Use tap to turn on hose
 ** default actions for using hose in house and out
@@ -38,7 +31,8 @@
 				Object("dog treat", "A tasty snack for dogs"),
 				Object("scooby snack", "Scooby, scooby, doo!"),
 			].random
-			snack.aliases = "snack biscuit chew bone treat".split
+			// everything must match everything else for the load cmd to work
+			snack.aliases = "biscuit|chew|bone|treat|snack|dog biscuit|dog chew|dog bone|dog treat|scooby snack".split('|')
 			snack.edible([
 				"Om nom nom. Tasty!",
 				"Yum, delicious!",
@@ -48,6 +42,27 @@
 				"Gulp!",
 				"Bursting with energy, you feel ready for action like Scrappy Doo!",
 			].random)
+			return snack
+		}
+		newVeg := |->Object| {
+			snack := [
+				Object("carrot", "A crunchy carrot."),
+				Object("potato", "An ugly potato with lots of eyes."),
+				Object("strawberry", "A sweet wild strawberry. Lucky the birds didn't find it!"),
+				Object("slug", "A fat slimy slug. Looks edible though!"),
+			].random
+			// everything must match everything else for the load cmd to work
+			snack.aliases = "veg vegetable carrot potato strawberry slug".split
+			if (snack.name == "slug")
+				snack.edible("Lick. Slurp. Gulp. Proof that dogs will eat anything!")
+			else
+				snack.edible([
+					"Om nom nom.",
+					"Chomp! Chomp! Chomp!",
+					"Nom nom nom nom.",
+					"Chew. Gnaw. Chomp. Swallow.",
+					"A bit bitter, but not bad.",
+				].random)
 			return snack
 		}
 
@@ -78,20 +93,43 @@
 			it.aliases = "box chocolates".split
 			it.edible("You scoff the chocolates with all the finesse you'd expect from a dog.")
 		}
-		presentKoi := Object("box of chocolates", "A small box of assorted milk chocolates.") {
-			it.aliases = "box chocolates".split
-			it.edible("You scoff the chocolates with all the finesse you'd expect from a dog.")
+		presentKoi := Object("pulley blueprints", "It's a hand drawn picture of a pulley system used to lever heavy objects out of the pond, but you figure the principle it could be applied to other uses. It comprises of a bucket, some rope, and a harness.") {
+			it.namePrefix = ""
+			it.aliases = "blueprints".split
+		}
+		presentMole := Object("comfortable pyjamas", "A stripy pair of comfortable cotton pyjamas.") {
+			it.canWear = true
+			it.onWear = msgFn("Ah! Soft and comfortable. In fact, you feel a little sleepy.")
 		}
 		presentLarry := Object("women's underwear", "A pair of racy red, slinky women's underwear. Your size too!") {
 			it.namePrefix = ""
 			it.aliases = "underwear knickers".split
+			it.verbs = "give".split
 			it.canPickUp = true
 			it.canWear = true
 			it.onWear = msgFn("You slip the knickers on over your back legs. You're not too sure about the frilly bits, but at least they don't make your bum look big!")
+			it.onDrop = |Object knickers, Player player -> Describe?| {
+				if (player.room.has("mole")) {
+					player.inventory.remove(knickers)
+					player.clothes.remove(knickers)
+					player.room.objects.remove(knickers)
+					knickers.canDrop = false
+					knickers.canTakeOff = false
+					mole := player.room.findObject("mole")
+					player.room.objects.remove(mole)
+					if (player.hasOpenedParcel("mole"))
+						player.room.objects.add(newSnack())
+					else
+						player.room.objects.add(parcelUp(presentMole, "mole"))
+					return Describe("\"Oh! My wife's knickers!\" exclaims the mole. \"Thank you Larry for giving them back, they are wife's favourite after all! Here you go, have something in return.\" The mole tosses a parcel out, up ends, and burrows away out of sight.")
+				}
+				return null
+			}
+			it.redirectOnUse(it.onDrop)
 		}
 
 		photoOfEmma := |->Object| {
-				Object("photo of emma", "It is a photo of your favourite play pal, Emma. You really miss her and long for some tender strokes. You remember walks in the long grass, frolics, and sausage surprises. You wish you could do it all again. But where is she? You feel a mission brewing...") {
+			Object("photo of emma", "It is a photo of your favourite play pal, Emma. You really miss her and long for some tender strokes. You remember walks in the long grass, frolics, and sausage surprises. You wish you could do it all again. But where is she? You feel a mission brewing...") {
 				it.aliases = "photo emma".split
 				it.verbs = "show give".split
 				it.canPickUp = true
@@ -137,6 +175,10 @@
 							return desc
 						player.room.objects.add(parcelUp(presentLarry, "Larry"))
 						return desc += "\"Actually,\" says Larry, \"That reminds me. Here's a little something I found. Just don't ask me where I got it!\""
+					}
+					if (player.room.has("mole")) {
+						desc := Describe("You show the photo of Emma to the mole.")
+						return desc += "\"Yep, that's my wife alright.\" he says, \"I recognise them raspberries anywhere!\"\n\nYou check the photo and it's definitely a facial portrait of Emma. You decide the mole must be very blind indeed."
 					}
 					return null
 				}
@@ -219,6 +261,10 @@
 				larry.meta["snacksGiven"] = snacksGiven + 1
 				player.room.objects.add(newSnack())
 				return Describe("You rollover onto your back and on to your front again. Larry watches in amazement before doing the same! He giggles at learning a new trick and hands you a treat in appreciation.\n\n\"Thanks for all the peanuts.\" says Larry, \"Say, if you've not already, try feeding all the birds round here, they're looking a bit hungry too!\"")
+			}
+			mole := player.room.findObject("mole")
+			if (mole != null) {
+				return Describe("You roll and wriggle around on your back, accidently caving in some freshly dug holes as you do so. The mole is not impressed.")
 			}
 			return null
 		}
@@ -457,7 +503,7 @@
 								}
 								return Describe("You pull the coat on over your head and tie the velcro straps around your waist. Ahh, toasty warm!")
 							}
-							it.onTakeOff = |->Describe?| {
+							it.onDrop = |->Describe?| {
 								// taking the coat off outside immobilises you
 								if (player.room.meta["inside"] != true) {
 									player.meta["tooColdToMove"] = true
@@ -467,6 +513,7 @@
 								}
 								return null
 							}
+							it.onTakeOff = it.onDrop
 						}
 						player.room.objects.add(coat)
 						oven.onLook = null
@@ -704,6 +751,14 @@
 			Room("lawn", "A featureless patch of grass in front of the summer house that's popular with the local avian wildlife, should there be enough food around.\n\nThe lawn also sports a lot of earth mounds and a couple of small holes.") {
 				it.namePrefix = "on the"
 				it.meta["isGarden"] = true
+				it.onLeave = |Room lawn->Describe?| {
+					if (lawn.has("mole")) {
+						mole := lawn.findObject("mole")
+						lawn.objects.remove(mole)
+						return Describe("The mole up ends and burries away out of sight.")
+					}
+					return null
+				}
 				Exit(ExitType.north, `room:koiPond`),
 				Exit(ExitType.west, `room:vegetablePatch`),
 				Exit(ExitType.in, `room:summerHouse`, "A patchwork of rotting wood that once was decking leads up to a small decaying door.") {
@@ -731,12 +786,27 @@
 				},
 				Object("spade", "A stout digging utensil.") {
 					it.canPickUp = true
+					it.verbs = "dig".split
 					it.onUse = |Object spade, Player player -> Describe?| {
 						if (player.room.id == `room:vegetablePatch`) {
-							
+							veg := newVeg()
+							player.room.objects.add(veg)
+							return Describe("You start digging over the vegetable patch with the spade until you discover a ${veg.name}!")
 						}
 						if (player.room.id == `room:lawn`) {
-							// FIXME mole
+							if (player.room.has("mole")) {
+								return Describe("You keep digging the lawn. The mole is not impressed. He can do it half the time you can.")
+							}
+							player.room.add(Object("mole", "A small creature with big claws. His eyesight is very poor due to having tiny peepers.") {
+								it.onHi5 = |Object larry->Describe?| {
+									player.incHi5("mole")
+									return Describe("You shout \"High five!\" and raise your paw. Moley does the same but, on account of him having poor eyesight, he slaps a mound of earth instead.\n\nIntent is everything so you figure it still counts!")
+								}
+							})
+							desc := Describe("You start digging up the lawn making some of the small holes even bigger. And then, out from one pops a mole!")
+							if (!player.hasOpenedParcel("mole"))
+								desc += "\"Larry!?\" shouts the mole. \"Is that you!? My wife says you've been stealing her knickers again!\""
+							return desc
 						}
 						return null
 					}
