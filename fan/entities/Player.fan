@@ -36,6 +36,11 @@
 	
 	GameData world() { gameData }
 	
+	Describe achievement(Str what) {
+		// FIXME save achievements
+		return Describe("Achievement accomplished: $what")
+	}
+	
 	Describe look(Describe? at := null) {
 		if (at == null) at = room
 
@@ -45,6 +50,13 @@
 			descs.add(((Object) at).onLook?.call(at, this))
 		
 		return Describe(descs)
+	}
+	
+	Describe where(Str name) {
+		room := gameData.rooms.find { it.has(name) }
+		if (room == null)
+			return Describe("I don't know where it is.")
+		return Describe("It is ${room.fullName}.")
 	}
 	
 	Describe statistics() {

@@ -226,12 +226,15 @@ using graphics
 				nom := cmdStr.lower == "load" ? "autosave" : cmdStr[5..-1].trim
 				restoreFromLocalStorage("afQuestCmds-${nom}")
 
+			case "del":
 			case "delete":
 				if (cmdStr.lower == "delete") return
 				nom := cmdStr[6..-1].trim
 				win.localStorage.remove("afQuestCmds-${nom}")
 				log("Deleted $nom")
 
+			case "ls":
+			case "dir":
 			case "list":
 				size  := win.localStorage.size
 				saved := ""
@@ -346,6 +349,7 @@ using graphics
 		str.add("  - wear    <item>\n")
 		str.add("  - takeoff <item>\n")
 		str.add("  - use     <item>\n")
+		str.add("  - where   <item>\n")
 		str.add("\n")
 		str.add("Player commands:\n")
 		str.add("  - rollover\n")

@@ -1,5 +1,4 @@
 
-** hi5 spider to get out, rollover in web? greenhouse
 ** squirrel? say climb the washing line, that's what we do!
 ** 
 ** spawn in greenhouse -> use hose to add water
@@ -44,6 +43,38 @@
 			].random)
 			return snack
 		}
+		
+		spiderFight := |Player player, Str attackType, Int damage, Str msg -> Describe?| {
+			spider := player.room.findObject("spider")
+			if (spider == null) return null
+			
+			health := spider.meta["health"] as Int
+			if (spider.meta.containsKey("attack.${attackType}")) {
+				desc := Describe("The spider is clever and learns fast. This time it dodges your attack and stands its ground.")
+				desc += "Spider health: ${health}/10"
+				return desc
+			}
+			
+			spider.meta["attack.${attackType}"] = true
+			desc   := Describe(msg)
+			health -= damage
+			spider.meta["health"] = health
+			if (health <= 0) {
+				player.room.objects.remove(spider)
+				desc += "The spider, fearing more retribution, retreats and curls up in the corner of the greenhouse. With its legs curled up around him, the spider looks a lot smaller and a lot less threatening. You decide you can now safely ignore it."
+				health = 0
+				player.room.objects.remove(spider)
+				player.achievement("2 legs are better than 8") //FIXME red returned
+				player.room.add(newSnack())
+				player.room.add(Object("trough of frog spawn", "") {
+					// FIXME frog spawn
+				})
+			}
+			desc += "Spider health: ${health}/10"
+			if (health <= 0)
+				desc += "Time to look around the greenhouse and see what else there is!"
+			return desc
+		}
 		newVeg := |->Object| {
 			snack := [
 				Object("carrot", "A crunchy carrot."),
@@ -85,6 +116,13 @@
 			it.verbs = "drink swig sip gulp".split
 			it.canPickUp = true
 			it.onUse = |Object me, Player player -> Describe?| {
+				spider := spiderFight(player, "gin", 5, "You grab a rag from the floor, stuff it in the end of the gin bottle and set light to it. \"Let's see how this thirsty spider drinks a Molotov cocktail!\" you think as you hurl your home made fire bomb.\n\nThe bottle fragments on the spiders's head, coating it in fire. The spider screams and rolls around in the web, putting the flames out. Defiantly, it springs back to its feet ready for more.")
+				if (spider != null) {
+					spider += player.achievement("Russian Bartender")
+					player.room.objects.remove(me)
+					player.inventory.remove(me)
+					return spider
+				}
 				// TODO max 3 swigs - stagger about to exits-2, exits-1
 				return Describe("You swig the gin. You feel woozy.") + player.gameStats.incSnacks
 			}
@@ -180,6 +218,9 @@
 						desc := Describe("You show the photo of Emma to the mole.")
 						return desc += "\"Yep, that's my wife alright.\" he says, \"I recognise them raspberries anywhere!\"\n\nYou check the photo and it's definitely a facial portrait of Emma. You decide the mole must be very blind indeed."
 					}
+					if (player.room.has("spider")) {
+						return spiderFight(player, "photo", 2, "The spider lunges at you but you whip out the photo of Emma and guard yourself with it. The spider stops its attack and instead stares at the photo in a trance like state. Beauty has tamed the beast, and with fours times as many eyes, it sees four times as much beauty.\n\nBut this advantage won't last forever. Best attack it again while you can.")
+					}
 					return null
 				}
 			}
@@ -265,6 +306,10 @@
 			mole := player.room.findObject("mole")
 			if (mole != null) {
 				return Describe("You roll and wriggle around on your back, accidently caving in some freshly dug holes as you do so. The mole is not impressed.")
+			}
+			spider := player.room.findObject("spider")
+			if (spider != null) {
+				return spiderFight(player, "rollover", 2, "You observe the spider is more agile on its bed of cobwebs. So thinking fast you start to rollover, and over, and over around the greenhouse, taking out the sticky cobwebs as you go. You break free before getting cocooned yourself, and dust yourself down.\n\nThe spider howls in anguish at having its home destroyed.")
 			}
 			return null
 		}
@@ -363,6 +408,8 @@
 					it.onUse = 	|Object lead, Player player -> Describe?| {
 						desc := climbWashingLine(lead, player)
 						if (desc != null) return desc
+						sdes := spiderFight(player, "lead", 2, "You take the lead and whip the spider. It dodges the first one, but the second catches it in the eye. It winces and you whip it again, taking out another eye.\n\nIt growls like a wounded animal, but you're now at an advantage.")
+						if (sdes != null) return sdes
 						door := player.room.findObject("door")
 						if (door != null)
 							return door.onUse?.call(door, player)
@@ -710,9 +757,11 @@
 					it.aliases = "hose|hosepipe|hose pipe".split('|')
 					it.canPickUp = true
 					it.onUse = |Object hosepipe, Player player -> Describe?| {
+						sdes := spiderFight(player, "hosepipe", 3, "You pull the trigger on the nozzle and hose down the spider. The water jets pummel it into a corner.\n\nIt tries to fight its way back but its legs become heavy as its hairy legs soak up the water. Disorientated with water in its eyes the spider drags itself back and stands there, wobbling with uncertainty.")
+						if (sdes != null) return sdes
 						desc := climbWashingLine(hosepipe, player)
 						if (desc != null) return desc
-						return null
+						return Describe("You pull the trigger on the nozzle and fire out soaking jets of water! It makes a mess, but not much else.")
 					}
 				}
 			},
@@ -781,6 +830,8 @@
 					it.onUse = |Object bucket, Player player -> Describe?| {
 						desc := climbWashingLine(bucket, player)
 						if (desc != null) return desc
+						sdes := spiderFight(player, "bucket", 1, "You swing the bucket but the spider catches it with a couple of its many legs and places it on its head, using it as an armoured helmet for protection.\n\nBut because it looks so funny, it dies a little inside.")
+						if (sdes != null) return sdes						
 						return null
 					}
 				},
@@ -808,7 +859,8 @@
 								desc += "\"Larry!?\" shouts the mole. \"Is that you!? My wife says you've been stealing her knickers again!\""
 							return desc
 						}
-						return null
+						desc := spiderFight(player, "spade", 5, "You swing the spade and watch it slam the spider full in the face. It staggers back and trips up as three of its legs give way. You wang the spade over your head and bring it down on the spider's with a satisfying 'Thwack!'.")
+						return desc
 					}
 				},
 				newSnack(),
@@ -817,14 +869,24 @@
 			Room("vegetable patch", "An old vegetable patch that's now mostly covered in wild strawberry creepers. In the corner sits a huge crown of rhubarb.") {
 				Exit(ExitType.east,  `room:lawn`),
 				Exit(ExitType.north, `room:goldfishPond`),
-				Exit(ExitType.in,	 `room:greenhouse`),
+				Exit(ExitType.in,	 `room:greenhouse`, "As you peer in through the murky windows, all you can make out is what appears to be rugby ball with hairy legs!?"),
 				Object("rhubarb", "The rhubarb has eagerly grown into huge monster of a plant as if it were auditioning for a role in The Little Shop of Horrors! Its size means it gives a seemingly endless supply of stalks.") {
 					it.namePrefix = ""
 					it.aliases = "stick|stalk|stalk of rhubarb|stick of rhubarb".split('|')
 					it.onPickUp = |Object food, Player player -> Describe?| {
 						player.inventory.add(Object("stalk of rhubarb", "A large sturdy red stick of rhubarb. Good for whacking things with!") {
 							it.aliases = "rhubarb stick stalk".split
-							it.edible("Nibbling on the bulbous red end, you decide it's almost as tasty as rawhide.")
+							it.canPickUp = true
+							it.verbs = verbs.rw.addAll("eat chomp gnaw chew trough swallow gulp scoff".split)
+							it.onUse = |Object rhubarb -> Describe?| {
+								desc := spiderFight(player, "rhubarb", -1, "You go to jab the spider with the sturdy stick of rhubarb, but the spider is faster. It grabs the rhubarb with its jaws, chews it up, and spits it out.\n\nRejuvenated with rhubarb juice, the spider is healthy, fighting fit, and ready for more!")
+								if (desc != null)  {
+									player.inventory.remove(rhubarb)
+									player.room.objects.remove(rhubarb)
+									return desc 
+								}
+								return Object.edibleFn("Nibbling on the bulbous red end, you decide it's almost as tasty as rawhide.")(rhubarb, player)
+							}
 							it.onDrop = |Object rhubarb->Describe?| {
 								if (player.room.id == `room:vegetablePatch`) {
 									rhubarb.canDrop = false
@@ -840,9 +902,37 @@
 				},
 			},
 
-			Room("greenhouse", "") {
+			Room("greenhouse", "An old dis-used greenhouse that's used more for storage than growing things.") {
+				it.onEnter = |Room gh, Player player -> Describe?| {
+					if (!gh.has("spider")) return null
+					spider := gh.findObject("spider")
+					health := spider.meta["health"] as Int
+					desc := Describe("You've disturbed the lair of a GIANT HOUSE SPIDER!")
+					desc += "The spider leaps out from the corner and crouches down in front of you. Its long hairy legs stretch from one side of the greenhouse to the other. All eight eyes watch you with a malevolent intelligence. It must be destroyed."
+					desc += "Spider health: ${health}/10"
+					return desc
+				}
+				it.onLeave = |Room gh, Player player -> Describe?| {
+					if (!gh.has("spider")) return null
+					spider := gh.findObject("spider")
+					health := spider.meta["health"] as Int
+					desc := Describe("You bolt out of the greenhouse with your heart pumping and your tail between your legs.")
+					
+					return desc
+				}
 				Exit(ExitType.out, `room:vegetablePatch`),
-				// FIXME Spider Fight!
+				Object("giant spider", "A colossal hairy house spider, bigger than your head!") {
+					it.aliases = "spider monster".split
+					it.meta["health"] = 10
+					it.onHi5 = |Object spider, Player player->Describe?| {
+						player.incHi5("spider")
+						return spiderFight(player, "hi5", 3, "You raise your paw and slog the beast with a right hook. The spider rolls with the blow before scrabbling back to its feet. It shakes its head and leans at you, menacingly.")
+					}
+					it.onUse = |Object spider, Player player->Describe?| {
+						spiderFight(player, "spider", 1, "You race in and attack the spider, drawing first blood with a savage bite to a leg. The spider kicks you off and now looks meaner and more determined than ever.")
+					}
+					it.verbs = "attack fight punch kick bite".split
+				},
 			},
 			
 			Room("birds nest", "You are high in the trees with no obvious route back. The garden and house is sprawled out below you, and you see the car in the driveway. Wait! Was that movement you saw in the car just now?") {

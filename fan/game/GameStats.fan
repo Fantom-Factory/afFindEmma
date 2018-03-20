@@ -98,7 +98,7 @@
 		str.add("Moves made ......... ${noOfMoves}\n")
 		str.add("Snacks eaten ....... ${noOfSnacksEaten}\n")
 		str.add("Belly size ......... ${bellySize}/9 (" + ("X" * bellySize) + ")\n")
-		str.add("High fives given ... ${hi5s.size}/6" + (hi5s.isEmpty ? "" : (" - " + hi5s.join(", "))) + "\n")
+		str.add("High fives given ... ${hi5s.size}/7" + (hi5s.isEmpty ? "" : (" - " + hi5s.join(", "))) + "\n")
 		str.add("Presents opened..... ${parcels.size}/6" + (parcels.isEmpty ? "" : (" - " + parcels.join(", "))) + "\n")
 		return str.toStr
 	}

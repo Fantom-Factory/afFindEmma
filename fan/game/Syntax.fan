@@ -7,7 +7,7 @@
 	static const Str[]	dropSynonyms		:= "drop "							.split('|', false)
 	static const Str[]	wearSynonyms		:= "wear |put on "					.split('|', false)
 	static const Str[]	takeOffSynonyms		:= "take off |remove "				.split('|', false)
-//	static const Str[]	useSynonyms			:= "use "							.split('|', false)
+	static const Str[]	whereSynonyms		:= "where |where is "				.split('|', false)	// FIXME why does "where is" no work?
 
 	static const Str[]	hi5Synonyms			:= "hi5 |high five "				.split('|', false)
 	static const Str[]	rolloverSynonyms	:= "rollover "						.split('|', false)
@@ -47,6 +47,8 @@
 			cmd = matchHi5(player, cmdStr)
 		if (cmd == null)
 			cmd = matchRollover(player, cmdStr)
+		if (cmd == null)
+			cmd = matchWhere(player, cmdStr)
 
 		return cmd
 	}
@@ -255,6 +257,21 @@
 		return Cmd {
 			it.method	= Player#hi5
 			it.args		= [object]
+		}
+	}
+
+	Cmd? matchWhere(Player player, Str cmdStr) {
+		whereCmd := whereSynonyms.find { cmdStr.startsWith(it) || cmdStr == it.trimEnd }
+		if (whereCmd == null) return null
+		
+		if (cmdStr == whereCmd.trimEnd)
+			return Cmd("Where what?")
+
+		cmdStr = cmdStr[whereCmd.size..-1]
+
+		return Cmd {
+			it.method	= Player#where
+			it.args		= [cmdStr]
 		}
 	}
 

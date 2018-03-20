@@ -5,12 +5,12 @@
 
 	@Operator
 	Describe plus(Describe d) {
-		DescribeMulti([this, d])
+		makeMulti([this, d])
 	}
 
 	@Operator
 	Describe plusStr(Str d) {
-		DescribeMulti([this, Describe(d)])
+		makeMulti([this, Describe(d)])
 	}
 	
 	static new makeStr(Str? desc) {
