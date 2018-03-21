@@ -221,11 +221,20 @@
  		show photo
  		drop knickers
  		open parcel
- 		l
- 		
+
+ 	// eight legged freak
  		west
+ 		in
+ 		attack spider
+ 		rollover
+ 		hi5 spider
  		use spade
- 		eat slug
+
+ 	// frog spawn
+
+
+
+ 		out
  		drop spade
 
  		
