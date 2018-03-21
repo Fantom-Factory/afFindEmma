@@ -194,6 +194,8 @@ using graphics
 			case "statistics":
 				log(player.statistics)
 			
+			case "?":
+			case "h":
 			case "help":
 				if (cmds.size == 1)
 					log(help)
@@ -372,7 +374,7 @@ using graphics
 		str.add("  - get snack\n")
 		str.add("  - open door\n")
 		str.add("\n")
-		str.add("Note some actions require items to be dropped or gathered together in the same room.\n")
+		str.add("Some actions require items to be dropped or gathered together in the same room.\n")
 		str.add("\n")
 		str.add("Terminal commands:\n")
 		str.add("  - help\n")

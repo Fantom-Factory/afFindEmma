@@ -1,13 +1,9 @@
 
 ** squirrel? say climb the washing line, that's what we do!
+** frog - pressie? hi 5 - lore from old tell of a hairy beast that saved us from a barren scorched land and transported us to the pond of plenty ... party on! Achient - times of old
+** gin
 ** 
-** spawn in greenhouse -> use hose to add water
-** pickup (endless) spawn (with bucket)
-** drop spawn in koi pond -> fish food!
-** drop spawn in gold fish pond -> nothing, but set onEnter action (x2 ?) to make frogs -> pressie!
-** 
-** Use tap to turn on hose
-** default actions for using hose in house and out
+** Tips - feed ALL the birds
 ** 
 ** Known Bug - if you take off your coat just before hoisting yourself up the washing line, you can wander the map without it on.
 ** If can then become trapped inside as you can't go outside without a coat. 
@@ -64,10 +60,25 @@
 				desc += "The spider, fearing more retribution, retreats and curls up in the corner of the greenhouse. With its legs curled up around him, the spider looks a lot smaller and a lot less threatening. You decide you can now safely ignore it."
 				health = 0
 				player.room.objects.remove(spider)
-				player.achievement("2 legs are better than 8") //FIXME red returned
+				player.achievement("4 legs are better than 8")
 				player.room.add(newSnack())
-				player.room.add(Object("trough of frog spawn", "") {
-					// FIXME frog spawn
+				player.room.add(Object("trough of frog spawn", "Someone has placed the frog spawn in the plastic trough, presumably to prevent it from freezing over in the pond.") {
+					it.aliases = "frogspawn spawn".split
+					it.meta["hydrated"] = false
+					it.onLook = |Object trough -> Describe?| {
+						if (trough.meta["hydrated"] == false)
+							return Describe("But now it looks dehydrated and is in danger of drying out. What can you do?") 
+						return Describe("But the trough has no food and you're concerned the tadpoles, once hatched, will go hungry.") 
+					}
+					it.onPickUp = |Object trough -> Describe?| {
+						if (trough.meta["hydrated"] == false)
+							return Describe("The dehydrated frogspawn looks too delicate to move.")
+						if (!player.has("bucket") && !player.room.has("bucket"))
+							return Describe("You try picking up the frog spawn but it just dribbles through your paws and slops back in the trough.")
+						bucket := player.findObject("bucket") ?: player.room.findObject("bucket") 
+						bucket.meta["hasSpawn"] = true
+						return Describe("You dip the bucket in the trough and scoop up some frog spawn.")
+					}
 				})
 			}
 			desc += "Spider health: ${health}/10"
@@ -118,7 +129,7 @@
 			it.onUse = |Object me, Player player -> Describe?| {
 				spider := spiderFight(player, "gin", 5, "You grab a rag from the floor, stuff it in the end of the gin bottle and set light to it. \"Let's see how this thirsty spider drinks a Molotov cocktail!\" you think as you hurl your home made fire bomb.\n\nThe bottle fragments on the spiders's head, coating it in fire. The spider screams and rolls around in the web, putting the flames out. Defiantly, it springs back to its feet ready for more.")
 				if (spider != null) {
-					spider += player.achievement("Russian Bartender")
+					player.achievement("Russian bartender")
 					player.room.objects.remove(me)
 					player.inventory.remove(me)
 					return spider
@@ -157,8 +168,10 @@
 					player.room.objects.remove(mole)
 					if (player.hasOpenedParcel("mole"))
 						player.room.objects.add(newSnack())
-					else
+					else {
 						player.room.objects.add(parcelUp(presentMole, "mole"))
+						player.achievement("Return the reds")
+					}
 					return Describe("\"Oh! My wife's knickers!\" exclaims the mole. \"Thank you Larry for giving them back, they are wife's favourite after all! Here you go, have something in return.\" The mole tosses a parcel out, up ends, and burrows away out of sight.")
 				}
 				return null
@@ -301,7 +314,7 @@
 					return Describe("Aww, Larry is all out of dog treats.")
 				larry.meta["snacksGiven"] = snacksGiven + 1
 				player.room.objects.add(newSnack())
-				return Describe("You rollover onto your back and on to your front again. Larry watches in amazement before doing the same! He giggles at learning a new trick and hands you a treat in appreciation.\n\n\"Thanks for all the peanuts.\" says Larry, \"Say, if you've not already, try feeding all the birds round here, they're looking a bit hungry too!\"")
+				return Describe("You rollover onto your back and on to your front again. Larry watches in amazement before doing the same! He giggles at learning a new trick and hands you a treat in appreciation.\n\n\"Thanks for all the peanuts.\" says Larry, \"Say, if you've not already, try feeding *all* the birds round here, they're looking a bit hungry too!\"")
 			}
 			mole := player.room.findObject("mole")
 			if (mole != null) {
@@ -761,6 +774,11 @@
 						if (sdes != null) return sdes
 						desc := climbWashingLine(hosepipe, player)
 						if (desc != null) return desc
+						if (player.room.has("trough of frog spawn")) {
+							trough := player.room.findObject("trough of frog spawn")
+							trough.meta["hydrated"] = true
+							return Describe("You pull the trigger and fill the trough with fresh water. The frog spawn begins to swell and looks a lot more healthy and juicy.\n\nBut you notice the trough has no food for when the tadpoles hatch. You figure it's best to move them.")
+						}
 						return Describe("You pull the trigger on the nozzle and fire out soaking jets of water! It makes a mess, but not much else.")
 					}
 				}
@@ -768,6 +786,42 @@
 
 			Room("goldfish pond", "It is a shallow square pond full of weeds.") {
 				it.namePrefix = "next to the"
+				it.meta["hasSpawn"]		= false
+				it.meta["hasTadpoles1"] = false
+				it.meta["hasTadpoles2"] = false
+				it.meta["hasFrogs"]		= false
+				it.onLook  = |Room pond->Describe?| {
+					if (pond.has("frogs"))
+						return Describe("It is also full of frogs, swimming, croaking, and playing!")
+					return null
+				}
+				it.onEnter = |Room pond, Player player->Describe?| {
+					if (pond.meta["hasSpawn"]) {
+						pond.meta["hasSpawn"]	  = false
+						pond.meta["hasTadpoles1"] = true
+						return Describe("You delight to see that, during your absence, the frog spawn has turned into little tadpoles! They're wriggling around, nibbling on the pond weed.")
+					}
+					if (pond.meta["hasTadpoles1"]) {
+						pond.meta["hasTadpoles1"] = false
+						pond.meta["hasTadpoles2"] = true
+						return Describe("The little tadpoles have turned into big tadpoles! They're still wriggling around, nibbling on pond weed.")
+					}
+					if (pond.meta["hasTadpoles2"]) {
+						pond.meta["hasTadpoles2"] = false
+						pond.meta["hasFrogs"] = true
+						return Describe("Oh wow, some of the tadpoles now have little legs! You're so excited! Now they're swimming around and sheltering under the pond weed.")
+					}
+					if (pond.meta["hasFrogs"]) {
+						pond.meta["hasFrogs"] = false
+						pond.add(Object("frogs", "") {
+							it.namePrefix = ""
+							// FIXME frog
+							
+						})
+						return Describe("You are surrounded by a cacophony of croaking. You look around to see a pond full of happy slimy frogs! They're all swimming around and climbing over each other.")
+					}
+					return null
+				}
 				Exit(ExitType.east, `room:koiPond`),
 				Exit(ExitType.north, `room:patio`, "A couple of stone steps lead down to the patio."),
 				Exit(ExitType.south, `room:vegetablePatch`),
@@ -826,12 +880,36 @@
 			Room("summer house", "Constructed of rotting wood the summer house is a dark and foreboding death trap. Inside, amongst the muddy garden tools a hundred eyes shine back at you from within the dim light.") {
 				Exit(ExitType.out, `room:lawn`),
 				Object("bucket", "A plastic yellow bucket with a handle, useful for carrying.") {
+					it.meta["hasSpawn"] = false
 					it.canPickUp = true
+					it.onLook = |Object bucket, Player player -> Describe?| {
+						if (bucket.meta["hasSpawn"] == true)
+							return Describe("It is half full of frog spawn.")
+						return null
+					}
 					it.onUse = |Object bucket, Player player -> Describe?| {
 						desc := climbWashingLine(bucket, player)
 						if (desc != null) return desc
 						sdes := spiderFight(player, "bucket", 1, "You swing the bucket but the spider catches it with a couple of its many legs and places it on its head, using it as an armoured helmet for protection.\n\nBut because it looks so funny, it dies a little inside.")
-						if (sdes != null) return sdes						
+						if (sdes != null) return sdes
+						if (player.room.has("trough of frog spawn")) {
+							trough := player.room.findObject("trough of frog spawn")
+							return trough.onPickUp(trough, player)
+						}
+						if (bucket.meta["hasSpawn"] == true)
+							return bucket.onDrop(bucket, player)
+						return null
+					}
+					it.onDrop = |Object bucket, Player player -> Describe?| {
+						if (bucket.meta["hasSpawn"] == true && player.room.id == `room:koiPond`) {
+							bucket.meta["hasSpawn"] = false
+							return Describe("You tip the bucket of frog spawn into the koi pond. All of a sudden the koi dart up from the deep and initiate a feeding frenzy, gulping down the tasty treats.\n\nYou don't have to worry about that frog spawn anymore!")
+						}
+						if (bucket.meta["hasSpawn"] == true && player.room.id == `room:goldfishPond`) {
+							bucket.meta["hasSpawn"] = false
+							player.room.meta["hasSpawn"] = true
+							return Describe("You tip the bucket of frog spawn into the goldfish pond where there are plenty of weeds for food. You hope that one day the spawn will hatch and turn into tadpoles, and then maybe even frogs!")
+						}
 						return null
 					}
 				},
@@ -1063,7 +1141,11 @@
 
 			Room("back seat of the car", "You're so happy you've found Emma, all the morning's adventures were worth it! But the day is not over yet, and there may be more adventures to come.\n\nYou look eagerly out of the window as Emma starts the engine. This is going to be a great day!\n\n  - THE END -\n\n") {
 				meta["noExits"] = true
-				it.onEnter = |Room room, Player player->Describe?| { player.endThis; return null }
+				it.onEnter = |Room room, Player player->Describe?| {
+					player.achievement("Found Emma")
+					player.endThis
+					return null
+				}
 			},
 		]
 		

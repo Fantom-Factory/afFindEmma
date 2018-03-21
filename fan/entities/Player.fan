@@ -36,7 +36,7 @@
 	
 	GameData world() { gameData }
 	
-	Describe achievement(Str what) {
+	Void achievement(Str what) {
 		// FIXME save achievements
 		return Describe("Achievement accomplished: $what")
 	}

@@ -9,6 +9,7 @@
 	Str:Obj?		meta		:= Str:Obj?[:]
 
 	// todo canLeave? canEnter?
+	|Room         -> Describe?|?	onLook
 	|Room, Player -> Describe?|?	onEnter
 	|Room, Player -> Describe?|?	onLeave
 	
@@ -83,6 +84,8 @@
 
 		if (desc.size > 0)
 			descs.add(Describe(desc))
+		descs.add(onLook?.call(this))
+
 
 		descs.add(lookObjects)
 		descs.add(lookExits)
