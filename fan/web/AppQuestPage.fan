@@ -1,7 +1,7 @@
 using dom
 using graphics
 
-@Js class AppDogPage : Commander, DomBob {
+@Js class AppQuestPage : Commander, DomBob {
 	override Game?			game
 	override Player?		player
 	override Syntax?		syntax
@@ -23,6 +23,7 @@ using graphics
 	             \n\n\n"
 	
 	Void init() {
+		echo("Find Emma v${typeof.pod.version} by Alien-Factory")
 		box 	:= null as Elem
 		cbox	:= null as CardBox
 		doc.body.insertBefore(
@@ -132,7 +133,7 @@ using graphics
 						},
 						div("screen hallOfFame") {
 							div("output") {
-								elem("span", "", "The \"Find Emma\" Hall of Fame!\n\n\nNo one has found found Emma yet!  :(\n\n\nIf you do, email me the completed save file and I'll add your details to this screen!\n\nContact details can be found on "),
+								elem("span", "", "The \"Find Emma\" Hall of Fame!\n\n\nNo one has found found Emma yet!  :(\n\n\nIf you do, email me the completed save file and I'll add your details to this screen!\n\nContact details can be found at the bottom of "),
 								elem("a", "", "Fantom-Factory") { it.setAttr("href", "http://www.fantomfactory.org/") },
 								elem("span", "", "."),
 							},
