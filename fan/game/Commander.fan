@@ -231,19 +231,73 @@
  		use spade
 
  	// frog spawn
-
-
-
- 		out
  		drop spade
-
- 		
- 	// finale from veg patch
+ 		out
+ 		north
+ 		north
+ 		get hose
+ 		south
+ 		south
+ 		in
+ 		drop hose
+ 		out
  		east
  		in
  		get bucket
  		out
+ 		west
+ 		in
+ 		use hose
+ 		use bucket
+ 		out
  		north
+ 		drop bucket
+ 		east
+ 		south
+ 		get photo
+ 		west
+ 		north
+ 		north
+ 		south
+ 		north
+ 		south
+ 		north
+ 		south
+ 		show photo
+ 		open present	// parcel frogs
+ 		use bubble bath
+ 		hi5 frogs
+ 
+ 	// squirrel
+ 		drop photo
+ 		north
+ 		north
+ 		west
+ 		get nuts
+ 		east
+ 		south
+ 		south
+ 		south
+ 		east
+ 		drop nuts
+ 		rollover
+ 		hi5 squirrel
+ 		north
+ 		west
+ 		get photo
+ 		south
+ 		east
+ 		show photo
+ 		open parcel
+ 		drink tea
+ 		drop photo
+ 
+ 		west
+ 		north
+ 		
+ 	// finale from frog pond
+ 		get bucket
+ 		east
  		north
  		drop bucket
  		south
@@ -258,9 +312,11 @@
  		drop lead
  		south
  		west
- 		north
- 		get hosepipe
  		south
+ 		in
+ 		get hosepipe
+ 		out
+ 		north
  		east
  		north
  		use washing line

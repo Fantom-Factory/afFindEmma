@@ -1,10 +1,4 @@
 
-** squirrel? say climb the washing line, that's what we do!
-** frog - pressie? hi 5 - lore from old tell of a hairy beast that saved us from a barren scorched land and transported us to the pond of plenty ... party on! Achient - times of old
-** gin
-** 
-** Tips - feed ALL the birds
-** 
 ** Known Bug - if you take off your coat just before hoisting yourself up the washing line, you can wander the map without it on.
 ** If can then become trapped inside as you can't go outside without a coat. 
 @Js class XEscape : Loader {
@@ -111,7 +105,7 @@
 		parcelUp := |Object inside, Str from->Object| {
 			Object("parcel", "A small parcel wrapped up in gift paper. I wonder what's inside?") {
 				it.canPickUp = true
-				it.aliases = Str[,]
+				it.aliases = "present gift".split
 				it.verbs = "open|rip open|tear open|rip|tear".split('|')
 				it.onUse = |Object me, Player player -> Describe| {
 					player.room.objects.add(inside)
@@ -139,7 +133,7 @@
 			}
 		}
 		presentGoldfish := Object("box of chocolates", "A small box of assorted milk chocolates.") {
-			it.aliases = "box chocolates".split
+			it.aliases = "box chocolates chocs".split
 			it.edible("You scoff the chocolates with all the finesse you'd expect from a dog.")
 		}
 		presentKoi := Object("pulley blueprints", "It's a hand drawn picture of a pulley system used to lever heavy objects out of the pond, but you figure the principle it could be applied to other uses. It comprises of a bucket, some rope, and a harness.") {
@@ -149,6 +143,24 @@
 		presentMole := Object("comfortable pyjamas", "A stripy pair of comfortable cotton pyjamas.") {
 			it.canWear = true
 			it.onWear = msgFn("Ah! Soft and comfortable. In fact, you feel a little sleepy.")
+		}
+		presentSquirrel := Object("tea bag", "Of the English breakfast variety.") {
+			it.aliases = "tea bag".split
+			it.verbs = "drink brew".split
+			it.edible("Ah! You brew a perfect cup of tea!")
+		}
+		presentFrogs := Object("bubble bath", "A bottle of bright green, relaxing bubble bath.") {
+			it.canPickUp = true
+			it.onDrop = |Object bubbles, Player player -> Describe?| {
+				if (player.room.has("frogs")) {
+					bubbles.canDrop = false
+					player.room.objects.remove(bubbles)
+					player.inventory.remove(bubbles)
+					return Describe("You accidently knock the bottle of bubble bath into the pond of frogs. Before you know it, bubbles and foam is flying everywhere. The frogs love it and start jumping and swimming, croaking and singing even more! Boy, those frogs sure know how to party!")
+				}
+				return null
+			}
+			it.redirectOnUse(it.onDrop)
 		}
 		presentLarry := Object("women's underwear", "A pair of racy red, slinky women's underwear. Your size too!") {
 			it.namePrefix = ""
@@ -192,7 +204,7 @@
 						player.room.objects.add(parcelUp(presentBirds, "birds"))
 						return desc += "In appreciation of their favourite feeder, the birds drop a present for you."
 					}
-					if (player.room.has("goldfish")) {
+					if (player.room.has("goldfish") && !player.room.has("frogs")) {	// frogs come first!
 						desc := Describe("You show the goldfish the photo of Emma. They swim around in excited circles - they love the sight of their feeder!")
 						if (player.hasOpenedParcel("goldfish"))
 							return desc
@@ -234,6 +246,23 @@
 					if (player.room.has("spider")) {
 						return spiderFight(player, "photo", 2, "The spider lunges at you but you whip out the photo of Emma and guard yourself with it. The spider stops its attack and instead stares at the photo in a trance like state. Beauty has tamed the beast, and with fours times as many eyes, it sees four times as much beauty.\n\nBut this advantage won't last forever. Best attack it again while you can.")
 					}
+					if (player.room.has("frogs")) {
+						desc := Describe("You hold the photo of Emma up to the frogs and exclaim, \"Has anyone seen this girl!?\".\n\nThe pond goes eerily quiet. A crowned frog hops onto a stone next to you and proudly proclaims, \"I am the frog king. Lore from old tells of a hairy beast that saved us from a barren and scorched land and transported us here, to the pond of plenty. So yes, we will help you in your quest.\n\n\"The koi have blueprints to a pulley system you can use to ascend the washing line. You may have to improvise a little, but once up there, you should be able to find your friend.\"\n\nAnd with that, he hops back in the pond and the frog partying continues!")
+						player.achievement("Times of old")
+						if (player.hasOpenedParcel("frogs"))
+							return desc
+						player.room.objects.add(parcelUp(presentFrogs, "frogs"))
+						desc += "The frogs then yell, \"Elixir of life!\" and chuck you a parcel."
+						return desc
+					}
+					
+					if (player.room.has("squirrel")) {
+						desc := Describe("You show the photo to NutSack. \"Emma the Feeder, she's great she is! Try making like a squirrel and climb up high somewhere. You may spot here from there.\"")
+						if (player.hasOpenedParcel("NutSack"))
+							return desc
+						player.room.objects.add(parcelUp(presentSquirrel, "NutSack"))
+						return desc += "\"And here's a little something that reminds me of her!\" says NutSack and tosses you a parcel."
+					}
 					return null
 				}
 			}
@@ -260,6 +289,7 @@
 				desc += "A loud screech pierces the air and all the birds instantly scatter.\n\nDaylight is eclipsed by the shadow of the enormous wingspan of a swooping buzzard. Attracted by the constant hive of activity in the gardens, the buzzard is here to feed. Its talons take a tight grip on your coat and it pounds the air with its wings. You no longer feel the ground under your feet."
 				if (player.hasSmallBelly) {
 					gardens.each { it.objects = it.objects.exclude { it.id == `obj:birds` } }
+					player.inventory.each { player.room.add(it) }; player.inventory.clear	// drop everything so you can pick up the key
 					player.transportTo(`room:birdsNest`)
 					desc += "Before you know it, you're high above the garden looking down on the ponds below. The buzzard takes you into the trees before dropping you in a large makeshift nest and flying away, leaving you alone once more."
 				} else {
@@ -323,6 +353,10 @@
 			spider := player.room.findObject("spider")
 			if (spider != null) {
 				return spiderFight(player, "rollover", 2, "You observe the spider is more agile on its bed of cobwebs. So thinking fast you start to rollover, and over, and over around the greenhouse, taking out the sticky cobwebs as you go. You break free before getting cocooned yourself, and dust yourself down.\n\nThe spider howls in anguish at having its home destroyed.")
+			}
+			squirrel := player.room.findObject("squirrel")
+			if (squirrel != null) {
+				return Describe("You rollover and the squirrel is very impressed!\n\n\"That's great!\" he says. \"I'll tell you what, if you ever get hassled by any of them eight legged freaks, give 'em a poke with a sturdy stick, that'll sort them right out!\"")
 			}
 			return null
 		}
@@ -595,6 +629,17 @@
 									player.inventory.remove(nuts)
 									return Describe("You place the peanuts back in the sack.")									
 								}
+								if (player.room.id == `room:lawn`) {
+									nuts.canDrop = false
+									player.inventory.remove(nuts)
+									player.room.add(Object("squirrel", "\"Hi!\" says the squirrel standing proud. \"I'm NutSack! On account of my, um, sack of nuts here.\"\n\nIndeed, you can not argue. For his diminutive size, the squirrel does have an impressive sack of nuts.") {
+										it.onHi5 = |Object squirrel->Describe?| {
+											player.incHi5("NutSack")
+											return Describe("You high five NutSack, and then wipe your hand as you're not quite sure where it's been.")
+										}
+									})
+									return Describe("You scatter the peanuts, and as if by magic a squirrel appears and starts filling its face.")									
+								}
 								if (player.room.id == `room:backLawn`) {
 									nuts.canDrop = false
 									player.inventory.remove(nuts)
@@ -813,10 +858,12 @@
 					}
 					if (pond.meta["hasFrogs"]) {
 						pond.meta["hasFrogs"] = false
-						pond.add(Object("frogs", "") {
+						pond.add(Object("frogs", "A multitude of common frogs are frolicking in the pond.") {
 							it.namePrefix = ""
-							// FIXME frog
-							
+							it.onHi5 = |Object frogs -> Describe?| {
+								player.incHi5("frogs")
+								return Describe("You scream, \"High five!\" and all the frogs line up in the pond with a little arm extended. You run along the side and high five them all. Yeah!")
+							}
 						})
 						return Describe("You are surrounded by a cacophony of croaking. You look around to see a pond full of happy slimy frogs! They're all swimming around and climbing over each other.")
 					}
@@ -1009,6 +1056,9 @@
 					it.onUse = |Object spider, Player player->Describe?| {
 						spiderFight(player, "spider", 1, "You race in and attack the spider, drawing first blood with a savage bite to a leg. The spider kicks you off and now looks meaner and more determined than ever.")
 					}
+					it.onPickUp = |Object spider, Player player->Describe?| {
+						spiderFight(player, "spiderPickUp", 1, "You pick up the spider and hurl it against the far wall. The spider springs back to it's feet, it is bruised but down yet.")
+					}
 					it.verbs = "attack fight punch kick bite".split
 				},
 			},
@@ -1072,6 +1122,7 @@
 						player.transportTo(`room:lawn`)
 						return Describe("You stare back at the fluffy squeaky thing in front of you. Your eyes widen, you can't contain yourself! Must chase!\n\nThe squirrel senses danger and darts off the roof, climbing down a wooden beam holding up the roof. Without a thought you do the same.\n\nBefore you know it, you're on the lawn. The squirrel has disappeared and you're left wondering how you got there!")
 					}
+					it.onHi5 = onUse
 				},
 				Exit(ExitType.down, `room:lawn`, "You can see the garden lawn below, but it's way to far to jump!") {
 					it.block("", "You teeter to the edge but crawl back when vertigo sets in!")
