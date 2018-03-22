@@ -7,9 +7,17 @@
 	Int			noOfSnacksEaten { private set }
 	Int			bellySize := 5	{ private set }
 	private Int	legWork
-	private Str[]	parcels		:= Str[,]
-	private Str[]	hi5s		:= Str[,]
-	
+	private Str[]		parcels		:= Str[,]
+	private Str[]		hi5s		:= Str[,]
+			Str:Bool achievements	:= Str:Bool[:] { ordered = true }
+
+	new make() {
+		achievements["4 legs are better than 8"]= false
+		achievements["Russian bartender"]		= false
+		achievements["Return the reds"]			= false
+		achievements["Times of old"]			= false
+		achievements["The green party"]			= false
+	}
 	
 	Duration gameTime() {
 		d := Duration.now - startTime
@@ -98,6 +106,14 @@
 		str.add("Belly size ......... ${bellySize}/9 (" + ("X" * bellySize) + ")\n")
 		str.add("High fives given ... ${hi5s.size}/9" + (hi5s.isEmpty ? "" : (" - " + hi5s.join(", "))) + "\n")
 		str.add("Presents opened..... ${parcels.size}/8" + (parcels.isEmpty ? "" : (" - " + parcels.join(", "))) + "\n")
+//		first := true
+//		achievements.each |complete, desc| {
+//			str.add(first ? "Achievements ....... " : "                     ")
+//			str.add(complete ? "|X| - " : "| | - ")
+//			str.add(desc)
+//			str.add("\n")
+//			first = false
+//		}
 		return str.toStr
 	}
 	
