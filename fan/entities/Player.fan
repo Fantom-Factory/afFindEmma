@@ -25,7 +25,7 @@
 	|Object?, Player -> Describe?|?	onHi5
 	|Player -> Describe?|?			onRollover
 
-	GameStats	gameStats	:= GameStats()
+	GameStats	gameStats			:= GameStats()
 	
 	@Transient
 	internal GameData	gameData
@@ -36,8 +36,10 @@
 	
 	GameData world() { gameData }
 	
+	Str[] achievements() { gameStats.achievements.findAll { it }.keys }
+
 	Void achievement(Str what) {
-		// FIXME save achievements
+		gameStats.achievements[what] = true
 		return Describe("Achievement accomplished: $what")
 	}
 	

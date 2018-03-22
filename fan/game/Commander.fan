@@ -15,6 +15,7 @@
 		obj := player.room.objects.dup
 		inv := player.inventory.dup
 		clo := player.clothes.dup
+		ach := player.achievements
 		des := cmd?.execute(player)
 		if (des != null)
 			log(des)
@@ -48,6 +49,11 @@
 			if (player.clothes != clo && !wasWearCmd && !wasTakeOffCmd)
 				log(player.lookClothes)
 		}
+
+		// not sure I want to list achievements
+//		acc := player.achievements.removeAll(ach).first
+//		if (acc != null)
+//			log("Achievement accomplished - $acc!")
 
 		return cmd != null
 	}

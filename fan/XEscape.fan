@@ -156,6 +156,7 @@
 					bubbles.canDrop = false
 					player.room.objects.remove(bubbles)
 					player.inventory.remove(bubbles)
+					player.achievement("The green party")
 					return Describe("You accidently knock the bottle of bubble bath into the pond of frogs. Before you know it, bubbles and foam is flying everywhere. The frogs love it and start jumping and swimming, croaking and singing even more! Boy, those frogs sure know how to party!")
 				}
 				return null
