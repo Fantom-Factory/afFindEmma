@@ -493,7 +493,7 @@
 				Object("door", "The door guards the hallway. Its handle looms high overhead, out of your reach.") {
 					it.openExit("lead", "west", openDoorDesc)
 				},
-				Object("television", "The door guards the hallway. Its handle looms high overhead, out of your reach.") {
+				Object("television", "A large flat screen TV with an easily accessible power button.") {
 					it.aliases = "tv".split
 					it.onHi5 = |Object tv, Player player->Describe?| {
 						player.incHi5("TV")
