@@ -5,7 +5,7 @@
 <stringAttribute key="mainScript" value=""/>
 <stringAttribute key="nature" value="com.xored.fanide.core.nature"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/Quest"/>
+<listEntry value="/Find Emma!"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="4"/>
@@ -13,6 +13,6 @@
 <listAttribute key="org.eclipse.debug.ui.favoriteGroups">
 <listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
 </listAttribute>
-<stringAttribute key="project" value="Quest"/>
+<stringAttribute key="project" value="Find Emma!"/>
 <stringAttribute key="scriptArguments" value="8069 -proxy"/>
 </launchConfiguration>

@@ -5,30 +5,17 @@ class TestPlayGame : Test, Commander {
 	override Player?	player
 	override Syntax?	syntax
 
-	Void testRunThrough() {		
+//	Void testLook() {
+//		startGame
+//		executeCmd("out")
+//		executeCmd("n")
+//		executeCmd("l tv")
+//	}
+
+	Void testRunThrough() {
 		log("START\n-----\n\n")
 		startGame
-		solution.splitLines.each { log(it.trim.upper); executeCmd(it) }
-
-//"
-// 		west
-// 		
-// 		drop lead
-// 		use nuts
-// 		eat nuts
-// 		use bird seed
-// 		eat seed
-// 		use bird seed
-// 		eat seed
-// 		use bird seed
-// 		eat seed
-// 		use bird seed
-// 		eat seed
-// 		
-// ".splitLines.each { log(it.trim.upper); executeCmd(it) }
-		
-//		 executeCmd("eat snack")
-		
+		solution.splitLines.each { log(it.trim.upper); executeCmd(it) }		
 		log("---\nEND\n\n")
 	}
 	

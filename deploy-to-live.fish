@@ -1,0 +1,1 @@
+fpm run afDeploy findEmma
