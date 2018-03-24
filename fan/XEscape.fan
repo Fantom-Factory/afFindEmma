@@ -1,6 +1,10 @@
 
+** 
+** 29 Rooms
+** 62 Objects
+**  
 ** Known Bug - if you take off your coat just before hoisting yourself up the washing line, you can wander the map without it on.
-** If can then become trapped inside as you can't go outside without a coat. 
+** If can then become trapped inside as you can't go outside without a coat.
 @Js class XEscape : Loader {
 	
 	private static const Str openDoorDesc := "You toss the lead into the air and its loop catches on the handle. You grasp the other end with your teeth and give it a tug. The door swings open."
@@ -141,6 +145,7 @@
 			it.aliases = "blueprints".split
 		}
 		presentMole := Object("comfortable pyjamas", "A stripy pair of comfortable cotton pyjamas.") {
+			it.canPickUp = true
 			it.canWear = true
 			it.onWear = msgFn("Ah! Soft and comfortable. In fact, you feel a little sleepy.")
 		}
@@ -315,14 +320,14 @@
 			}
 			if (player.room.id == `room:goldfishPond`) {
 				goldfish := player.room.findObject("goldfish")
-				player.room.objects.remove(goldfish)
+				if (goldfish != null) player.room.objects.remove(goldfish)
 				return Describe("You roll on to your back, teeter on the edge of the pond, and loose your balance.\n\nSplosh!\n\nAs fast you fell in, you spring right out again - hoping nobody saw you. You give a little shake, trying to act cool. It may have worked too, if it wasn't for the pond weed on your head!\n\nIt impressed no-one.") 				
 			}
 			if (player.room.id == `room:koiPond`) {
 				koiCarp := player.room.findObject("koi carp")
 				bubbles := player.room.findObject("bubbles")
-				player.room.objects.remove(koiCarp)
-				player.room.objects.remove(bubbles)
+				if (koiCarp != null) player.room.objects.remove(koiCarp)
+				if (bubbles != null) player.room.objects.remove(bubbles)
 				return Describe("You roll on to your back, teeter on the edge of the pond, and loose your balance.\n\nSplosh!\n\nAs fast you fell in, you spring right out again - hoping nobody saw you. You give a little shake, trying to act cool. It may have worked too, if it wasn't for the pond weed on your head!\n\nIt impressed no-one.") 				
 			}
 			if (player.room.id == `room:garageRoof`) {
