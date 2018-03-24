@@ -5,6 +5,9 @@
 **  
 ** Known Bug - if you take off your coat just before hoisting yourself up the washing line, you can wander the map without it on.
 ** If can then become trapped inside as you can't go outside without a coat.
+** 
+** Known Bug - if you don't open parcels straight away, you can receive many gifts from the animals.
+** 
 @Js class XEscape : Loader {
 	
 	private static const Str openDoorDesc := "You toss the lead into the air and its loop catches on the handle. You grasp the other end with your teeth and give it a tug. The door swings open."
