@@ -29,7 +29,7 @@ class Build : BuildPod {
 			"afColdFeet   1.4.0  - 1.4",
 		]
 
-		srcDirs = [`fan/`, `fan/entities/`, `fan/game/`, `fan/util/`, `fan/web/`, `test/`]
+		srcDirs = [`fan/`, `fan/engine/`, `fan/web/`, `test/`]
 		resDirs = [,]
 		
 		docApi = true
