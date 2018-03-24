@@ -150,7 +150,7 @@ using graphics
 						},
 					},
 					elem("a", "#downloadLink") {
-						it.setAttr("download", "saveEmmaCmds.txt")
+						it.setAttr("download", "findEmmaCmds.txt")
 					}, 
 					elem("form", "#uploadForm") {
 						it.setAttr("action", "/dog/upload")
@@ -283,7 +283,7 @@ using graphics
 					promptHis.add(it)
 				}
 			
-			case "cheat":
+//			case "cheat":
 			case "supercalifragilisticexpialidocious":
 				solution.splitLines.each {
 					screen.add(div("usrCmd", "\n> ${it.trim.upper}"))
