@@ -133,7 +133,22 @@ using graphics
 						},
 						div("screen hallOfFame") {
 							div("output") {
-								elem("span", "", "The \"Find Emma\" Hall of Fame!\n\n\nNo one has found found Emma yet!  :(\n\n\nIf you do, email me the completed save file and I'll add your details to this screen!\n\nContact details can be found at the bottom of "),
+								msg := "The \"Find Emma\" Hall of Fame!\n\n\n"
+								[
+									["When       ", "Who                           ", "Cmds", "Moves", "Hi5s", "Presents"],
+									["-----------", "------------------------------", "----", "-----", "----", "--------"],
+									["23 Mar 2018", "Emma", "519", "752", "6", "8"],
+								].each {
+									msg += it[0].justl(11) + "  "
+									msg += it[1].justl(30) + "  "
+									msg += it[2].justr( 4) + "  "
+									msg += it[3].justr( 5) + "  "
+									msg += it[4].justr( 4) + "  "
+									msg += it[5].justr( 8) + "\n"
+								}
+								msg += "\n\nIf you Find Emma, email me the completed save file and I'll add your details to this screen!\n\n"
+								elem("span", "", msg),
+								elem("span", "", "Contact details can be found at the bottom of "),
 								elem("a", "", "Fantom-Factory") { it.setAttr("href", "http://www.fantomfactory.org/") },
 								elem("span", "", "."),
 							},

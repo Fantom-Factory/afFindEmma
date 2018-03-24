@@ -4,10 +4,10 @@ class Build : BuildPod {
 	new make() {
 		podName = "afFindEmma"
 		summary = "A retro text adventure game created as a Birthday present for my wife Emma"
-		version = Version("1.0.0")
+		version = Version("1.0.2")
 
 		meta = [
-			"pod.dis"		: "Find Emma",
+			"pod.dis"		: "Find Emma!",
 			"repo.public"	: "true",
 			"afIoc.module"	: "afFindEmma::WebModule"
 		]
