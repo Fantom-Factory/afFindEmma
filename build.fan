@@ -27,6 +27,7 @@ class Build : BuildPod {
 			"afEfanXtra   1.2.0  - 1.2",
 			"afDuvet      1.1.8  - 1.1",
 			"afColdFeet   1.4.0  - 1.4",
+			"afGoogleAnalytics 0.1.8 - 0.1"
 		]
 
 		srcDirs = [`fan/`, `fan/engine/`, `fan/web/`, `test/`]
