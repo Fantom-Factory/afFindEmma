@@ -2,8 +2,9 @@ using afIoc::Contribute
 using afIoc::Configuration
 using afIoc::RegistryBuilder
 using afIocConfig::ApplicationDefaults
-using afBedSheet::FileHandler
 using afBedSheet::BedSheetConfigIds
+using afBedSheet::Route
+using afBedSheet::Routes
 
 const class WebModule {
 	
@@ -11,17 +12,16 @@ const class WebModule {
 		bob.options["afIoc.bannerText"] = "Find Emma v${typeof.pod.version}"
 	}
 
-	
-	
-	// ---- BedSheet Configuration ----------------------------------------------------------------
-	
-	@Contribute { serviceType=FileHandler# }
-	Void contributeFileHandler(Configuration config) {
-		config[`/`]		= `etc/web-static/`.toFile
-	}
+    @Contribute { serviceType=Routes# }
+    Void contributeRoutes(Configuration config) {
+        config.add(Route(`/favicon.ico`, 		typeof.pod.file(`/res/favicon.ico`)))
+        config.add(Route(`/css/app.min.css`, 	typeof.pod.file(`/res/css/app.min.css`)))
+        config.add(Route(`/images/ogimage.png`, typeof.pod.file(`/res/images/ogimage.png`)))
+        config.add(Route(`/images/tv.jpg`, 		typeof.pod.file(`/res/images/tv.jpg`)))
+    }
 	
 	@Contribute { serviceType=ApplicationDefaults# }
 	Void contributeAppDefaults(Configuration config) {
-		config[BedSheetConfigIds.host]	= "http://findemma.fantomfactory.org/"
+		config[BedSheetConfigIds.host]					= "http://findemma.fantomfactory.org/"
 	}
 }

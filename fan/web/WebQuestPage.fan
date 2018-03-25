@@ -20,9 +20,8 @@ const mixin WebQuestPage : EfanComponent {
 	@Inject abstract HttpRequest	httpReq
 	@Inject abstract HttpResponse	httpRes
 	@Inject abstract BedSheetServer	bedServer
-	@Inject abstract ClientAssetCache	assets
 	
-	static const Image ogImage		:= Image.decode(`etc/web-static/images/ogimage.png`.toFile.readAllBuf)
+	static const Image ogImage		:= Image.decode(`fan://afFindEmma/res/images/ogimage.png`.toFile.readAllBuf)
 	static const Str windowTitle	:= "Find Emma! - by Alien-Factory"
 	static const Str windowDesc		:= "A retro text adventure game created as a Birthday present for my wife Emma; written in Fantom by Alien-Factory"
 	
@@ -37,7 +36,7 @@ const mixin WebQuestPage : EfanComponent {
 		injector.injectMeta.withProperty("og:type"			).withContent("website")
 		injector.injectMeta.withProperty("og:title"			).withContent(windowTitle)
 		injector.injectMeta.withProperty("og:url"			).withContent(bedServer.host.encode)
-		injector.injectMeta.withProperty("og:image"			).withContent(assets.getAndUpdateOrProduce(`/images/ogimage.png`).clientUrlAbs.encode)
+		injector.injectMeta.withProperty("og:image"			).withContent(bedServer.toAbsoluteUrl(bedServer.toClientUrl(`/images/ogimage.png`)).encode)
 		injector.injectMeta.withProperty("og:image:width"	).withContent(ogImage.size.w.toInt.toStr)
 		injector.injectMeta.withProperty("og:image:height"	).withContent(ogImage.size.h.toInt.toStr)
 		injector.injectMeta.withProperty("og:description"	).withContent(windowDesc)
