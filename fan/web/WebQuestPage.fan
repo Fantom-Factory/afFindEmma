@@ -12,14 +12,16 @@ using afPillow::PageEvent
 using afDuvet::HtmlInjector
 using afEfanXtra::EfanComponent
 using graphics::Image
+using afGoogleAnalytics::GoogleAnalytics
 
 @Page { url=`/` }
 const mixin WebQuestPage : EfanComponent {
 
-	@Inject abstract HtmlInjector	injector
-	@Inject abstract HttpRequest	httpReq
-	@Inject abstract HttpResponse	httpRes
-	@Inject abstract BedSheetServer	bedServer
+	@Inject abstract HtmlInjector		injector
+	@Inject abstract HttpRequest		httpReq
+	@Inject abstract HttpResponse		httpRes
+	@Inject abstract BedSheetServer		bedServer
+	@Inject abstract GoogleAnalytics	ganal
 	
 	static const Image ogImage		:= Image.decode(`fan://afFindEmma/res/images/ogimage.png`.toFile.readAllBuf)
 	static const Str windowTitle	:= "Find Emma! - by Alien-Factory"
@@ -43,6 +45,7 @@ const mixin WebQuestPage : EfanComponent {
 		injector.injectLink.withRel		("canonical"		).setAttr	 ("href", bedServer.host.encode)
 
 		injector.injectStylesheet.fromLocalUrl(`/css/app.min.css`)
+		ganal.renderPageView
 
 		// manually inject pods so the likes of afIoc aren't injected
 		"sys concurrent graphics web dom afFindEmma".split.each |pod| {

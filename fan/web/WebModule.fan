@@ -5,6 +5,7 @@ using afIocConfig::ApplicationDefaults
 using afBedSheet::BedSheetConfigIds
 using afBedSheet::Route
 using afBedSheet::Routes
+using afGoogleAnalytics::GoogleAnalyticsConfigIds
 
 const class WebModule {
 	
@@ -23,5 +24,6 @@ const class WebModule {
 	@Contribute { serviceType=ApplicationDefaults# }
 	Void contributeAppDefaults(Configuration config) {
 		config[BedSheetConfigIds.host]					= "http://findemma.fantomfactory.org/"
+		config[GoogleAnalyticsConfigIds.accountNumber]	= "UA-33997125-13"
 	}
 }
