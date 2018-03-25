@@ -16,9 +16,9 @@ const class WebModule {
     @Contribute { serviceType=Routes# }
     Void contributeRoutes(Configuration config) {
         config.add(Route(`/favicon.ico`, 		typeof.pod.file(`/res/favicon.ico`)))
-        config.add(Route(`/css/app.min.css`, 	typeof.pod.file(`/res/css/app.min.css`)))
-        config.add(Route(`/images/ogimage.png`, typeof.pod.file(`/res/images/ogimage.png`)))
-        config.add(Route(`/images/tv.jpg`, 		typeof.pod.file(`/res/images/tv.jpg`)))
+        config.add(Route(`/css/app.min.css`, 	typeof.pod.file(`/res/app.min.css`)))
+        config.add(Route(`/images/ogimage.png`, typeof.pod.file(`/doc/ogimage.png`)))
+        config.add(Route(`/images/tv.jpg`, 		typeof.pod.file(`/res/tv.jpg`)))
     }
 	
 	@Contribute { serviceType=ApplicationDefaults# }

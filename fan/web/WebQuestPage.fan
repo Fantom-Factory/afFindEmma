@@ -23,7 +23,7 @@ const mixin WebQuestPage : EfanComponent {
 	@Inject abstract BedSheetServer		bedServer
 	@Inject abstract GoogleAnalytics	ganal
 	
-	static const Image ogImage		:= Image.decode(`fan://afFindEmma/res/images/ogimage.png`.toFile.readAllBuf)
+	static const Image ogImage		:= Image.decode(`fan://afFindEmma/doc/ogimage.png`.toFile.readAllBuf)
 	static const Str windowTitle	:= "Find Emma! - by Alien-Factory"
 	static const Str windowDesc		:= "A retro text adventure game created as a Birthday present for my wife Emma; written in Fantom by Alien-Factory"
 	
