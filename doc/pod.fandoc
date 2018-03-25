@@ -1,11 +1,25 @@
 Overview
 ********
-
 "Find Emma!" is a Birthday present for my wife, Emma.
 
 It is a retro style text adventure game in the ilk of [Zork]`https://en.wikipedia.org/wiki/Zork` and [Colossal Cave Adventure]`https://en.wikipedia.org/wiki/Colossal_Cave_Adventure`.
 
-It's about a little doggy who has to feed animials in the garden, open presents, eat snacks, and ultimately find her carer and best pal, Emma! The whole game is based on a dog we're (currently) fostering and our village home in South Wales, UK.
+It's about a little doggy who has to feed animals in the garden, open presents, eat snacks, and ultimately find her best pal, Emma! The whole game is based on a dog we're (currently) fostering and our village home in South Wales, UK.
 
-"Find Emma!" may be played online at [http://findemma.fantomfactory.org/]`http://findemma.fantomfactory.org/`.
+Play "Find Emma!" online at [http://findemma.fantomfactory.org/]`http://findemma.fantomfactory.org/`.
+
+
+
+Play Locally
+************
+To run "Find Emma!" locally, install the 'afFindEmma.pod' into your Fantom environment and then run the following command:
+
+  C:\> fan afFindEmma 8069
+
+This starts up a webserver and "Find Emma!" may then be played in a browser by visiting `http://localhost:8069/`.
+
+
+Stats
+*****
+"Find Emma!" has 62 interactable objects and 29 rooms.
 

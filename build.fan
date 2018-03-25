@@ -31,7 +31,7 @@ class Build : BuildPod {
 		]
 
 		srcDirs = [`fan/`, `fan/engine/`, `fan/web/`, `test/`]
-		resDirs = [`res/`, `res/css/`, `res/images/`]
+		resDirs = [`doc/`, `res/`]
 		
         docApi = false
         docSrc = true
